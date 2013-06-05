@@ -30,6 +30,8 @@ namespace Junction
 
         char[] AllergenList = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };
 
+        // Flag to control the creation of delay jobs:
+        public bool doGenerateDelay;
         //private double[] ProdRunTime;
         private double[] JobRunTime;
         private String[] ProductName;
@@ -1687,8 +1689,25 @@ namespace Junction
             {
                 throw new ApplicationException("Order Data Set cannot be initialized. The Resources Data Table must be initialized first.\r\n");
             }
+            // If we want to generate delay jobs on the fly instead of reading them from the input spreadsheet
             int SlackJobs, TotalJobs;
-            NumberOfRealJobs = masterData.Tables["Orders"].Rows.Count;
+            int numberOfDelayJobs = 0;
+            foreach (DataRow dr in dt.Rows)
+            {
+                string ProdNum = dr["Product Number"].ToString();
+                if (ProdNum == "9999")
+                {
+                    numberOfDelayJobs++;
+                }
+            }
+            if (doGenerateDelay)
+            {
+                NumberOfRealJobs = NumberOfRealJobs + numberOfDelayJobs;
+            }
+            else
+            {
+                NumberOfRealJobs = masterData.Tables["Orders"].Rows.Count;
+            }
             SlackJobs = (NumberOfRealJobs * NumberOfResources) - NumberOfRealJobs;
             TotalJobs = NumberOfRealJobs + SlackJobs;
 
@@ -1704,12 +1723,18 @@ namespace Junction
             MinEarlyCost = new double[TotalJobs];
             EarlyCostPerHour = new double[TotalJobs];
 
+            doGenerateDelay = true;
+
             int i = 0;
             foreach (DataRow dr in dt.Rows)
             {
                 try
                 {
                     string ProdNum = dr["Product Number"].ToString();
+                    if (doGenerateDelay & ProdNum == "9999")
+                    {
+                        break;
+                    }
                     int ProdIndex = (int)ProductNumberHash[ProdNum];
                     OrderQty[i] = (double)dr["Quantity"];
                     JobsToSchedule[i] = ProdIndex;
@@ -1786,7 +1811,13 @@ namespace Junction
                 i++;
             }
 
+            // Set up the delay jobs if they are not input
+            if (doGenerateDelay)
+            {
+                numberOfDelayJobs = NumberOfRealJobs * 6;
+                NumberOfRealJobs += numberOfDelayJobs;
 
+            }
             //Set up the Slack Jobs
             if (TotalJobs > NumberOfRealJobs)
             {
@@ -2079,7 +2110,7 @@ namespace Junction
 
 
 }
-namespace GeneticOptimizer
+namespace ConstrainedGeneticOptimizer
 {
     // Job Scheduling Problem description:
     //
@@ -2101,6 +2132,279 @@ namespace GeneticOptimizer
     // Reduce the time it takes to complete the jobs without violating constraints
     // * Minimize cost
     // There are other penalties... todo: define penalties and costs.
+
+    /// <summary>
+    /// Second GA attempt. Does not allow precedence contraint violations.
+    /// Didn't just replace the last one because I want to have them both available for comparison.
+    /// </summary>
+    public class ConstrainedGA
+    {
+        public Func<int[], double> FitnessFunction { get; set; }
+        public ConstrainedCreature[] population;
+        private ConstrainedCreature[] offspring;
+        private Random _rand;
+        // GA parameters:
+        private int _seed;
+        private int _length;
+        private int _popsize;
+        private int _offsize;
+        private double _mutationRate;
+        public ConstrainedGA(int seed, int length, int popsize, int offsize, double mutationRate)
+        {
+            _seed = seed;
+            _rand = new Random(seed);
+            _length = length;
+            _popsize = popsize;
+            _offsize = offsize;
+            _mutationRate = mutationRate;
+            population = new ConstrainedCreature[_popsize];
+            offspring = new ConstrainedCreature[_offsize];
+            for (int i = 0; i < popsize; i++)
+            {
+                population[i] = new ConstrainedCreature(length);
+                // population[i].fitness = FitnessFunction(population[i].Genes);
+            }
+            for (int i = 0; i < offsize; i++)
+            {
+                offspring[i] = new ConstrainedCreature(length);
+            }
+
+        }
+        public double AverageFitness()
+        {
+            double avg = 0;
+            for (int i = 0; i < _popsize; i++)
+            {
+                avg += population[i].fitness;
+            }
+            avg = avg / _popsize;
+            return avg;
+        }
+
+        public void EvaluatePopulation()
+        {
+            for (int i = 0; i < _popsize; i++)
+            {
+                population[i].fitness = FitnessFunction(population[i].Genes);
+            }
+
+        }
+        public void GenerateOffspring()
+        {
+            for (int i = 0; i < _offsize; i += 2)
+            {
+                // Select two parents
+                int p1 = SelectParent();
+                int p2 = SelectParent();
+
+                // Crossover to create two offspring
+                Crossover(p1, p2, i, i + 1);
+
+                // Mutation chance
+                Mutate(i);
+                if (!offspring[i].IsValid())
+                {
+                    MessageBox.Show("Invalid mutation");
+                    //Array.Sort(offspring[i].Genes);
+                    //throw new ApplicationException("Invalid offspring");
+                }
+
+                Mutate(i + 1);
+                if (!offspring[i + 1].IsValid())
+                {
+                    //Array.Sort(offspring[i + 1].Genes);
+                    MessageBox.Show("Invalid mutation");
+                    // throw new ApplicationException("Invalid offspring");
+                }
+                offspring[i].fitness = FitnessFunction(offspring[i].Genes);
+                offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes);
+
+            }
+        }
+        private int SelectParent()
+        {
+            // Binary tourny for no reason
+            int p1 = _rand.Next(_popsize);
+            int p2 = _rand.Next(_popsize);
+            int p = 0;
+            if (population[p1].fitness > population[p2].fitness)
+            {
+                p = p1;
+            }
+            else
+            {
+                p = p2;
+            }
+            return p;
+        }
+        public void SurvivalSelection()
+        {
+            List<ConstrainedCreature> combo = new List<ConstrainedCreature>();
+            combo.AddRange(population);
+            combo.AddRange(offspring);
+            combo.Sort(new NewComp());
+            for (int i = 0; i < _popsize; i++)
+            {
+                population[i].fitness = combo[i].fitness;
+                for (int j = 0; j < _length; j++)
+                {
+                    population[i].Genes[j] = combo[i].Genes[j];
+                }
+            }
+            // This doesnt work due to shallow copy nonsense:
+            // Creature[] combo = new Creature[_popsize + _offsize];
+            // population.CopyTo(combo, 0);
+            // offspring.CopyTo(combo, _popsize);
+            // Array.Sort(combo, new NewComp());
+            // Array.Copy(combo, population, _popsize);
+        }
+        public void Crossover(int p1, int p2, int o1, int o2)
+        {
+            int cutpoint = _rand.Next(_length);
+            //population[p1].Genes.CopyTo(offspring[o1].Genes, 0);
+            //population[p2].Genes.CopyTo(offspring[o2].Genes, 0);
+
+            for (int i = 0; i < _length; i++)
+            {
+                offspring[o1].Genes[i] = population[p1].Genes[i];
+            }
+            for (int i = 0; i < _length; i++)
+            {
+                offspring[o2].Genes[i] = population[p2].Genes[i];
+            }
+            for (int i = 0; i < _length; i++)
+            {
+                if (population[p1].Genes[i] != offspring[o1].Genes[i])
+                {
+                    MessageBox.Show("Offspring 1 did not copy correctly");
+                    break;
+                }
+            }
+
+            if (!offspring[o1].IsValid())
+            {
+
+                MessageBox.Show("Invalid creature before crossover");
+                //Array.Sort(offspring[o1].Genes);
+                //throw new ApplicationException("Invalid offspring");
+            }
+            if (!offspring[o2].IsValid())
+            {
+                MessageBox.Show("Invalid creature before crossover");
+                //Array.Sort(offspring[o2].Genes);
+                //throw new ApplicationException("Invalid offspring");
+            }
+            List<int> remainder = new List<int>(population[p2].Genes);
+            //remainder = population[p2].Genes;
+            for (int i = 0; i < cutpoint; i++)
+            {
+                remainder.Remove(population[p1].Genes[i]);
+            }
+            for (int i = cutpoint; i < _length; i++)
+            {
+                offspring[o1].Genes[i] = remainder[i - cutpoint];
+            }
+
+            if (!offspring[o1].IsValid())
+            {
+                MessageBox.Show("Invalid offspring1 after crossover");
+                //Array.Sort(offspring[o1].Genes);
+                //throw new ApplicationException("Invalid offspring");
+            }
+            // Repeat for offspring 2
+            remainder = new List<int>(population[p1].Genes);
+            for (int i = cutpoint; i < _length; i++)
+            {
+                remainder.Remove(population[p2].Genes[i]);
+            }
+
+            for (int i = 0; i < cutpoint; i++)
+            {
+                offspring[o2].Genes[i] = remainder[i];
+            }
+            if (!offspring[o2].IsValid())
+            {
+                MessageBox.Show("Invalid offspring2 after crossover");
+                //Array.Sort(offspring[o1].Genes);
+                //throw new ApplicationException("Invalid offspring");
+            }
+        }
+        public void Mutate(int o)
+        {
+            for (int i = 0; i < _length; i++)
+            {
+                if (_rand.NextDouble() < _mutationRate)
+                {
+                    int r = _rand.Next(_length);
+                    int temp = offspring[o].Genes[i];
+                    offspring[o].Genes[i] = offspring[o].Genes[r];
+                    offspring[o].Genes[r] = temp;
+                }
+            }
+        }
+        public class ConstrainedCreature
+        {
+            static Random _rand = new Random();
+
+            public int[] Genes;
+            public double[] Times;
+            public double fitness;
+            public ConstrainedCreature(int length)
+            {
+                Genes = new int[length];
+                List<int> randarray = new List<int>();
+                for (int i = 0; i < length; i++)
+                {
+                    randarray.Add(i);
+                }
+                for (int i = 0; i < length; i++)
+                {
+                    int r = _rand.Next(0, length - i);
+                    Genes[i] = randarray[r];
+                    randarray.RemoveAt(r);
+                }
+                fitness = -1;
+            }
+            public ConstrainedCreature(ConstrainedCreature c)
+            {
+                // This doesn't work. Creates shallow copy.
+                //c.Genes.CopyTo(Genes, 0);
+                fitness = c.fitness;
+            }
+            public bool IsValid()
+            {
+                List<int> vals = new List<int>();
+                bool r = true;
+                foreach (int i in Genes)
+                {
+                    if (vals.Contains(i))
+                    {
+                        r = false;
+                        break;
+                    }
+                    vals.Add(i);
+                }
+                return r;
+            }
+
+        }
+        public sealed class NewComp : IComparer<ConstrainedCreature>
+        {
+            public int Compare(ConstrainedCreature x, ConstrainedCreature y)
+            {
+                return (y.fitness.CompareTo(x.fitness));
+            }
+        }
+
+    }
+}
+
+namespace GeneticOptimizer
+{
+ 
+    /// <summary>
+    /// My first GA attempt. Roughly replicates the original nestle demo functionality.
+    /// </summary>
     public class GA
     {
         public Func<int[], double> FitnessFunction { get; set; }
@@ -2311,7 +2615,6 @@ namespace GeneticOptimizer
             static Random _rand = new Random();
 
             public int[] Genes;
-            public double[] Times;
             public double fitness;
             public Creature(int length)
             {
