@@ -33,3 +33,10 @@ C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\GASEngineCS\obj\Release\
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\GASEngineCS\obj\Release\GASEngineCS.csproj.GenerateResource.Cache
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\GASEngineCS\obj\Release\GASEngineCS.dll
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\GASEngineCS\obj\Release\GASEngineCS.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\GASEngineCS\bin\Release\GASEngineCS.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\GASEngineCS\bin\Release\GASEngineCS.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\GASEngineCS\obj\Release\GASEngineCS.csprojResolveAssemblyReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\GASEngineCS\obj\Release\Junction.StatusForm.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\GASEngineCS\obj\Release\GASEngineCS.csproj.GenerateResource.Cache
+C:\Users\bsmithmartinez\work\Nestle Demo\GASEngineCS\obj\Release\GASEngineCS.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\GASEngineCS\obj\Release\GASEngineCS.pdb

@@ -134,3 +134,25 @@ C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\obj\Release\GAScheduling
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\obj\Release\GAScheduling.GAScheduling.resources
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\obj\Release\GAScheduling.Resources.resources
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\obj\Release\GAScheduling.vbproj.GenerateResource.Cache
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Release\GAScheduling.vbproj.ResolveComReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Release\GAScheduling.exe
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Release\GAScheduling.xml
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Release\GAScheduling.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\GAScheduling.exe
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\GAScheduling.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\GAScheduling.xml
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\ExcelAutomation.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\Gantt.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\GanttCS.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\GASEngineCS.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\GanttControl.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\ExcelAutomation.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\Gantt.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\Gantt.xml
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\GanttCS.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\GASEngineCS.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Release\GanttControl.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Release\GAScheduling.vbprojResolveAssemblyReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Release\GAScheduling.GAScheduling.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Release\GAScheduling.Resources.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Release\GAScheduling.vbproj.GenerateResource.Cache

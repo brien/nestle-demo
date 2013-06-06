@@ -1020,19 +1020,22 @@ namespace Junction
                 int Product = Convert.ToInt32(ScheduleResult[1, i]);
                 int ResourceNum = (int)ScheduleResult[5, i] - 1;
                 //Todo Could add a filter to skip delay jobs here (delay jobs are input with product code 9999 currently)
-                if (Product != -1) //Skip slack jobs
+                if (Product != -1 & Product != 9999 ) //Skip slack jobs
                 {
                     int LastRow = dt.Rows.Count - 1;
                     dr["Sequence Number"] = LastRow + 2;
                     int CurrentJob = (int)ScheduleResult[0, i];
                     dr["Job Number"] = CurrentJob;
                     dr["Product Index"] = Product;
-                    dr["Product Number"] = masterData.Tables["Products"].Rows[Product]["Product Number"];
+                    // todo: replace 3333 with actual product number
+                    dr["Product Number"] = 3333; //masterData.Tables["Products"].Rows[Product]["Product Number"];
                     dr["Product Name"] = ScheduleResult[2, i];
 
                     dr["End Time"] = Conversions.ConvertDate((double)ScheduleResult[3, i]);
-
-                    dr["Production Order"] = masterData.Tables["Orders"].Rows[(int)ScheduleResult[0, i]]["Production Order"];
+                    // In generating the delay jobs on the fly there is a problem on this line with ScheduleResult[0,i] being out of range of
+                    // masterData.Tables["Orders"].Rows
+                    // todo: replace 6666 with actual production order number
+                    dr["Production Order"] = 6666; //masterData.Tables["Orders"].Rows[(int)ScheduleResult[0, i]]["Production Order"];
                     dr["Setup Time"] = (double)(ScheduleResult[6, i]) * 60.0;//Convert Decimal Hour Setup Time to Minutes
                     dr["Run Time"] = JobRunTime[CurrentJob] * 60; //Convert Decimal Hour Run Times to Minutes
                     dr["Order Quantity"] = OrderQty[CurrentJob];
@@ -1690,18 +1693,24 @@ namespace Junction
                 throw new ApplicationException("Order Data Set cannot be initialized. The Resources Data Table must be initialized first.\r\n");
             }
             // If we want to generate delay jobs on the fly instead of reading them from the input spreadsheet
+            // Note: "NumberOfRealJobs" is misleading.
+            // It is the number of actual orders with real products + number of delay jobs, whether they are generated or in the input spreadsheet. 
+            doGenerateDelay = true;
             int SlackJobs, TotalJobs;
             int numberOfDelayJobs = 0;
-            foreach (DataRow dr in dt.Rows)
-            {
-                string ProdNum = dr["Product Number"].ToString();
-                if (ProdNum == "9999")
-                {
-                    numberOfDelayJobs++;
-                }
-            }
+            NumberOfRealJobs = 0;
             if (doGenerateDelay)
             {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    // Count the number of real jobs. Generate the number of delay jobs
+                    string ProdNum = dr["Product Number"].ToString();
+                    if (ProdNum != "9999")
+                    {
+                        NumberOfRealJobs++;
+                    }
+                }
+                numberOfDelayJobs = NumberOfRealJobs * 6;
                 NumberOfRealJobs = NumberOfRealJobs + numberOfDelayJobs;
             }
             else
@@ -1723,7 +1732,7 @@ namespace Junction
             MinEarlyCost = new double[TotalJobs];
             EarlyCostPerHour = new double[TotalJobs];
 
-            doGenerateDelay = true;
+            double avgJobRunTime = 0;
 
             int i = 0;
             foreach (DataRow dr in dt.Rows)
@@ -1740,6 +1749,7 @@ namespace Junction
                     JobsToSchedule[i] = ProdIndex;
 
                     JobRunTime[i] = (double)dr.ItemArray[3] / 60.0; //Read in the product run time and convert from minutes to decimal hours
+                    avgJobRunTime += JobRunTime[i];
 
                     if (JobsToSchedule[i] > ProductName.GetUpperBound(0))
                     {
@@ -1811,11 +1821,27 @@ namespace Junction
                 i++;
             }
 
-            // Set up the delay jobs if they are not input
+            avgJobRunTime = avgJobRunTime / (NumberOfRealJobs - numberOfDelayJobs);
+            // Set up the generated delayjobs 
             if (doGenerateDelay)
             {
-                numberOfDelayJobs = NumberOfRealJobs * 6;
-                NumberOfRealJobs += numberOfDelayJobs;
+                for (int j = NumberOfRealJobs - numberOfDelayJobs; j < NumberOfRealJobs; j++)
+                {
+                    int ProdIndex = (int)ProductNumberHash["9999"];
+                    OrderQty[j] = 1;
+                    JobsToSchedule[j] = ProdIndex;
+
+                    JobRunTime[j] = avgJobRunTime;
+
+                    // Load the order late cost penalties
+                    MinLateCost[j] = 0;
+                    MaxLateCost[j] = 0;
+                    LateCostPerHour[j] = 0;
+                    // Load the order early cost penalties
+                    MinEarlyCost[j] = 0;
+                    MaxEarlyCost[j] = 0;
+                    EarlyCostPerHour[j] = 0;
+                }
 
             }
             //Set up the Slack Jobs
