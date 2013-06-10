@@ -32,6 +32,8 @@ namespace Junction
 
         // Flag to control the creation of delay jobs:
         public bool doGenerateDelay;
+        // Run the refactored GA or the original Nestle Demo?
+        public bool runRefactored;
         //private double[] ProdRunTime;
         private double[] JobRunTime;
         private String[] ProductName;
@@ -816,7 +818,7 @@ namespace Junction
             }
         }
 
-        private void CreateScheduleDataTable()
+        private void CreateScheduleDataTable(int[] genes)
         {
             DataTable dt = new DataTable();
             DataRow dr;
@@ -926,7 +928,7 @@ namespace Junction
             dc.ReadOnly = true;
             dc.AutoIncrement = false;
             dt.Columns.Add(dc);
-
+            
             dc = new DataColumn();
             dc.DataType = System.Type.GetType("System.String");
             dc.ColumnName = "Allergens";
@@ -988,7 +990,8 @@ namespace Junction
             {
                 int Job;
                 int Product;
-                Job = Population[BestIndex, i];
+                //Job = Population[BestIndex, i];
+                Job = genes[i];
                 Product = JobsToSchedule[Job];
                 ScheduleResult[0, i] = Job;
                 ScheduleResult[1, i] = Product;
@@ -1303,18 +1306,21 @@ namespace Junction
                 frmStatus.lblFeasible.Text = "No Feasible Solution Found";
             }
             // BSM:
-            int popsize = 50;
-            GA = new GeneticOptimizer.GA(1, NumJobs, popsize, popsize, 0.05);
-            GA.FitnessFunction = this.CalcFitness;
-            GA.EvaluatePopulation();
-            double avgf = 0;
-            for (int i = 0; i < 1000; i++)
+            if (runRefactored)
             {
-                GA.GenerateOffspring();
-                GA.SurvivalSelection();
-                avgf = GA.AverageFitness();
-                if (i % 100 == 0)
-                    frmStatus.lblCurrentValue.Text = avgf.ToString();
+                int popsize = 50;
+                GA = new GeneticOptimizer.GA(1, NumJobs, popsize, popsize, 0.05);
+                GA.FitnessFunction = this.CalcFitness;
+                GA.EvaluatePopulation();
+                double avgf = 0;
+                for (int i = 0; i < 1000; i++)
+                {
+                    GA.GenerateOffspring();
+                    GA.SurvivalSelection();
+                    avgf = GA.AverageFitness();
+                    if (i % 100 == 0)
+                        frmStatus.lblCurrentValue.Text = avgf.ToString();
+                }
             }
             //
             //    Begin Evolution
@@ -1349,13 +1355,18 @@ namespace Junction
                 }
             }
 
-            //    close the status form
+            // Close the status form
             frmStatus.Close();
             frmStatus = null;
             BestIndex = FindBestIndex();
             Best = FitnessArray[BestIndex];
-            //    'Create a data table with the schedule
-            CreateScheduleDataTable();
+            // Create a data table with the schedule
+            int[] best = new int[NumJobs];
+            for (int i = 0; i < NumJobs; i++)
+            {
+                best[i] = Population[BestIndex, i];
+            }
+            CreateScheduleDataTable(best);
             return Best;
         }
 
@@ -1450,27 +1461,48 @@ namespace Junction
         private void SetProdData(DataTable dt)
         {
             int i = 0;
-
+            int numberOfProducts = 0;
+            if (doGenerateDelay)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    // Count the number of real products 
+                    string ProdNum = dr["Product Number"].ToString();
+                    if (ProdNum != "9999")
+                    {
+                        numberOfProducts++;
+                    }
+                }
+                numberOfProducts+=1;
+            }
+            else
+            {
+            numberOfProducts = dt.Rows.Count;
+            }
+          
             //redimension the arrays to hold the product data
-            int NumberOfProducts = dt.Rows.Count;
-            ProductName = new string[NumberOfProducts];
-            AllergensInProduct = new string[NumberOfProducts];
+            ProductName = new string[numberOfProducts];
+            AllergensInProduct = new string[numberOfProducts];
 
-            BOMItemIndex = new int[NumberOfProducts];
+            BOMItemIndex = new int[numberOfProducts];
             //initialize the BOMItemIndex so that all values are -1;
             //The correct values will be set in the SetBOMData method
-            for (int j = 0; j < NumberOfProducts; j++)
+            for (int j = 0; j < numberOfProducts; j++)
             {
                 BOMItemIndex[j] = -1;
             }
 
             ProductNumberHash = new System.Collections.Hashtable();
-            ResourcePreference = new double[NumberOfProducts, NumberOfResources];
+            ResourcePreference = new double[numberOfProducts, NumberOfResources];
 
             foreach (DataRow dr in dt.Rows)
             {
                 ProductName[i] = (string)dr["Product Name"]; //Read in the product name
                 string ProdNum = dr["Product Number"].ToString();
+                if (doGenerateDelay & ProdNum == "9999")
+                {
+                    break;
+                }
                 //todo  change delay index
                 if (ProdNum == "9999")
                 {
@@ -1499,6 +1531,19 @@ namespace Junction
                     }
                 }
                 i++;
+            }
+            // If we are generating DelayJobs on the fly, then make a Delay product as well:
+            if (doGenerateDelay)
+            {
+                ProductName[numberOfProducts - 1] = "Delay";
+                DelayIndex = i;
+                ProductNumberHash.Add("9999", i);
+                AllergensInProduct[i] = "";
+                ResourcePreference[i, 0] = ResourceNotFeasible;
+                for (int j = 1; j < NumberOfResources; j++)
+                {
+                        ResourcePreference[i, j] = (ResourcePref / 10) - (ResourcePref / 10);
+                }
             }
         }
 

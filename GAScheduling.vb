@@ -51,7 +51,16 @@ Public Class GAScheduling
             .BOMPenaltyCost = CDbl(tbComponentShortagePenalty.Text)
             .ResourceNotFeasible = CDbl(tbLineInfeasibility.Text)
             .ResourcePref = CDbl(tbLineAffinity.Text)
-
+            If (chkbox_GenerateDelay.Checked) Then
+                .doGenerateDelay = True
+            Else
+                .doGenerateDelay = False
+            End If
+            If (RadioButton1.Checked) Then
+                .runRefactored = False
+            Else
+                .runRefactored = True
+            End If
             'The next section of code loads worksheets into multiple data tables within a single data set
             'The dataset is then passed to the scheduler via the GAS.Masterdata Property.
             Try
