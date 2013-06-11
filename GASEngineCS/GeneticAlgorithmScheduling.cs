@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using TestSimpleRNG;
 
 namespace Junction
 {
@@ -84,6 +85,7 @@ namespace Junction
         public bool[] ConstrainedStart { get; set; }
 
         public GeneticOptimizer.GA GA;
+        public ConstrainedGeneticOptimizer.ConstrainedGA CGA;
 
 
         private int NumberOfRealJobs;
@@ -1268,9 +1270,6 @@ namespace Junction
             ScheduleDataSet.Tables.Add(dt);
         }
 
-
-
-
         // This is the main method invoked to begin the scheduling process
         public double Schedule(double StrengthOfFather, double MutationProbability, int NumberOfGenerations,
                                 double DeathRate, int NumNonRandom, int PopulationSize)
@@ -1306,18 +1305,20 @@ namespace Junction
                 frmStatus.lblFeasible.Text = "No Feasible Solution Found";
             }
             // BSM:
+            // GeneticOptimizer.GA is just a refactored version of the original
+            // GeneticOptimizer.CGA is modified to remove delayjobs
             if (runRefactored)
             {
                 int popsize = 50;
-                GA = new GeneticOptimizer.GA(1, NumJobs, popsize, popsize, 0.05);
-                GA.FitnessFunction = this.CalcFitness;
-                GA.EvaluatePopulation();
+                CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, 0.05);
+                CGA.FitnessFunction = this.CCalcFitness;
+                CGA.EvaluatePopulation();
                 double avgf = 0;
                 for (int i = 0; i < 1000; i++)
                 {
-                    GA.GenerateOffspring();
-                    GA.SurvivalSelection();
-                    avgf = GA.AverageFitness();
+                    CGA.GenerateOffspring();
+                    CGA.SurvivalSelection();
+                    avgf = CGA.AverageFitness();
                     if (i % 100 == 0)
                         frmStatus.lblCurrentValue.Text = avgf.ToString();
                 }
@@ -1899,8 +1900,214 @@ namespace Junction
                 }
             }
         }
-
+        
         private double CalcFitness(int[] genes)
+        {
+            double Time = ProdStartTime[0];
+            double NonDelayTime = Time; //Added 3/24 to elim delay time
+            double JobStartTime, JobEndTime;
+            double Fitness;
+            double SumOfServiceEarlyPenalties = 0;
+            double SumOfServiceLatePenalties = 0;
+            double SumOfResourceLatePenalties = 0;
+            double BOMPenalties = 0;
+            int Previous = -1;
+            bool ScheduleViolationBOM = false;
+            bool ScheduleViolationResourceLate = false;
+            bool ScheduleViolationOrderLate = false;
+            bool ScheduleViolationResourceFeasiblilty = false;
+            bool ScheduleViolationEarlyTime = false;
+            double LateTime, EarlyTime;
+            int CurrentProd;
+            double TotalTimeAllResources = 0;
+            int CurrentJob;
+            double ResourcePrefPenalties = 0;
+            double SumOfChangeOverPenalties = 0;
+            double EarlyStartFactor = 0;
+
+            // List of production orders to support calculation of BOM Item requirements
+            List<ProdSchedule> pSched = new List<ProdSchedule>();
+
+
+            for (int Resource = 0; Resource < NumberOfResources; Resource++)
+            {
+                Time = ProdStartTime[Resource];
+                NonDelayTime = Time; // added to eliminate delay orders
+
+                if (ConstrainedStart[Resource])
+                {
+                    Previous = StartProduct[Resource];
+                }
+                else
+                {
+                    Previous = -1;
+                }
+                // Calculate the time for the following jobs
+                int FirstGeneInResource = NumberOfRealJobs * Resource;
+                int LastGeneInResource = (NumberOfRealJobs * (Resource + 1)) - 1;
+                double co, cop;
+                for (int i = FirstGeneInResource; i <= LastGeneInResource; i++)
+                {
+                    CurrentJob = genes[i];
+                    CurrentProd = JobsToSchedule[CurrentJob];
+                    if (Previous != -1 & CurrentProd != -1)
+                    {
+                        co = ChangeOver[Previous, CurrentProd];
+                        cop = ChangeOverPenalties[Previous, CurrentProd];
+                    }
+                    else
+                    {
+                        co = 0;
+                        cop = 0;
+                    }
+                    // Change code to eliminate Delay Jobs from the fitness calculation as well as slack jobs
+                    // Delay jobs are being coded manually as product 9999
+                    //ToDo enhance input to give a better spread on delay jobs vs adding products and orders for delays. Get rid of the 9999 comparison.
+                    //if (CurrentProd != -1)  Changed on 3/24/2012
+                    if (CurrentProd != -1)
+                    {
+
+                        //This is a real job so process it
+                        if (Previous == -1)
+                        {
+                            //First job on the resource was a slack job
+                            JobStartTime = Time;
+                            Time += JobRunTime[CurrentJob];
+                            JobEndTime = Time;
+                        }
+                        else
+                        {
+                            //we have a real job in the previous variable
+                            JobStartTime = Time;
+                            Time += JobRunTime[CurrentJob] + co;
+                            JobEndTime = Time;
+                            // Find last non delay time on the resource
+
+                        }
+                        if (CurrentProd != DelayIndex)
+                        {
+                            //Used to find the last real job running on a resource
+                            NonDelayTime = Time;
+                            //Used to encourage jobs to start as soon as possible
+                            //Todo  Turn Early start facto into a configurable factor (by resorce?)
+                            EarlyStartFactor += JobStartTime;
+                        }
+
+                        Previous = JobsToSchedule[CurrentJob];
+
+                        //Calculate Service Early Cost
+                        EarlyTime = EarlyStart[CurrentJob];
+                        if (JobStartTime < EarlyTime & EarlyTime != 0.0)
+                        {
+                            SumOfServiceEarlyPenalties += Math.Min(MaxEarlyCost[CurrentJob], MinEarlyCost[CurrentJob] + EarlyCostPerHour[CurrentJob] * (EarlyTime - (JobStartTime)));
+                            ScheduleViolationEarlyTime = true;
+                        }
+
+                        //Calculate Service Late Cost
+                        LateTime = Priority[CurrentJob];
+                        if (Time > LateTime)
+                        {
+                            SumOfServiceLatePenalties += Math.Min(MaxLateCost[CurrentJob], MinLateCost[CurrentJob] + LateCostPerHour[CurrentJob] * (JobEndTime - Priority[CurrentJob]));
+                            ScheduleViolationOrderLate = true;
+                        }
+
+                        //Calculate Resource Late Cost
+                        if (Time > ProdEndTime[Resource])
+                        {
+                            SumOfResourceLatePenalties += Math.Min(RLCMax[Resource], RLCMin[Resource] + RLCRatePerHour[Resource] * (Time - ProdEndTime[Resource]));
+                            ScheduleViolationResourceLate = true;
+                        }
+
+                        // Add the resource preference penalties
+                        ResourcePrefPenalties += ResourcePreference[CurrentProd, Resource];
+                        if (ResourcePreference[CurrentProd, Resource] == ResourceNotFeasible)
+                        {
+                            ScheduleViolationResourceFeasiblilty = true;
+                        }
+
+                        //Sum up the changeover penalties
+                        SumOfChangeOverPenalties += cop;
+
+                        //Build the output schedule for BOM Items
+                        //First create a new production schedule item
+                        ProdSchedule p = new ProdSchedule(CurrentProd, JobStartTime, JobEndTime, OrderQty[CurrentJob]);
+                        //Second, add the new schedule item to the list
+                        pSched.Add(p);
+                    }
+                }
+                // Calculate the total production time required
+                //TotalTimeAllResources += Time - ProdStartTime[Resource]; 
+                TotalTimeAllResources += NonDelayTime - ProdStartTime[Resource];
+            }
+
+            //Get ready to check for BOM violations
+            if (BOMItems.Count > 0) //This is purely a speed enhancement to skip this section if there are no BOM items.
+            {
+                List<ProdSchedule> ComponentSchedule = new List<ProdSchedule>();
+                foreach (ProdSchedule ps in pSched)
+                {
+                    //Find out if the item has components
+                    int bIdx = BOMItemIndex[ps.Product];
+                    if (bIdx == -1) continue;
+                    int cIdx = -1;
+                    BOMItem bi = BOMItems[bIdx];
+                    foreach (int component in bi.Components)
+                    {
+                        cIdx++;
+                        //add the demand of the component quantity to the schedule
+                        double ComponentDemand = -(ps.OrderQty * bi.Percent[cIdx]);
+                        //Note: StartTime is used twice in the line below. This is not a mistake.
+                        //Component demand is not a real scheduled job.
+                        //This simplification makes sure the demand occurs at the start of the parent job.
+                        //Adding .0001 keeps the posting sequence = (debit inventory first at any given time then credit)
+                        ProdSchedule cd = new ProdSchedule(component, ps.StartTime, ps.StartTime + 0.0001, ComponentDemand);
+                        ComponentSchedule.Add(cd);
+                    }
+
+                }
+                pSched.AddRange(ComponentSchedule);
+                pSched.Sort();
+                int pProd = -99; // set up a variable to hold the previous product
+                double pQty = 0; //set up a variable to hold the previous quantity
+
+                //Calculate the available quantities
+                foreach (ProdSchedule ps in pSched)
+                {
+                    // Calculate the penalty
+                    if (pProd == ps.Product)
+                    {
+                        pQty += ps.OrderQty;
+                        ps.AvailableQuantity = pQty;
+                    }
+                    else
+                    {
+                        pQty = ps.OrderQty;
+                        pProd = ps.Product;
+                        ps.AvailableQuantity = pQty;
+                    }
+                    if (ps.AvailableQuantity < 0.0)
+                    {
+                        BOMPenalties += BOMPenaltyCost;
+                        ScheduleViolationBOM = true;
+                    }
+                }
+            }
+
+            if (!(ScheduleViolationBOM | ScheduleViolationResourceLate | ScheduleViolationOrderLate | ScheduleViolationResourceFeasiblilty | ScheduleViolationEarlyTime))
+            {
+                IsFeasible = true;
+            }
+
+            //Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
+            //    + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties; 
+            Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
+             + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties + EarlyStartFactor;
+
+            // Fitness must be increasing.
+            return (-1.0 * Fitness);
+        }
+
+        private double CCalcFitness(int[] genes, double[] times)
         {
             double Time = ProdStartTime[0];
             double NonDelayTime = Time; //Added 3/24 to elim delay time
@@ -2210,7 +2417,7 @@ namespace ConstrainedGeneticOptimizer
     /// </summary>
     public class ConstrainedGA
     {
-        public Func<int[], double> FitnessFunction { get; set; }
+        public Func<int[], double[], double> FitnessFunction { get; set; }
         public ConstrainedCreature[] population;
         private ConstrainedCreature[] offspring;
         private Random _rand;
@@ -2256,7 +2463,7 @@ namespace ConstrainedGeneticOptimizer
         {
             for (int i = 0; i < _popsize; i++)
             {
-                population[i].fitness = FitnessFunction(population[i].Genes);
+                population[i].fitness = FitnessFunction(population[i].Genes, population[i].Times);
             }
 
         }
@@ -2287,8 +2494,8 @@ namespace ConstrainedGeneticOptimizer
                     MessageBox.Show("Invalid mutation");
                     // throw new ApplicationException("Invalid offspring");
                 }
-                offspring[i].fitness = FitnessFunction(offspring[i].Genes);
-                offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes);
+                offspring[i].fitness = FitnessFunction(offspring[i].Genes, offspring[i].Times);
+                offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes, offspring[i].Times);
 
             }
         }
@@ -2354,16 +2561,11 @@ namespace ConstrainedGeneticOptimizer
 
             if (!offspring[o1].IsValid())
             {
-
                 MessageBox.Show("Invalid creature before crossover");
-                //Array.Sort(offspring[o1].Genes);
-                //throw new ApplicationException("Invalid offspring");
             }
             if (!offspring[o2].IsValid())
             {
                 MessageBox.Show("Invalid creature before crossover");
-                //Array.Sort(offspring[o2].Genes);
-                //throw new ApplicationException("Invalid offspring");
             }
             List<int> remainder = new List<int>(population[p2].Genes);
             //remainder = population[p2].Genes;
@@ -2399,6 +2601,7 @@ namespace ConstrainedGeneticOptimizer
                 //Array.Sort(offspring[o1].Genes);
                 //throw new ApplicationException("Invalid offspring");
             }
+
         }
         public void Mutate(int o)
         {
@@ -2410,6 +2613,9 @@ namespace ConstrainedGeneticOptimizer
                     int temp = offspring[o].Genes[i];
                     offspring[o].Genes[i] = offspring[o].Genes[r];
                     offspring[o].Genes[r] = temp;
+                    // Mutate the delay time
+                    r = _rand.Next(_length);
+                    offspring[o].Times[r] = TestSimpleRNG.SimpleRNG.GetExponential(1);
                 }
             }
         }
@@ -2435,13 +2641,13 @@ namespace ConstrainedGeneticOptimizer
                     randarray.RemoveAt(r);
                 }
                 fitness = -1;
+                Times = new double[length];
+                for (int i = 0; i < length; i++)
+                {
+                    Times[i] = TestSimpleRNG.SimpleRNG.GetExponential(1);
+                }
             }
-            public ConstrainedCreature(ConstrainedCreature c)
-            {
-                // This doesn't work. Creates shallow copy.
-                //c.Genes.CopyTo(Genes, 0);
-                fitness = c.fitness;
-            }
+           
             public bool IsValid()
             {
                 List<int> vals = new List<int>();
@@ -2459,6 +2665,7 @@ namespace ConstrainedGeneticOptimizer
             }
 
         }
+        
         public sealed class NewComp : IComparer<ConstrainedCreature>
         {
             public int Compare(ConstrainedCreature x, ConstrainedCreature y)
