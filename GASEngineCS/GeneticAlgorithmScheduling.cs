@@ -1673,8 +1673,12 @@ namespace Junction
 
         private void SetChangeOverData(DataTable dt)
         {
-            int jMax = dt.Columns.Count - 1; //skip first column and then make zero based
-            int iMax = dt.Rows.Count;
+            // This doesnt work for some reason:
+            // Read up on how this "DataTable" thing works with Excel
+            // int jMax = dt.Columns.Count - 1; //skip first column and then make zero based
+            // int iMax = dt.Rows.Count;
+            int jMax = dt.Columns.Count - 2;
+            int iMax = dt.Rows.Count - 1;
 
             // Make sure the changeover matrix is valid
             int NumberOfProducts = ProductName.GetUpperBound(0) + 1;
@@ -1704,8 +1708,12 @@ namespace Junction
 
         private void SetChangeOverPenaltyData(DataTable dt)
         {
-            int jMax = dt.Columns.Count - 1; //skip first column and then make zero based
-            int iMax = dt.Rows.Count;
+            // This doesnt work for some reason:
+            // Read up on how this "DataTable" thing works with Excel
+            // int jMax = dt.Columns.Count - 1; //skip first column and then make zero based
+            // int iMax = dt.Rows.Count;
+            int jMax = dt.Columns.Count - 2;
+            int iMax = dt.Rows.Count - 1;
 
             // Make sure the changeover matrix is valid
             if (iMax != ProductName.GetUpperBound(0) + 1 | jMax != ProductName.GetUpperBound(0) + 1)
@@ -1741,7 +1749,6 @@ namespace Junction
             // If we want to generate delay jobs on the fly instead of reading them from the input spreadsheet
             // Note: "NumberOfRealJobs" is misleading.
             // It is the number of actual orders with real products + number of delay jobs, whether they are generated or in the input spreadsheet. 
-            doGenerateDelay = true;
             int SlackJobs, TotalJobs;
             int numberOfDelayJobs = 0;
             NumberOfRealJobs = 0;
