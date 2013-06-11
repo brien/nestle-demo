@@ -35,6 +35,9 @@ namespace Junction
         public bool doGenerateDelay;
         // Run the refactored GA or the original Nestle Demo?
         public bool runRefactored;
+        // Or Run the new GA (originally called constrained, no longer accurate description)?
+        public bool runConstrained;
+
         //private double[] ProdRunTime;
         private double[] JobRunTime;
         private String[] ProductName;
@@ -1304,12 +1307,30 @@ namespace Junction
                 frmStatus.lblGeneration.Text = "Initialized";
                 frmStatus.lblFeasible.Text = "No Feasible Solution Found";
             }
+            double eliteFitness=0;
             // BSM:
             // GeneticOptimizer.GA is just a refactored version of the original
             // GeneticOptimizer.CGA is modified to remove delayjobs
+            int popsize = 50;
             if (runRefactored)
             {
-                int popsize = 50;
+                GA = new GeneticOptimizer.GA(1, NumJobs, popsize, popsize, 0.05);
+                GA.FitnessFunction = this.CalcFitness;
+                GA.EvaluatePopulation();
+                double avgf = 0;
+                for (int i = 0; i < 1000; i++)
+                {
+                    CGA.GenerateOffspring();
+                    CGA.SurvivalSelection();
+                    avgf = CGA.AverageFitness();
+                    if (i % 100 == 0)
+                    {
+                        frmStatus.lblCurrentValue.Text = avgf.ToString();
+                    }
+                }
+            }
+            else if (runConstrained)
+            {
                 CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, 0.05);
                 CGA.FitnessFunction = this.CCalcFitness;
                 CGA.EvaluatePopulation();
@@ -1319,56 +1340,98 @@ namespace Junction
                     CGA.GenerateOffspring();
                     CGA.SurvivalSelection();
                     avgf = CGA.AverageFitness();
-                    if (i % 100 == 0)
+                    if (ShowStatusWhileRunning & (i % 100 == 0))
+                    {
+                        //frmStatus.lblCurrentValue.Text = avgf.ToString();
+                    
+                    //Update the status form
+                  
+                        frmStatus.lblGeneration.Text = "Generation " + i.ToString();
+                        //BestIndex = FindBestIndex();
+                        //Best = FitnessArray[BestIndex];
+                        //frmStatus.lblCurrentValue.Text = Best.ToString();
+                        eliteFitness = avgf;
                         frmStatus.lblCurrentValue.Text = avgf.ToString();
-                }
-            }
-            //
-            //    Begin Evolution
-            //    Use supremacy mating
-            //       Have strongest bulls mate with a selected herd of the others
-            //       Replace any solution that is not as strong as the current worst offspring
-            int BestIndex;
-            double Best;
-            for (int i = 1; i < NumberOfGenerations; i++)
-            {
-                Mate(FindBestIndex(), StrengthOfFather, DeathRate, MutationProbability);
+                        //ToString();
+                        frmStatus.lblCurrentValue.Text = String.Format("Fitness ={0: #,###.00}", eliteFitness);
 
-                //Update the status form
-                if (ShowStatusWhileRunning & (i % 100 == 0))
+                        if (IsFeasible)
+                        {
+                            frmStatus.lblFeasible.Text = "Feasible Solution Found";
+                        }
+
+                        if (frmStatus.cbStopped.Checked)
+                        {
+                            break;
+                        }
+                        System.Windows.Forms.Application.DoEvents();
+                    }
+                }
+
+                // Close the status form
+                frmStatus.Close();
+                frmStatus = null;
+                //BestIndex = FindBestIndex();
+                //Best = FitnessArray[BestIndex];
+                // Create a data table with the schedule
+                int[] best = new int[NumJobs];
+                for (int i = 0; i < NumJobs; i++)
                 {
-                    frmStatus.lblGeneration.Text = "Generation " + i.ToString();
-                    BestIndex = FindBestIndex();
-                    Best = FitnessArray[BestIndex];
-                    //frmStatus.lblCurrentValue.Text = Best.ToString();
-                    frmStatus.lblCurrentValue.Text = String.Format("Fitness ={0: #,###.00}", Best);
-
-                    if (IsFeasible)
-                    {
-                        frmStatus.lblFeasible.Text = "Feasible Solution Found";
-                    }
-
-                    if (frmStatus.cbStopped.Checked)
-                    {
-                        break;
-                    }
-                    System.Windows.Forms.Application.DoEvents();
+                    best[i] = CGA.population[0].Genes[i];//Population[BestIndex, i];
                 }
-            }
+                CreateScheduleDataTable(best);
 
-            // Close the status form
-            frmStatus.Close();
-            frmStatus = null;
-            BestIndex = FindBestIndex();
-            Best = FitnessArray[BestIndex];
-            // Create a data table with the schedule
-            int[] best = new int[NumJobs];
-            for (int i = 0; i < NumJobs; i++)
-            {
-                best[i] = Population[BestIndex, i];
+
             }
-            CreateScheduleDataTable(best);
-            return Best;
+            else
+            {
+                //    Begin Evolution
+                //    Use supremacy mating
+                //       Have strongest bulls mate with a selected herd of the others
+                //       Replace any solution that is not as strong as the current worst offspring
+                int BestIndex;
+                double Best;
+                for (int i = 1; i < NumberOfGenerations; i++)
+                {
+                    Mate(FindBestIndex(), StrengthOfFather, DeathRate, MutationProbability);
+
+                    //Update the status form
+                    if (ShowStatusWhileRunning & (i % 100 == 0))
+                    {
+                        frmStatus.lblGeneration.Text = "Generation " + i.ToString();
+                        BestIndex = FindBestIndex();
+                        Best = FitnessArray[BestIndex];
+                        //frmStatus.lblCurrentValue.Text = Best.ToString();
+                        frmStatus.lblCurrentValue.Text = String.Format("Fitness ={0: #,###.00}", Best);
+
+                        if (IsFeasible)
+                        {
+                            frmStatus.lblFeasible.Text = "Feasible Solution Found";
+                        }
+
+                        if (frmStatus.cbStopped.Checked)
+                        {
+                            break;
+                        }
+                        System.Windows.Forms.Application.DoEvents();
+                    }
+                }
+
+                // Close the status form
+                frmStatus.Close();
+                frmStatus = null;
+                BestIndex = FindBestIndex();
+                Best = FitnessArray[BestIndex];
+                // Create a data table with the schedule
+                int[] best = new int[NumJobs];
+                for (int i = 0; i < NumJobs; i++)
+                {
+                    best[i] = Population[BestIndex, i];
+                }
+                CreateScheduleDataTable(best);
+                return Best;
+            }
+            return eliteFitness;
         }
 
         private double CalcAllergenChangeOver(int FromProduct, int ToProduct)
@@ -2543,6 +2606,20 @@ namespace ConstrainedGeneticOptimizer
             // Array.Sort(combo, new NewComp());
             // Array.Copy(combo, population, _popsize);
         }
+        public void DTCrossover(int p1, int p2, int o1, int o2)
+        {
+            int cutpoint = _rand.Next(_length);
+            for( int i = 0; i < cutpoint; i++)
+            {
+                offspring[o1].Times[i] = population[p1].Times[i];
+                offspring[o2].Times[i] = population[p2].Times[i];
+            }
+            for (int i = cutpoint; i < _length; i++)
+            {
+                offspring[o1].Times[i] = population[p2].Times[i];
+                offspring[o2].Times[i] = population[p1].Times[i];
+            }
+        }
         public void Crossover(int p1, int p2, int o1, int o2)
         {
             int cutpoint = _rand.Next(_length);
@@ -2608,6 +2685,7 @@ namespace ConstrainedGeneticOptimizer
                 //Array.Sort(offspring[o1].Genes);
                 //throw new ApplicationException("Invalid offspring");
             }
+            DTCrossover(p1, p2, o1, o2);
 
         }
         public void Mutate(int o)

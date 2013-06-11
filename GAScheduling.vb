@@ -58,8 +58,13 @@ Public Class GAScheduling
             End If
             If (RadioButton1.Checked) Then
                 .runRefactored = False
-            Else
+                .runConstrained = False
+            ElseIf (RadioButton2.Checked) Then
                 .runRefactored = True
+                .runConstrained = False
+            Else
+                .runRefactored = False
+                .runConstrained = True
             End If
             'The next section of code loads worksheets into multiple data tables within a single data set
             'The dataset is then passed to the scheduler via the GAS.Masterdata Property.

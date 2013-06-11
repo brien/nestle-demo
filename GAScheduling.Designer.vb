@@ -47,6 +47,11 @@ Partial Class GAScheduling
         Me.ErrorProvider1 = New System.Windows.Forms.ErrorProvider(Me.components)
         Me.tcGAFormTabs = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.GroupBox8 = New System.Windows.Forms.GroupBox()
+        Me.RadioButton3 = New System.Windows.Forms.RadioButton()
+        Me.RadioButton2 = New System.Windows.Forms.RadioButton()
+        Me.RadioButton1 = New System.Windows.Forms.RadioButton()
+        Me.chkbox_GenerateDelay = New System.Windows.Forms.CheckBox()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
         Me.lblBOMViolations = New System.Windows.Forms.Label()
         Me.Label5 = New System.Windows.Forms.Label()
@@ -103,15 +108,11 @@ Partial Class GAScheduling
         Me.dgvSchedule = New System.Windows.Forms.DataGridView()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.chkbox_GenerateDelay = New System.Windows.Forms.CheckBox()
-        Me.GroupBox8 = New System.Windows.Forms.GroupBox()
-        Me.RadioButton1 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton2 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton3 = New System.Windows.Forms.RadioButton()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
         Me.TabPage1.SuspendLayout()
+        Me.GroupBox8.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
@@ -123,7 +124,6 @@ Partial Class GAScheduling
         Me.GroupBox2.SuspendLayout()
         Me.TabPage4.SuspendLayout()
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.GroupBox8.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnSolve
@@ -387,6 +387,62 @@ Partial Class GAScheduling
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Main"
         Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'GroupBox8
+        '
+        Me.GroupBox8.Controls.Add(Me.RadioButton3)
+        Me.GroupBox8.Controls.Add(Me.RadioButton2)
+        Me.GroupBox8.Controls.Add(Me.RadioButton1)
+        Me.GroupBox8.Location = New System.Drawing.Point(624, 194)
+        Me.GroupBox8.Name = "GroupBox8"
+        Me.GroupBox8.Size = New System.Drawing.Size(122, 105)
+        Me.GroupBox8.TabIndex = 40
+        Me.GroupBox8.TabStop = False
+        Me.GroupBox8.Text = "GA Version"
+        '
+        'RadioButton3
+        '
+        Me.RadioButton3.AutoSize = True
+        Me.RadioButton3.Location = New System.Drawing.Point(13, 69)
+        Me.RadioButton3.Name = "RadioButton3"
+        Me.RadioButton3.Size = New System.Drawing.Size(104, 17)
+        Me.RadioButton3.TabIndex = 2
+        Me.RadioButton3.TabStop = True
+        Me.RadioButton3.Text = "GA Improvement"
+        Me.RadioButton3.UseVisualStyleBackColor = True
+        '
+        'RadioButton2
+        '
+        Me.RadioButton2.AutoSize = True
+        Me.RadioButton2.Location = New System.Drawing.Point(13, 46)
+        Me.RadioButton2.Name = "RadioButton2"
+        Me.RadioButton2.Size = New System.Drawing.Size(100, 17)
+        Me.RadioButton2.TabIndex = 1
+        Me.RadioButton2.TabStop = True
+        Me.RadioButton2.Text = "Simple Refactor"
+        Me.RadioButton2.UseVisualStyleBackColor = True
+        '
+        'RadioButton1
+        '
+        Me.RadioButton1.AutoSize = True
+        Me.RadioButton1.Location = New System.Drawing.Point(13, 23)
+        Me.RadioButton1.Name = "RadioButton1"
+        Me.RadioButton1.Size = New System.Drawing.Size(91, 17)
+        Me.RadioButton1.TabIndex = 0
+        Me.RadioButton1.TabStop = True
+        Me.RadioButton1.Text = "Original Demo"
+        Me.RadioButton1.UseVisualStyleBackColor = True
+        '
+        'chkbox_GenerateDelay
+        '
+        Me.chkbox_GenerateDelay.AutoSize = True
+        Me.chkbox_GenerateDelay.Location = New System.Drawing.Point(624, 305)
+        Me.chkbox_GenerateDelay.Name = "chkbox_GenerateDelay"
+        Me.chkbox_GenerateDelay.Size = New System.Drawing.Size(122, 17)
+        Me.chkbox_GenerateDelay.TabIndex = 38
+        Me.chkbox_GenerateDelay.Text = "Generate DelayJobs"
+        Me.chkbox_GenerateDelay.TextAlign = System.Drawing.ContentAlignment.TopCenter
+        Me.chkbox_GenerateDelay.UseVisualStyleBackColor = True
         '
         'GroupBox7
         '
@@ -975,62 +1031,6 @@ Partial Class GAScheduling
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
-        'chkbox_GenerateDelay
-        '
-        Me.chkbox_GenerateDelay.AutoSize = True
-        Me.chkbox_GenerateDelay.Location = New System.Drawing.Point(624, 305)
-        Me.chkbox_GenerateDelay.Name = "chkbox_GenerateDelay"
-        Me.chkbox_GenerateDelay.Size = New System.Drawing.Size(122, 17)
-        Me.chkbox_GenerateDelay.TabIndex = 38
-        Me.chkbox_GenerateDelay.Text = "Generate DelayJobs"
-        Me.chkbox_GenerateDelay.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.chkbox_GenerateDelay.UseVisualStyleBackColor = True
-        '
-        'GroupBox8
-        '
-        Me.GroupBox8.Controls.Add(Me.RadioButton3)
-        Me.GroupBox8.Controls.Add(Me.RadioButton2)
-        Me.GroupBox8.Controls.Add(Me.RadioButton1)
-        Me.GroupBox8.Location = New System.Drawing.Point(624, 194)
-        Me.GroupBox8.Name = "GroupBox8"
-        Me.GroupBox8.Size = New System.Drawing.Size(122, 105)
-        Me.GroupBox8.TabIndex = 40
-        Me.GroupBox8.TabStop = False
-        Me.GroupBox8.Text = "GA Version"
-        '
-        'RadioButton1
-        '
-        Me.RadioButton1.AutoSize = True
-        Me.RadioButton1.Location = New System.Drawing.Point(13, 23)
-        Me.RadioButton1.Name = "RadioButton1"
-        Me.RadioButton1.Size = New System.Drawing.Size(91, 17)
-        Me.RadioButton1.TabIndex = 0
-        Me.RadioButton1.TabStop = True
-        Me.RadioButton1.Text = "Original Demo"
-        Me.RadioButton1.UseVisualStyleBackColor = True
-        '
-        'RadioButton2
-        '
-        Me.RadioButton2.AutoSize = True
-        Me.RadioButton2.Location = New System.Drawing.Point(13, 46)
-        Me.RadioButton2.Name = "RadioButton2"
-        Me.RadioButton2.Size = New System.Drawing.Size(100, 17)
-        Me.RadioButton2.TabIndex = 1
-        Me.RadioButton2.TabStop = True
-        Me.RadioButton2.Text = "Simple Refactor"
-        Me.RadioButton2.UseVisualStyleBackColor = True
-        '
-        'RadioButton3
-        '
-        Me.RadioButton3.AutoSize = True
-        Me.RadioButton3.Location = New System.Drawing.Point(13, 69)
-        Me.RadioButton3.Name = "RadioButton3"
-        Me.RadioButton3.Size = New System.Drawing.Size(81, 17)
-        Me.RadioButton3.TabIndex = 2
-        Me.RadioButton3.TabStop = True
-        Me.RadioButton3.Text = "Constrained"
-        Me.RadioButton3.UseVisualStyleBackColor = True
-        '
         'GAScheduling
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1045,6 +1045,8 @@ Partial Class GAScheduling
         Me.tcGAFormTabs.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.TabPage1.PerformLayout()
+        Me.GroupBox8.ResumeLayout(False)
+        Me.GroupBox8.PerformLayout()
         Me.GroupBox7.ResumeLayout(False)
         Me.GroupBox7.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
@@ -1064,8 +1066,6 @@ Partial Class GAScheduling
         Me.GroupBox2.PerformLayout()
         Me.TabPage4.ResumeLayout(False)
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.GroupBox8.ResumeLayout(False)
-        Me.GroupBox8.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
