@@ -996,7 +996,7 @@ namespace Junction
             dc.ReadOnly = true;
             dc.AutoIncrement = false;
             dt.Columns.Add(dc);
-            
+
             dc = new DataColumn();
             dc.DataType = System.Type.GetType("System.String");
             dc.ColumnName = "Allergens";
@@ -1091,7 +1091,7 @@ namespace Junction
                 int Product = Convert.ToInt32(ScheduleResult[1, i]);
                 int ResourceNum = (int)ScheduleResult[5, i] - 1;
                 //Todo Could add a filter to skip delay jobs here (delay jobs are input with product code 9999 currently)
-                if (Product != -1 & Product != 9999 ) //Skip slack jobs
+                if (Product != -1 & Product != 9999) //Skip slack jobs
                 {
                     int LastRow = dt.Rows.Count - 1;
                     dr["Sequence Number"] = LastRow + 2;
@@ -1445,7 +1445,7 @@ namespace Junction
             dc.ReadOnly = true;
             dc.AutoIncrement = false;
             dt.Columns.Add(dc);
-            
+
             dc = new DataColumn();
             dc.DataType = System.Type.GetType("System.String");
             dc.ColumnName = "Allergens";
@@ -1540,7 +1540,7 @@ namespace Junction
                 int Product = Convert.ToInt32(ScheduleResult[1, i]);
                 int ResourceNum = (int)ScheduleResult[5, i] - 1;
                 //Todo Could add a filter to skip delay jobs here (delay jobs are input with product code 9999 currently)
-                if (Product != -1 & Product != 9999 ) //Skip slack jobs
+                if (Product != -1 & Product != 9999) //Skip slack jobs
                 {
                     int LastRow = dt.Rows.Count - 1;
                     dr["Sequence Number"] = LastRow + 2;
@@ -1814,7 +1814,7 @@ namespace Junction
                 frmStatus.lblGeneration.Text = "Initialized";
                 frmStatus.lblFeasible.Text = "No Feasible Solution Found";
             }
-            double eliteFitness=0;
+            double eliteFitness = 0;
             // BSM:
             // GeneticOptimizer.GA is just a refactored version of the original
             // GeneticOptimizer.CGA is modified to remove delayjobs
@@ -1850,9 +1850,9 @@ namespace Junction
                     if (ShowStatusWhileRunning & (i % 100 == 0))
                     {
                         //frmStatus.lblCurrentValue.Text = avgf.ToString();
-                    
-                    //Update the status form
-                  
+
+                        //Update the status form
+
                         frmStatus.lblGeneration.Text = "Generation " + i.ToString();
                         //BestIndex = FindBestIndex();
                         //Best = FitnessArray[BestIndex];
@@ -2044,13 +2044,13 @@ namespace Junction
                         numberOfProducts++;
                     }
                 }
-                numberOfProducts+=1;
+                numberOfProducts += 1;
             }
             else
             {
-            numberOfProducts = dt.Rows.Count;
+                numberOfProducts = dt.Rows.Count;
             }
-          
+
             //redimension the arrays to hold the product data
             ProductName = new string[numberOfProducts];
             AllergensInProduct = new string[numberOfProducts];
@@ -2113,7 +2113,7 @@ namespace Junction
                 ResourcePreference[i, 0] = ResourceNotFeasible;
                 for (int j = 1; j < NumberOfResources; j++)
                 {
-                        ResourcePreference[i, j] = (ResourcePref / 10) - (ResourcePref / 10);
+                    ResourcePreference[i, j] = (ResourcePref / 10) - (ResourcePref / 10);
                 }
             }
         }
@@ -2477,7 +2477,7 @@ namespace Junction
                 }
             }
         }
-        
+
         private double CalcFitness(int[] genes)
         {
             double Time = ProdStartTime[0];
@@ -2750,23 +2750,21 @@ namespace Junction
                     if (CurrentProd != -1)
                     {
 
-                        //This is a real job so process it
+                        JobStartTime = Time;
+                        // TODO: Verify that this logic is redundant and remove it.
+                        // if currentProd != -1 && Previous != -1, then Time += JobRuntime[CurrentJob] + 0;
                         if (Previous == -1)
                         {
                             //First job on the resource was a slack job
-                            JobStartTime = Time;
                             Time += JobRunTime[CurrentJob];
-                            JobEndTime = Time;
                         }
                         else
                         {
                             //we have a real job in the previous variable
-                            JobStartTime = Time;
                             Time += JobRunTime[CurrentJob] + co;
-                            JobEndTime = Time;
-                            // Find last non delay time on the resource
-
                         }
+                        JobEndTime = Time;
+
                         // There are no longer DelayJobs
                         if (CurrentProd != DelayIndex)
                         {
@@ -3117,7 +3115,7 @@ namespace ConstrainedGeneticOptimizer
         public void DTCrossover(int p1, int p2, int o1, int o2)
         {
             int cutpoint = _rand.Next(_length);
-            for( int i = 0; i < cutpoint; i++)
+            for (int i = 0; i < cutpoint; i++)
             {
                 offspring[o1].Times[i] = population[p1].Times[i];
                 offspring[o2].Times[i] = population[p2].Times[i];
@@ -3240,7 +3238,7 @@ namespace ConstrainedGeneticOptimizer
                     Times[i] = TestSimpleRNG.SimpleRNG.GetExponential(1);
                 }
             }
-           
+
             public bool IsValid()
             {
                 List<int> vals = new List<int>();
@@ -3258,7 +3256,7 @@ namespace ConstrainedGeneticOptimizer
             }
 
         }
-        
+
         public sealed class NewComp : IComparer<ConstrainedCreature>
         {
             public int Compare(ConstrainedCreature x, ConstrainedCreature y)
@@ -3272,7 +3270,7 @@ namespace ConstrainedGeneticOptimizer
 
 namespace GeneticOptimizer
 {
- 
+
     /// <summary>
     /// My first GA attempt. Roughly replicates the original nestle demo functionality.
     /// </summary>
@@ -3382,7 +3380,7 @@ namespace GeneticOptimizer
             combo.AddRange(population);
             combo.AddRange(offspring);
             combo.Sort(new NewComp());
-            for(int i=0; i < _popsize; i++)
+            for (int i = 0; i < _popsize; i++)
             {
                 population[i].fitness = combo[i].fitness;
                 for (int j = 0; j < _length; j++)
@@ -3411,7 +3409,7 @@ namespace GeneticOptimizer
             {
                 offspring[o2].Genes[i] = population[p2].Genes[i];
             }
-             for (int i = 0; i < _length; i++)
+            for (int i = 0; i < _length; i++)
             {
                 if (population[p1].Genes[i] != offspring[o1].Genes[i])
                 {
