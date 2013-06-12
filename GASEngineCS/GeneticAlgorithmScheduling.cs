@@ -392,6 +392,69 @@ namespace Junction
             return Fitness;
         }
 
+        private void CalcTime(ref object[,] Schedule, int TimeColumn, int SetupColumn, int[] genes, double[] delayTimes)
+        {
+            //Calculates Time Only - For Fitness use the the CalcFitness method
+            double Time = ProdStartTime[0];
+            int PreviousProd = -1;
+            int CurrentProd;
+
+            //Clear the global time variables
+            TotalTime = 0;
+            RunTime = 0;
+            ChangeOverTime = 0;
+
+            //Calculate the time for the following jobs
+            for (int Resource = 0; Resource < NumberOfResources; Resource++)
+            {
+                if (ConstrainedStart[Resource])
+                {
+                    PreviousProd = StartProduct[Resource];
+                }
+                else
+                {
+                    PreviousProd = -1;
+                }
+                Time = ProdStartTime[Resource];
+                //Split the gene string into resources
+                int FirstGeneInResource = NumberOfRealJobs * Resource;
+                int LastGeneInResource = (NumberOfRealJobs * (Resource + 1)) - 1;
+
+                for (int i = FirstGeneInResource; i <= LastGeneInResource; i++)
+                {
+                    //int CurrentJob = (int)Schedule[0, i];
+                    //CurrentProd = (int)Schedule[1, i];
+
+                    int CurrentJob = genes[i]; // Population[BestIndex, i];
+                    CurrentProd = JobsToSchedule[CurrentJob];
+
+                    double co = 0;
+
+                    if (PreviousProd != -1 & CurrentProd != -1)
+                    {
+                        co = ChangeOver[PreviousProd, CurrentProd];
+                    }
+                    Schedule[SetupColumn, i] = co;
+                    if (CurrentProd != -1)
+                    {
+                        Time += JobRunTime[CurrentJob] + co + delayTimes[CurrentJob];
+                        Schedule[TimeColumn, i] = Time;
+                        //Update the global variables for time and late jobs
+                        RunTime += JobRunTime[CurrentJob] + delayTimes[CurrentJob];
+                        ChangeOverTime += co;
+                        //Set the previous = current for the next loop
+                        PreviousProd = CurrentProd;
+                    }
+                    else
+                    {
+                        Schedule[TimeColumn, i] = Time;
+                    }
+                }
+                TotalTime += Time - ProdStartTime[Resource];
+                //Reset the variables for the next resource
+                PreviousProd = -1;
+            }
+        }
         private void CalcTime(ref object[,] Schedule, int TimeColumn, int SetupColumn, int BestIndex)
         {
             //Calculates Time Only - For Fitness use the the CalcFitness method
@@ -1272,6 +1335,450 @@ namespace Junction
             //Add the new DataTable to the dataset
             ScheduleDataSet.Tables.Add(dt);
         }
+        private void CreateScheduleDataTable(int[] genes, double[] delayTimes)
+        {
+            DataTable dt = new DataTable();
+            DataRow dr;
+
+            //create a new data column, set the type and name, and add it to the table
+            DataColumn dc = new DataColumn();
+            dc.DataType = Type.GetType("System.Int32");
+            dc.ColumnName = "Sequence Number";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = Type.GetType("System.Int32");
+            dc.ColumnName = "Job Number";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = Type.GetType("System.Int32");
+            dc.ColumnName = "Product Index";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.String");
+            dc.ColumnName = "Product Number";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.String");
+            dc.ColumnName = "Product Name";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = Type.GetType("System.DateTime");
+            dc.ColumnName = "Early Start";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.Double");
+            dc.ColumnName = "Setup Time";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = Type.GetType("System.DateTime");
+            dc.ColumnName = "Start Time";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.Double");
+            dc.ColumnName = "Run Time";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = Type.GetType("System.DateTime");
+            dc.ColumnName = "End Time";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = Type.GetType("System.DateTime");
+            dc.ColumnName = "Time Due";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = Type.GetType("System.Double");
+            dc.ColumnName = "Order Quantity";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = Type.GetType("System.Int32");
+            dc.ColumnName = "Resource Number";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.String");
+            dc.ColumnName = "Resource Name";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.String");
+            dc.ColumnName = "Production Order";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+            
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.String");
+            dc.ColumnName = "Allergens";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.String");
+            dc.ColumnName = "Allergen Alert";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.Boolean");
+            dc.ColumnName = "Resource Late";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.Boolean");
+            dc.ColumnName = "Service Late";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.Boolean");
+            dc.ColumnName = "Early Violation";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.Boolean");
+            dc.ColumnName = "Resource Feasibility";
+            dc.ReadOnly = true;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            dc = new DataColumn();
+            dc.DataType = System.Type.GetType("System.Boolean");
+            dc.ColumnName = "BOM Violation";
+            dc.ReadOnly = false;
+            dc.AutoIncrement = false;
+            dt.Columns.Add(dc);
+
+            DateTime d = DateTime.Today;
+
+            //**************************************************************
+
+            int jMax = ScheduleResult.GetUpperBound(1) + 1;
+
+            int BestIndex = FindBestIndex();
+
+            for (int i = 0; i < jMax; i++)
+            {
+                int Job;
+                int Product;
+                //Job = Population[BestIndex, i];
+                Job = genes[i];
+                Product = JobsToSchedule[Job];
+                ScheduleResult[0, i] = Job;
+                ScheduleResult[1, i] = Product;
+                if (Product == -1)
+                {
+                    ScheduleResult[2, i] = "Slack";
+                    ScheduleResult[4, i] = UNCONSTRAINED_TIME;
+                }
+                else
+                {
+                    ScheduleResult[2, i] = ProductName[Product];
+                    ScheduleResult[4, i] = Priority[Job];
+                }
+                ScheduleResult[5, i] = (int)(Math.Truncate((double)i / (double)NumberOfRealJobs)) + 1;
+            }
+            //put the time and setuptime into the schedule
+            CalcTime(ref ScheduleResult, 3, 6, genes, delayTimes);
+
+            //Update the number of late jobs
+            NumberOfServiceLateJobs = 0;
+            NumberOfResourceLateJobs = 0;
+            NumberOfResourceFeasibilityViolations = 0;
+            NumberOfEarlyStartViolations = 0;
+            NumberOfBOMViolations = 0; // Added 3/24/13
+
+            for (int i = 0; i < jMax; i++)
+            {
+                dr = dt.NewRow();
+                int Product = Convert.ToInt32(ScheduleResult[1, i]);
+                int ResourceNum = (int)ScheduleResult[5, i] - 1;
+                //Todo Could add a filter to skip delay jobs here (delay jobs are input with product code 9999 currently)
+                if (Product != -1 & Product != 9999 ) //Skip slack jobs
+                {
+                    int LastRow = dt.Rows.Count - 1;
+                    dr["Sequence Number"] = LastRow + 2;
+                    int CurrentJob = (int)ScheduleResult[0, i];
+                    dr["Job Number"] = CurrentJob;
+                    dr["Product Index"] = Product;
+                    // todo: replace 3333 with actual product number
+                    dr["Product Number"] = 3333; //masterData.Tables["Products"].Rows[Product]["Product Number"];
+                    dr["Product Name"] = ScheduleResult[2, i];
+
+                    dr["End Time"] = Conversions.ConvertDate((double)ScheduleResult[3, i]);
+                    // In generating the delay jobs on the fly there is a problem on this line with ScheduleResult[0,i] being out of range of
+                    // masterData.Tables["Orders"].Rows
+                    // todo: replace 6666 with actual production order number
+                    dr["Production Order"] = 6666; //masterData.Tables["Orders"].Rows[(int)ScheduleResult[0, i]]["Production Order"];
+                    dr["Setup Time"] = (double)(ScheduleResult[6, i]) * 60.0;//Convert Decimal Hour Setup Time to Minutes
+                    dr["Run Time"] = JobRunTime[CurrentJob] * 60; //Convert Decimal Hour Run Times to Minutes
+                    dr["Order Quantity"] = OrderQty[CurrentJob];
+
+                    DateTime st = Conversions.ConvertDate((double)ScheduleResult[3, i]);
+                    TimeSpan rm = new TimeSpan(0, (int)(JobRunTime[CurrentJob] * 60), 0);
+                    st -= rm;
+                    dr["Start Time"] = st;
+
+                    dr["Early Start"] = Conversions.ConvertDate(EarlyStart[CurrentJob]);
+                    if (st < Conversions.ConvertDate(EarlyStart[CurrentJob]) & EarlyStart[CurrentJob] != 0)
+                    {
+                        NumberOfEarlyStartViolations++;
+                        dr["Early Violation"] = true;
+                    }
+                    else
+                    {
+                        dr["Early Violation"] = false;
+                    }
+
+
+                    if ((double)ScheduleResult[3, i] > (double)ScheduleResult[4, i])
+                    {
+                        NumberOfServiceLateJobs++;
+                        dr["Service Late"] = true;
+                    }
+                    else
+                    {
+                        dr["Service Late"] = false;
+                    }
+                    if ((double)ScheduleResult[3, i] > ProdEndTime[ResourceNum])
+                    {
+                        NumberOfResourceLateJobs++;
+                        dr["Resource Late"] = true;
+                    }
+                    else
+                    {
+                        dr["Resource Late"] = false;
+                    }
+
+                    // calculate infeasible resources
+                    int prod = (int)ScheduleResult[1, i]; //find the product
+                    int rn = (int)ScheduleResult[5, i] - 1;  //find the resource (base zero)
+                    double rp = ResourcePreference[prod, rn];
+                    if (rp == ResourceNotFeasible)
+                    {
+                        NumberOfResourceFeasibilityViolations++;
+                        dr["Resource Feasibility"] = true;
+                    }
+                    else
+                    {
+                        dr["Resource Feasibility"] = false;
+                    }
+
+                    //Initialize BOM Violation to false as a defualt
+                    dr["BOM Violation"] = false;
+
+                    dr["Allergens"] = AllergensInProduct[Product];
+                    dr["Resource Number"] = ScheduleResult[5, i];
+                    dr["Resource Name"] = ResourceName[(int)ScheduleResult[5, i] - 1];
+                    // set the allergen alerts
+                    dr["Allergen Alert"] = Allergens.None;
+
+
+                    if (LastRow == -1 & ConstrainedStart[ResourceNum])
+                    {
+                        dr["Allergen Alert"] = AllergenAlert(StartProduct[ResourceNum], Product);
+                    }
+                    if (i > 0 & LastRow > -1)
+                    {
+                        int pResc = (int)dt.Rows[LastRow]["Resource Number"] - 1;
+                        if (ResourceNum == pResc)
+                        {
+                            dr["Allergen Alert"] = AllergenAlert((int)dt.Rows[LastRow]["Product Index"], Product);
+                        }
+                        else
+                        {
+                            if (ConstrainedStart[ResourceNum])
+                            {
+                                dr["Allergen Alert"] = AllergenAlert(StartProduct[ResourceNum], Product);
+                            }
+                            else
+                            {
+                                dr["Allergen Alert"] = Allergens.None;
+                            }
+                        }
+                    }
+
+                    //convert the decimal due date to a date or a blank if unconstrained
+                    double decDate = (double)ScheduleResult[4, i];
+                    //double decDate = Priority[Job];
+                    if (decDate == UNCONSTRAINED_TIME)
+                    {
+                        dr["Time Due"] = DBNull.Value;
+                    }
+                    else
+                    {
+                        dr["Time Due"] = Conversions.ConvertDate(decDate);
+                    }
+
+                    //convert unconstrained early start time to a blank
+                    DateTime es = (DateTime)dr["Early Start"];
+                    if (es == DateTime.Today)
+                    {
+                        dr["Early Start"] = DBNull.Value;
+                    }
+
+                    //ToDo 3/26 it looks like I messed up the logic near here
+                    dt.Rows.Add(dr);
+
+
+                }
+            }
+            // 3/24/13 changes
+            // Display BOM Violations - Need to go back through the data set to find all potential BOM violaionns
+            NumberOfBOMViolations = 0;
+
+            //// List of production orders to support calculation of BOM Item requirements
+            //List<ProdSchedule> pSched = new List<ProdSchedule>();
+
+            //******************************************************************************************
+            //Get ready to check for BOM violations
+            if (BOMItems.Count > 0) //This is purely a speed enhancement to skip this section if there are no BOM items.
+            {
+                List<ProdSchedule> pSched = new List<ProdSchedule>();
+                int rMax = dt.Rows.Count - 1;
+                for (int i = 0; i < rMax; i++)
+                {
+                    dr = dt.Rows[i];
+                    double EndTime = Conversions.ConvertDateTimetoDecimalHours((DateTime)dr["End Time"]);
+                    double StartTime = Conversions.ConvertDateTimetoDecimalHours((DateTime)dr["Start Time"]);
+                    double OrderQuantity = (double)dr["Order Quantity"];
+                    int ProductIndex = (int)dr["Product Index"];
+                    int JobNum = (int)dr["Job Number"];
+                    //Build the output schedule for BOM Items
+                    //First create a new production schedule item
+                    ProdSchedule p = new ProdSchedule(ProductIndex, StartTime, EndTime, OrderQuantity, JobNum);
+                    //Second, add the new schedule item to the list
+                    if ((string)dr["Product Number"] != "9999") pSched.Add(p); //don't add slack jobs
+                }
+
+
+                List<ProdSchedule> ComponentSchedule = new List<ProdSchedule>();
+                foreach (ProdSchedule ps in pSched)
+                {
+                    // Find out if the item has components
+                    int bIdx = BOMItemIndex[ps.Product];
+                    if (bIdx == -1) continue;
+                    int cIdx = -1;
+                    BOMItem bi = BOMItems[bIdx];
+                    foreach (int component in bi.Components)
+                    {
+                        cIdx++;
+                        //add the demand of the component quantity to the schedule
+                        double ComponentDemand = -(ps.OrderQty * bi.Percent[cIdx]);
+
+                        //Note: StartTime is used twice in the line below. This is not a mistake.
+                        //Component demand is not a real scheduled job.
+                        //This simplification makes sure the demand occurs at the start of the parent job.
+                        //Adding .0001 keeps the posting sequence = (debit inventory first at any given time then credit)
+                        ProdSchedule cd = new ProdSchedule(component, ps.StartTime, ps.StartTime + 0.0001, ComponentDemand, ps.JobNum);
+                        ComponentSchedule.Add(cd);
+                    }
+
+                }
+                pSched.AddRange(ComponentSchedule);
+                pSched.Sort();
+
+                int pProd = -99; // set up a variable to hold the previous product
+                double pQty = 0; //set up a variable to hold the previous quantity
+
+                //Calculate the available quantities
+                foreach (ProdSchedule ps in pSched)
+                {
+                    // Calculate the penalty
+                    if (pProd == ps.Product)
+                    {
+                        pQty += ps.OrderQty;
+                        ps.AvailableQuantity = pQty;
+                    }
+                    else
+                    {
+                        pQty = ps.OrderQty;
+                        pProd = ps.Product;
+                        ps.AvailableQuantity = pQty;
+                    }
+                    if (ps.AvailableQuantity < 0.0)
+                    {
+                        //BOMPenalties += BOMPenaltyCost;
+                        //ScheduleViolationBOM = true;
+                        NumberOfBOMViolations += 1;
+
+                        // Update the output BOM Violations
+                        int rwMax = dt.Rows.Count - 1;
+                        for (int i = 0; i < rwMax; i++)
+                        {
+                            dr = dt.Rows[i];
+                            int JobNum = (int)dr["Job Number"];
+                            if (JobNum == ps.JobNum & ps.Product != -1)
+                            {
+                                dr["BOM Violation"] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Eliminate the delay jobs from the dataset
+            int r = dt.Rows.Count - 1;
+            for (int i = r; i >= 0; i--)
+            {
+                dr = dt.Rows[i];
+                if ((int)dr["Product Index"] == DelayIndex & DelayIndex >= 0)
+                {
+                    dt.Rows[i].Delete();
+                }
+            }
+
+            ScheduleDataSet = new DataSet();
+            //Add the new DataTable to the dataset
+            ScheduleDataSet.Tables.Add(dt);
+        }
 
         // This is the main method invoked to begin the scheduling process
         public double Schedule(double StrengthOfFather, double MutationProbability, int NumberOfGenerations,
@@ -1379,7 +1886,7 @@ namespace Junction
                 {
                     best[i] = CGA.population[0].Genes[i];//Population[BestIndex, i];
                 }
-                CreateScheduleDataTable(best);
+                CreateScheduleDataTable(best, CGA.population[0].Times);
 
 
             }
@@ -2260,6 +2767,7 @@ namespace Junction
                             // Find last non delay time on the resource
 
                         }
+                        // There are no longer DelayJobs
                         if (CurrentProd != DelayIndex)
                         {
                             //Used to find the last real job running on a resource
