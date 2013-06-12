@@ -2684,7 +2684,7 @@ namespace Junction
             return (-1.0 * Fitness);
         }
 
-        private double CCalcFitness(int[] genes, double[] times)
+        private double CCalcFitness(int[] genes, double[] delayTimes)
         {
             double Time = ProdStartTime[0];
             double NonDelayTime = Time; //Added 3/24 to elim delay time
@@ -2750,7 +2750,7 @@ namespace Junction
                     if (CurrentProd != -1)
                     {
 
-                        JobStartTime = Time;
+                        JobStartTime = Time + delayTimes[CurrentJob];
                         // TODO: Verify that this logic is redundant and remove it.
                         // if currentProd != -1 && Previous != -1, then Time += JobRuntime[CurrentJob] + 0;
                         if (Previous == -1)
@@ -2769,7 +2769,7 @@ namespace Junction
                         if (CurrentProd != DelayIndex)
                         {
                             //Used to find the last real job running on a resource
-                            NonDelayTime = Time;
+                            NonDelayTime = Time - delayTimes[CurrentJob];
                             //Used to encourage jobs to start as soon as possible
                             //Todo  Turn Early start facto into a configurable factor (by resorce?)
                             EarlyStartFactor += JobStartTime;
