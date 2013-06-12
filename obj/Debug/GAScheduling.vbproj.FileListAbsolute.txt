@@ -178,3 +178,25 @@ C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\obj\Debug\GAScheduling.v
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\obj\Debug\GAScheduling.GAScheduling.resources
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\obj\Debug\GAScheduling.Resources.resources
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\obj\Debug\GAScheduling.vbproj.GenerateResource.Cache
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Debug\GAScheduling.vbproj.ResolveComReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Debug\GAScheduling.exe
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Debug\GAScheduling.xml
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Debug\GAScheduling.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\GAScheduling.exe
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\GAScheduling.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\GAScheduling.xml
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\ExcelAutomation.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\Gantt.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\GanttCS.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\GASEngineCS.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\GanttControl.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\ExcelAutomation.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\Gantt.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\Gantt.xml
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\GanttCS.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\GASEngineCS.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\bin\Debug\GanttControl.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Debug\GAScheduling.vbprojResolveAssemblyReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Debug\GAScheduling.GAScheduling.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Debug\GAScheduling.Resources.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\obj\Debug\GAScheduling.vbproj.GenerateResource.Cache

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using TestSimpleRNG;
+using System.Diagnostics;
 
 namespace Junction
 {
@@ -1839,7 +1840,7 @@ namespace Junction
             else if (runConstrained)
             {
                 CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, 0.05);
-                CGA.FitnessFunction = this.CCalcFitness;
+                CGA.FitnessFunction = this.CalcFitness;
                 CGA.EvaluatePopulation();
                 double avgf = 0;
                 for (int i = 0; i < 1000; i++)
@@ -1849,24 +1850,15 @@ namespace Junction
                     avgf = CGA.AverageFitness();
                     if (ShowStatusWhileRunning & (i % 100 == 0))
                     {
-                        //frmStatus.lblCurrentValue.Text = avgf.ToString();
-
                         //Update the status form
-
                         frmStatus.lblGeneration.Text = "Generation " + i.ToString();
-                        //BestIndex = FindBestIndex();
-                        //Best = FitnessArray[BestIndex];
-                        //frmStatus.lblCurrentValue.Text = Best.ToString();
                         eliteFitness = avgf;
                         frmStatus.lblCurrentValue.Text = avgf.ToString();
-                        //ToString();
                         frmStatus.lblCurrentValue.Text = String.Format("Fitness ={0: #,###.00}", eliteFitness);
-
                         if (IsFeasible)
                         {
                             frmStatus.lblFeasible.Text = "Feasible Solution Found";
                         }
-
                         if (frmStatus.cbStopped.Checked)
                         {
                             break;
@@ -1878,17 +1870,14 @@ namespace Junction
                 // Close the status form
                 frmStatus.Close();
                 frmStatus = null;
-                //BestIndex = FindBestIndex();
-                //Best = FitnessArray[BestIndex];
-                // Create a data table with the schedule
+                // Create a data table with the best schedule
                 int[] best = new int[NumJobs];
                 for (int i = 0; i < NumJobs; i++)
                 {
-                    best[i] = CGA.population[0].Genes[i];//Population[BestIndex, i];
+                    best[i] = CGA.population[0].Genes[i];
+                    Debug.Write(Environment.NewLine + CGA.population[0].Genes[i] + " - " + CGA.population[0].Times[i] );
                 }
                 CreateScheduleDataTable(best, CGA.population[0].Times);
-
-
             }
             else
             {
@@ -1933,8 +1922,9 @@ namespace Junction
                 int[] best = new int[NumJobs];
                 for (int i = 0; i < NumJobs; i++)
                 {
-                    best[i] = Population[BestIndex, i];
+                    best[i] = Population[BestIndex, i];                    Debug.Write(Environment.NewLine + Population[BestIndex, i] );
                 }
+                
                 CreateScheduleDataTable(best);
                 return Best;
             }
@@ -2247,9 +2237,13 @@ namespace Junction
             // Read up on how this "DataTable" thing works with Excel
             // int jMax = dt.Columns.Count - 1; //skip first column and then make zero based
             // int iMax = dt.Rows.Count;
-            int jMax = dt.Columns.Count - 2;
-            int iMax = dt.Rows.Count - 1;
+            int jMax = dt.Columns.Count - 1;
+            int iMax = dt.Rows.Count;
 
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                Debug.Write(Environment.NewLine + dt.Columns[i].ColumnName);
+            }
             // Make sure the changeover matrix is valid
             int NumberOfProducts = ProductName.GetUpperBound(0) + 1;
             if (iMax != NumberOfProducts | jMax != NumberOfProducts)
@@ -2282,8 +2276,8 @@ namespace Junction
             // Read up on how this "DataTable" thing works with Excel
             // int jMax = dt.Columns.Count - 1; //skip first column and then make zero based
             // int iMax = dt.Rows.Count;
-            int jMax = dt.Columns.Count - 2;
-            int iMax = dt.Rows.Count - 1;
+            int jMax = dt.Columns.Count - 1;
+            int iMax = dt.Rows.Count;
 
             // Make sure the changeover matrix is valid
             if (iMax != ProductName.GetUpperBound(0) + 1 | jMax != ProductName.GetUpperBound(0) + 1)
@@ -2684,7 +2678,7 @@ namespace Junction
             return (-1.0 * Fitness);
         }
 
-        private double CCalcFitness(int[] genes, double[] delayTimes)
+        private double CalcFitness(int[] genes, double[] delayTimes)
         {
             double Time = ProdStartTime[0];
             double NonDelayTime = Time; //Added 3/24 to elim delay time
@@ -3235,7 +3229,14 @@ namespace ConstrainedGeneticOptimizer
                 Times = new double[length];
                 for (int i = 0; i < length; i++)
                 {
-                    Times[i] = TestSimpleRNG.SimpleRNG.GetExponential(1);
+                    if (_rand.NextDouble() > .95)
+                    {
+                        Times[i] = TestSimpleRNG.SimpleRNG.GetExponential(1);
+                    }
+                    else
+                    {
+                        Times[i] = 0.0;
+                    }
                 }
             }
 

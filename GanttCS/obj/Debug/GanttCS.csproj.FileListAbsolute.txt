@@ -94,3 +94,15 @@ C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\GanttCS\obj\Debug\Juncti
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\GanttCS\obj\Debug\GanttCS.csproj.GenerateResource.Cache
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\GanttCS\obj\Debug\GanttCS.dll
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\GanttCS\obj\Debug\GanttCS.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\bin\Debug\GanttCS.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\bin\Debug\GanttCS.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\bin\Debug\Gantt.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\bin\Debug\GanttControl.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\bin\Debug\GanttControl.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\bin\Debug\Gantt.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\bin\Debug\Gantt.xml
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\obj\Debug\GanttCS.csprojResolveAssemblyReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\obj\Debug\Junction.GanttFormCS.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\obj\Debug\GanttCS.csproj.GenerateResource.Cache
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\obj\Debug\GanttCS.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\GanttCS\obj\Debug\GanttCS.pdb
