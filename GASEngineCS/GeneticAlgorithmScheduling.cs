@@ -1848,7 +1848,7 @@ namespace Junction
                     CGA.GenerateOffspring();
                     CGA.SurvivalSelection();
                     //avgf = CGA.AverageFitness();
-                    if (ShowStatusWhileRunning & (i % 100 == 0))
+                    if (ShowStatusWhileRunning & (i % (NumberOfGenerations/10) == 0))
                     {
                         //Update the status form
                         frmStatus.lblGeneration.Text = "Generation " + i.ToString();
