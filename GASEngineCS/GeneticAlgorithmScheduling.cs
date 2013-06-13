@@ -2766,13 +2766,13 @@ namespace Junction
                             //we have a real job in the previous variable
                             Time += JobRunTime[CurrentJob] + co;
                         }
-                        JobEndTime = Time;
+                        JobEndTime = Time + delayTimes[CurrentJob];
 
                         // There are no longer DelayJobs
                         if (CurrentProd != DelayIndex)
                         {
                             //Used to find the last real job running on a resource
-                            NonDelayTime = Time - delayTimes[CurrentJob];
+                            //NonDelayTime = Time - delayTimes[CurrentJob];
                             //Used to encourage jobs to start as soon as possible
                             //Todo  Turn Early start facto into a configurable factor (by resorce?)
                             EarlyStartFactor += JobStartTime;
@@ -2821,8 +2821,8 @@ namespace Junction
                     }
                 }
                 // Calculate the total production time required
-                //TotalTimeAllResources += Time - ProdStartTime[Resource]; 
-                TotalTimeAllResources += NonDelayTime - ProdStartTime[Resource];
+                TotalTimeAllResources += Time - ProdStartTime[Resource]; 
+                //TotalTimeAllResources += NonDelayTime - ProdStartTime[Resource];
             }
 
             //Get ready to check for BOM violations
