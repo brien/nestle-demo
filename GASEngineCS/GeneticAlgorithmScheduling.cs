@@ -38,6 +38,8 @@ namespace Junction
         public bool runRefactored;
         // Or Run the new GA (originally called constrained, no longer accurate description)?
         public bool runConstrained;
+        // The mean of the delay times:
+        public double meanDelayTime;
 
         //private double[] ProdRunTime;
         private double[] JobRunTime;
@@ -1816,17 +1818,19 @@ namespace Junction
                 frmStatus.lblFeasible.Text = "No Feasible Solution Found";
             }
             double eliteFitness = 0;
+            // Take parameters from calling functions parameters
+            int popsize = PopulationSize;
+            double mutarate = MutationProbability;
             // BSM:
             // GeneticOptimizer.GA is just a refactored version of the original
             // GeneticOptimizer.CGA is modified to remove delayjobs
-            int popsize = 50;
             if (runRefactored)
             {
-                GA = new GeneticOptimizer.GA(1, NumJobs, popsize, popsize, 0.05);
+                GA = new GeneticOptimizer.GA(1, NumJobs, popsize, popsize, mutarate);
                 GA.FitnessFunction = this.CalcFitness;
                 GA.EvaluatePopulation();
                 double avgf = 0;
-                for (int i = 0; i < 1000; i++)
+                for (int i = 0; i < NumberOfGenerations; i++)
                 {
                     CGA.GenerateOffspring();
                     CGA.SurvivalSelection();
@@ -1839,11 +1843,11 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, 0.05);
+                CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, mutarate, meanDelayTime);
                 CGA.FitnessFunction = this.CalcFitness;
                 CGA.EvaluatePopulation();
                 double avgf = 0;
-                for (int i = 0; i < 1000; i++)
+                for (int i = 0; i < NumberOfGenerations; i++)
                 {
                     CGA.GenerateOffspring();
                     CGA.SurvivalSelection();
@@ -1852,8 +1856,8 @@ namespace Junction
                     {
                         //Update the status form
                         frmStatus.lblGeneration.Text = "Generation " + i.ToString();
-                        eliteFitness = avgf;
-                        frmStatus.lblCurrentValue.Text = avgf.ToString();
+                        eliteFitness = CGA.population[0].fitness;
+                        frmStatus.lblCurrentValue.Text = eliteFitness.ToString();
                         frmStatus.lblCurrentValue.Text = String.Format("Fitness ={0: #,###.00}", eliteFitness);
                         if (IsFeasible)
                         {
@@ -1866,6 +1870,7 @@ namespace Junction
                         System.Windows.Forms.Application.DoEvents();
                     }
                 }
+                CGA.EvaluatePopulation();
 
                 // Close the status form
                 frmStatus.Close();
@@ -1875,12 +1880,15 @@ namespace Junction
                 for (int i = 0; i < NumJobs; i++)
                 {
                     best[i] = CGA.population[0].Genes[i];
-                    Debug.Write(Environment.NewLine + CGA.population[0].Genes[i] + " - " + CGA.population[0].Times[i] );
+                    Debug.Write(Environment.NewLine + CGA.population[0].Genes[i] + "  " + CGA.population[0].Times[i] + "  " + CGA.population[0].fitness );
                 }
+                eliteFitness = CalcFitness(CGA.population[0].Genes, CGA.population[0].Times);
                 CreateScheduleDataTable(best, CGA.population[0].Times);
             }
             else
             {
+                // Original Nestle Demo Code:
+                //
                 //    Begin Evolution
                 //    Use supremacy mating
                 //       Have strongest bulls mate with a selected herd of the others
@@ -1890,7 +1898,7 @@ namespace Junction
                 for (int i = 1; i < NumberOfGenerations; i++)
                 {
                     Mate(FindBestIndex(), StrengthOfFather, DeathRate, MutationProbability);
-
+                    
                     //Update the status form
                     if (ShowStatusWhileRunning & (i % 100 == 0))
                     {
@@ -1922,7 +1930,8 @@ namespace Junction
                 int[] best = new int[NumJobs];
                 for (int i = 0; i < NumJobs; i++)
                 {
-                    best[i] = Population[BestIndex, i];                    Debug.Write(Environment.NewLine + Population[BestIndex, i] );
+                    best[i] = Population[BestIndex, i];
+                    Debug.Write(Environment.NewLine + Population[BestIndex, i] );
                 }
                 
                 CreateScheduleDataTable(best);
@@ -2879,7 +2888,6 @@ namespace Junction
             Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
              + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties + EarlyStartFactor;
 
-            // Fitness must be increasing.
             return (-1.0 * Fitness);
         }
     }
@@ -2994,10 +3002,11 @@ namespace ConstrainedGeneticOptimizer
         // GA parameters:
         private int _seed;
         private int _length;
+        private double _meanTime;
         private int _popsize;
         private int _offsize;
         private double _mutationRate;
-        public ConstrainedGA(int seed, int length, int popsize, int offsize, double mutationRate)
+        public ConstrainedGA(int seed, int length, int popsize, int offsize, double mutationRate, double meanTime)
         {
             _seed = seed;
             _rand = new Random(seed);
@@ -3005,16 +3014,16 @@ namespace ConstrainedGeneticOptimizer
             _popsize = popsize;
             _offsize = offsize;
             _mutationRate = mutationRate;
+            _meanTime = meanTime;
             population = new ConstrainedCreature[_popsize];
             offspring = new ConstrainedCreature[_offsize];
             for (int i = 0; i < popsize; i++)
             {
-                population[i] = new ConstrainedCreature(length);
-                // population[i].fitness = FitnessFunction(population[i].Genes);
+                population[i] = new ConstrainedCreature(length, _meanTime);
             }
             for (int i = 0; i < offsize; i++)
             {
-                offspring[i] = new ConstrainedCreature(length);
+                offspring[i] = new ConstrainedCreature(length, _meanTime);
             }
 
         }
@@ -3097,6 +3106,7 @@ namespace ConstrainedGeneticOptimizer
                 for (int j = 0; j < _length; j++)
                 {
                     population[i].Genes[j] = combo[i].Genes[j];
+                    population[i].Times[j] = combo[i].Times[j];
                 }
             }
             // This doesnt work due to shallow copy nonsense:
@@ -3108,7 +3118,7 @@ namespace ConstrainedGeneticOptimizer
         }
         public void DTCrossover(int p1, int p2, int o1, int o2)
         {
-            int cutpoint = _rand.Next(_length);
+            int cutpoint = _rand.Next(_length + 1);
             for (int i = 0; i < cutpoint; i++)
             {
                 offspring[o1].Times[i] = population[p1].Times[i];
@@ -3200,7 +3210,7 @@ namespace ConstrainedGeneticOptimizer
                     offspring[o].Genes[r] = temp;
                     // Mutate the delay time
                     r = _rand.Next(_length);
-                    offspring[o].Times[r] = TestSimpleRNG.SimpleRNG.GetExponential(1);
+                    offspring[o].Times[r] = TestSimpleRNG.SimpleRNG.GetExponential(_meanTime);
                 }
             }
         }
@@ -3211,7 +3221,7 @@ namespace ConstrainedGeneticOptimizer
             public int[] Genes;
             public double[] Times;
             public double fitness;
-            public ConstrainedCreature(int length)
+            public ConstrainedCreature(int length, double meanTime)
             {
                 Genes = new int[length];
                 List<int> randarray = new List<int>();
@@ -3229,9 +3239,9 @@ namespace ConstrainedGeneticOptimizer
                 Times = new double[length];
                 for (int i = 0; i < length; i++)
                 {
-                    if (_rand.NextDouble() > .95)
+                    if (_rand.NextDouble() > .75)
                     {
-                        Times[i] = TestSimpleRNG.SimpleRNG.GetExponential(1);
+                        Times[i] = TestSimpleRNG.SimpleRNG.GetExponential(meanTime);
                     }
                     else
                     {
@@ -3300,7 +3310,6 @@ namespace GeneticOptimizer
             for (int i = 0; i < popsize; i++)
             {
                 population[i] = new Creature(length);
-                // population[i].fitness = FitnessFunction(population[i].Genes);
             }
             for (int i = 0; i < offsize; i++)
             {
