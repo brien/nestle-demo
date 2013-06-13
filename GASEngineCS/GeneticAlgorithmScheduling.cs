@@ -1847,7 +1847,7 @@ namespace Junction
                 {
                     CGA.GenerateOffspring();
                     CGA.SurvivalSelection();
-                    avgf = CGA.AverageFitness();
+                    //avgf = CGA.AverageFitness();
                     if (ShowStatusWhileRunning & (i % 100 == 0))
                     {
                         //Update the status form
@@ -1933,7 +1933,7 @@ namespace Junction
                 CreateScheduleDataTable(best);
                 return Best;
             }
-            return eliteFitness;
+            return -1 * eliteFitness;
         }
 
         private double CalcAllergenChangeOver(int FromProduct, int ToProduct)
@@ -3070,7 +3070,7 @@ namespace ConstrainedGeneticOptimizer
                     // throw new ApplicationException("Invalid offspring");
                 }
                 offspring[i].fitness = FitnessFunction(offspring[i].Genes, offspring[i].Times);
-                offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes, offspring[i].Times);
+                offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes, offspring[i + 1].Times);
 
             }
         }

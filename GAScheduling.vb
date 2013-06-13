@@ -65,7 +65,7 @@ Public Class GAScheduling
             Else
                 .runRefactored = False
                 .runConstrained = True
-                .meanDelayTime = 1.0
+                .meanDelayTime = 2.0
             End If
             'The next section of code loads worksheets into multiple data tables within a single data set
             'The dataset is then passed to the scheduler via the GAS.Masterdata Property.
