@@ -18,10 +18,22 @@ namespace TestSimpleRNG
 
         static SimpleRNG()
         {
-            // These values are not magical, just the default values Marsaglia used.
-            // Any pair of unsigned integers should be fine.
+            // these values are not magical, just the default values marsaglia used.
+            // any pair of unsigned integers should be fine.
             m_w = 521288629;
             m_z = 362436069;
+        }
+
+        public SimpleRNG(uint u, uint v)
+        {
+            SetSeed(u, v);
+        }
+        
+        public SimpleRNG(uint u)
+        { 
+            m_w = 521288629;
+            m_z = 362436069;
+            SetSeed(u);
         }
 
         // The random generator seed can be set three ways:

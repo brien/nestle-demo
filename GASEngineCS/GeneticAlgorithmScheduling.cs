@@ -1830,8 +1830,8 @@ namespace Junction
                 double avgf = 0;
                 for (int i = 0; i < NumberOfGenerations; i++)
                 {
-                    CGA.GenerateOffspring();
-                    CGA.SurvivalSelection();
+                    GA.GenerateOffspring();
+                    GA.SurvivalSelection();
                     avgf = CGA.AverageFitness();
                     if (i % 100 == 0)
                     {
@@ -1842,6 +1842,10 @@ namespace Junction
             else if (runConstrained)
             {
                 CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, mutarate, delayRate, meanDelayTime);
+                for (int i = 0; i < 10; i++)
+                {
+                   CGA.GenRand();
+                }
                 CGA.FitnessFunction = this.CalcFitness;
                 CGA.EvaluatePopulation();
                 //double avgf = 0;
@@ -1877,7 +1881,7 @@ namespace Junction
                 for (int i = 0; i < NumJobs; i++)
                 {
                     best[i] = CGA.population[0].Genes[i];
-                    Debug.Write(Environment.NewLine + CGA.population[0].fitness);
+                    //Debug.Write(Environment.NewLine + CGA.population[0].fitness);
                     Debug.Write(Environment.NewLine + CGA.population[0].Genes[i] + "  " + CGA.population[0].Times[i] );
                 }
                 eliteFitness = CalcFitness(CGA.population[0].Genes, CGA.population[0].Times);
@@ -2997,6 +3001,7 @@ namespace ConstrainedGeneticOptimizer
         public ConstrainedCreature[] population;
         private ConstrainedCreature[] offspring;
         static private Random _rand;
+        static private SimpleRNG _srng;
         // Generic GA parameters:
         private int _seed;
         private int _length;
@@ -3010,7 +3015,8 @@ namespace ConstrainedGeneticOptimizer
         public ConstrainedGA(int seed, int length, int popsize, int offsize, double mutationRate, double delayRate, double delayMean)
         {
             _seed = seed;
-            _rand = new Random(seed);
+            _rand = new Random(_seed);
+            _srng = new SimpleRNG((uint)_seed);
             _length = length;
             _popsize = popsize;
             _offsize = offsize;
@@ -3038,6 +3044,10 @@ namespace ConstrainedGeneticOptimizer
             }
             avg = avg / _popsize;
             return avg;
+        }
+        public void GenRand()
+        {
+            population[0].GenRand(); //TestSimpleRNG.SimpleRNG.GetExponential();
         }
 
         public void EvaluatePopulation()
@@ -3212,7 +3222,8 @@ namespace ConstrainedGeneticOptimizer
                     offspring[o].Genes[r] = temp;
                     // Mutate the delay time
                     r = _rand.Next(_length);
-                    offspring[o].Times[r] = TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
+                    offspring[o].Times[r] = SimpleRNG.GetExponential(_delayMean);
+                    //offspring[o].Times[r] = _rand.NextDouble() * _delayMean; //TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
                 }
             }
         }
@@ -3242,13 +3253,18 @@ namespace ConstrainedGeneticOptimizer
                 {
                     if (_rand.NextDouble() < delayRate)
                     {
-                        Times[i] = TestSimpleRNG.SimpleRNG.GetExponential(delayMean);
+                        Times[i] = SimpleRNG.GetExponential(delayMean);
                     }
                     else
                     {
                         Times[i] = 0.0;
                     }
                 }
+            }
+
+            public void GenRand()
+            {
+                Debug.Write( Environment.NewLine + _rand.Next(Genes.Length) );
             }
 
             public bool IsValid()
