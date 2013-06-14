@@ -110,10 +110,8 @@ Partial Class GAScheduling
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.tbDelayProb = New System.Windows.Forms.TextBox()
         Me.tbMeanDelay = New System.Windows.Forms.TextBox()
-        Me.tbDelayVar = New System.Windows.Forms.TextBox()
         Me.Label23 = New System.Windows.Forms.Label()
         Me.Label26 = New System.Windows.Forms.Label()
-        Me.Label29 = New System.Windows.Forms.Label()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -555,10 +553,8 @@ Partial Class GAScheduling
         '
         'TabPage2
         '
-        Me.TabPage2.Controls.Add(Me.Label29)
         Me.TabPage2.Controls.Add(Me.Label26)
         Me.TabPage2.Controls.Add(Me.Label23)
-        Me.TabPage2.Controls.Add(Me.tbDelayVar)
         Me.TabPage2.Controls.Add(Me.tbMeanDelay)
         Me.TabPage2.Controls.Add(Me.tbDelayProb)
         Me.TabPage2.Controls.Add(Me.Label9)
@@ -643,7 +639,7 @@ Partial Class GAScheduling
         Me.tbHerdSize.Name = "tbHerdSize"
         Me.tbHerdSize.Size = New System.Drawing.Size(100, 20)
         Me.tbHerdSize.TabIndex = 32
-        Me.tbHerdSize.Text = "50"
+        Me.tbHerdSize.Text = "100"
         Me.ToolTip1.SetToolTip(Me.tbHerdSize, "The number of individuals per group. More individuals increase the chance of find" & _
         "ing a better solution, but also increases run time.")
         '
@@ -1049,6 +1045,7 @@ Partial Class GAScheduling
         Me.tbDelayProb.Name = "tbDelayProb"
         Me.tbDelayProb.Size = New System.Drawing.Size(100, 20)
         Me.tbDelayProb.TabIndex = 36
+        Me.tbDelayProb.Text = "0.25"
         '
         'tbMeanDelay
         '
@@ -1056,14 +1053,7 @@ Partial Class GAScheduling
         Me.tbMeanDelay.Name = "tbMeanDelay"
         Me.tbMeanDelay.Size = New System.Drawing.Size(100, 20)
         Me.tbMeanDelay.TabIndex = 37
-        Me.tbMeanDelay.Text = "2.0"
-        '
-        'tbDelayVar
-        '
-        Me.tbDelayVar.Location = New System.Drawing.Point(29, 396)
-        Me.tbDelayVar.Name = "tbDelayVar"
-        Me.tbDelayVar.Size = New System.Drawing.Size(100, 20)
-        Me.tbDelayVar.TabIndex = 38
+        Me.tbMeanDelay.Text = "6.0"
         '
         'Label23
         '
@@ -1082,15 +1072,6 @@ Partial Class GAScheduling
         Me.Label26.Size = New System.Drawing.Size(130, 13)
         Me.Label26.TabIndex = 40
         Me.Label26.Text = "Mean Delay (in unit hours)"
-        '
-        'Label29
-        '
-        Me.Label29.AutoSize = True
-        Me.Label29.Location = New System.Drawing.Point(26, 380)
-        Me.Label29.Name = "Label29"
-        Me.Label29.Size = New System.Drawing.Size(79, 13)
-        Me.Label29.TabIndex = 41
-        Me.Label29.Text = "Delay Variance"
         '
         'GAScheduling
         '
@@ -1215,10 +1196,8 @@ Partial Class GAScheduling
     Friend WithEvents RadioButton3 As System.Windows.Forms.RadioButton
     Friend WithEvents RadioButton2 As System.Windows.Forms.RadioButton
     Friend WithEvents RadioButton1 As System.Windows.Forms.RadioButton
-    Friend WithEvents Label29 As System.Windows.Forms.Label
     Friend WithEvents Label26 As System.Windows.Forms.Label
     Friend WithEvents Label23 As System.Windows.Forms.Label
-    Friend WithEvents tbDelayVar As System.Windows.Forms.TextBox
     Friend WithEvents tbMeanDelay As System.Windows.Forms.TextBox
     Friend WithEvents tbDelayProb As System.Windows.Forms.TextBox
 

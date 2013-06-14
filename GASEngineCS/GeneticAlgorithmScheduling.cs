@@ -40,6 +40,8 @@ namespace Junction
         public bool runConstrained;
         // The mean of the delay times:
         public double meanDelayTime;
+        // The rate at which delay times are generated (probablilty of non-zero delay time)
+        public double delayRate;
 
         //private double[] ProdRunTime;
         private double[] JobRunTime;
@@ -1839,7 +1841,7 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, mutarate, meanDelayTime);
+                CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, mutarate, delayRate, meanDelayTime);
                 CGA.FitnessFunction = this.CalcFitness;
                 CGA.EvaluatePopulation();
                 double avgf = 0;
@@ -1853,8 +1855,7 @@ namespace Junction
                         //Update the status form
                         frmStatus.lblGeneration.Text = "Generation " + i.ToString();
                         eliteFitness = CGA.population[0].fitness;
-                        frmStatus.lblCurrentValue.Text = eliteFitness.ToString();
-                        frmStatus.lblCurrentValue.Text = String.Format("Fitness ={0: #,###.00}", eliteFitness);
+                        frmStatus.lblCurrentValue.Text = String.Format("Fitness ={0: #,###.00}", Math.Abs(eliteFitness));
                         if (IsFeasible)
                         {
                             frmStatus.lblFeasible.Text = "Feasible Solution Found";
@@ -1876,7 +1877,8 @@ namespace Junction
                 for (int i = 0; i < NumJobs; i++)
                 {
                     best[i] = CGA.population[0].Genes[i];
-                    Debug.Write(Environment.NewLine + CGA.population[0].Genes[i] + "  " + CGA.population[0].Times[i] + "  " + CGA.population[0].fitness );
+                    Debug.Write(Environment.NewLine + CGA.population[0].fitness);
+                    Debug.Write(Environment.NewLine + CGA.population[0].Genes[i] + "  " + CGA.population[0].Times[i] );
                 }
                 eliteFitness = CalcFitness(CGA.population[0].Genes, CGA.population[0].Times);
                 CreateScheduleDataTable(CGA.population[0].Genes, CGA.population[0].Times);
@@ -2994,7 +2996,7 @@ namespace ConstrainedGeneticOptimizer
         public Func<int[], double[], double> FitnessFunction { get; set; }
         public ConstrainedCreature[] population;
         private ConstrainedCreature[] offspring;
-        private Random _rand;
+        static private Random _rand;
         // Generic GA parameters:
         private int _seed;
         private int _length;
@@ -3005,7 +3007,7 @@ namespace ConstrainedGeneticOptimizer
         private double _delayMean;
         double _delayRate;
         double _delayVar;
-        public ConstrainedGA(int seed, int length, int popsize, int offsize, double mutationRate, double meanTime)
+        public ConstrainedGA(int seed, int length, int popsize, int offsize, double mutationRate, double delayRate, double delayMean)
         {
             _seed = seed;
             _rand = new Random(seed);
@@ -3013,16 +3015,17 @@ namespace ConstrainedGeneticOptimizer
             _popsize = popsize;
             _offsize = offsize;
             _mutationRate = mutationRate;
-            _delayMean = meanTime;
+            _delayRate = delayRate;
+            _delayMean = delayMean;
             population = new ConstrainedCreature[_popsize];
             offspring = new ConstrainedCreature[_offsize];
             for (int i = 0; i < popsize; i++)
             {
-                population[i] = new ConstrainedCreature(length, _delayMean);
+                population[i] = new ConstrainedCreature(length, _delayRate, _delayMean);
             }
             for (int i = 0; i < offsize; i++)
             {
-                offspring[i] = new ConstrainedCreature(length, _delayMean);
+                offspring[i] = new ConstrainedCreature(length, _delayRate, _delayMean);
             }
 
         }
@@ -3215,12 +3218,11 @@ namespace ConstrainedGeneticOptimizer
         }
         public class ConstrainedCreature
         {
-            static Random _rand = new Random();
-
             public int[] Genes;
             public double[] Times;
             public double fitness;
-            public ConstrainedCreature(int length, double meanTime)
+
+            public ConstrainedCreature(int length, double delayRate, double delayMean)
             {
                 Genes = new int[length];
                 List<int> randarray = new List<int>();
@@ -3238,9 +3240,9 @@ namespace ConstrainedGeneticOptimizer
                 Times = new double[length];
                 for (int i = 0; i < length; i++)
                 {
-                    if (_rand.NextDouble() > .75)
+                    if (_rand.NextDouble() < delayRate)
                     {
-                        Times[i] = TestSimpleRNG.SimpleRNG.GetExponential(meanTime);
+                        Times[i] = TestSimpleRNG.SimpleRNG.GetExponential(delayMean);
                     }
                     else
                     {
