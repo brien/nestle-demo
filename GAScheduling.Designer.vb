@@ -1056,6 +1056,7 @@ Partial Class GAScheduling
         Me.tbMeanDelay.Name = "tbMeanDelay"
         Me.tbMeanDelay.Size = New System.Drawing.Size(100, 20)
         Me.tbMeanDelay.TabIndex = 37
+        Me.tbMeanDelay.Text = "2.0"
         '
         'tbDelayVar
         '
