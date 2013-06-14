@@ -1102,14 +1102,14 @@ namespace Junction
                     dr["Job Number"] = CurrentJob;
                     dr["Product Index"] = Product;
                     // todo: replace 3333 with actual product number
-                    dr["Product Number"] = 3333; //masterData.Tables["Products"].Rows[Product]["Product Number"];
+                    dr["Product Number"] = masterData.Tables["Products"].Rows[Product]["Product Number"];
                     dr["Product Name"] = ScheduleResult[2, i];
 
                     dr["End Time"] = Conversions.ConvertDate((double)ScheduleResult[3, i]);
                     // In generating the delay jobs on the fly there is a problem on this line with ScheduleResult[0,i] being out of range of
                     // masterData.Tables["Orders"].Rows
                     // todo: replace 6666 with actual production order number
-                    dr["Production Order"] = 6666; //masterData.Tables["Orders"].Rows[(int)ScheduleResult[0, i]]["Production Order"];
+                    dr["Production Order"] = masterData.Tables["Orders"].Rows[(int)ScheduleResult[0, i]]["Production Order"];
                     dr["Setup Time"] = (double)(ScheduleResult[6, i]) * 60.0;//Convert Decimal Hour Setup Time to Minutes
                     dr["Run Time"] = JobRunTime[CurrentJob] * 60; //Convert Decimal Hour Run Times to Minutes
                     dr["Order Quantity"] = OrderQty[CurrentJob];
