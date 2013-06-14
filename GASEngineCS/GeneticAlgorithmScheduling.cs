@@ -1844,7 +1844,7 @@ namespace Junction
                 CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, mutarate, delayRate, meanDelayTime);
                 CGA.FitnessFunction = this.CalcFitness;
                 CGA.EvaluatePopulation();
-                double avgf = 0;
+                //double avgf = 0;
                 for (int i = 0; i < NumberOfGenerations; i++)
                 {
                     CGA.GenerateOffspring();
@@ -3006,7 +3006,7 @@ namespace ConstrainedGeneticOptimizer
         // Problem specific parameters:
         private double _delayMean;
         double _delayRate;
-        double _delayVar;
+        //double _delayVar;
         public ConstrainedGA(int seed, int length, int popsize, int offsize, double mutationRate, double delayRate, double delayMean)
         {
             _seed = seed;
