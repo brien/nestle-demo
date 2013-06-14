@@ -2995,13 +2995,16 @@ namespace ConstrainedGeneticOptimizer
         public ConstrainedCreature[] population;
         private ConstrainedCreature[] offspring;
         private Random _rand;
-        // GA parameters:
+        // Generic GA parameters:
         private int _seed;
         private int _length;
-        private double _meanTime;
         private int _popsize;
         private int _offsize;
         private double _mutationRate;
+        // Problem specific parameters:
+        private double _delayMean;
+        double _delayRate;
+        double _delayVar;
         public ConstrainedGA(int seed, int length, int popsize, int offsize, double mutationRate, double meanTime)
         {
             _seed = seed;
@@ -3010,16 +3013,16 @@ namespace ConstrainedGeneticOptimizer
             _popsize = popsize;
             _offsize = offsize;
             _mutationRate = mutationRate;
-            _meanTime = meanTime;
+            _delayMean = meanTime;
             population = new ConstrainedCreature[_popsize];
             offspring = new ConstrainedCreature[_offsize];
             for (int i = 0; i < popsize; i++)
             {
-                population[i] = new ConstrainedCreature(length, _meanTime);
+                population[i] = new ConstrainedCreature(length, _delayMean);
             }
             for (int i = 0; i < offsize; i++)
             {
-                offspring[i] = new ConstrainedCreature(length, _meanTime);
+                offspring[i] = new ConstrainedCreature(length, _delayMean);
             }
 
         }
@@ -3206,7 +3209,7 @@ namespace ConstrainedGeneticOptimizer
                     offspring[o].Genes[r] = temp;
                     // Mutate the delay time
                     r = _rand.Next(_length);
-                    offspring[o].Times[r] = TestSimpleRNG.SimpleRNG.GetExponential(_meanTime);
+                    offspring[o].Times[r] = TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
                 }
             }
         }
