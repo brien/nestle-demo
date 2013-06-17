@@ -407,6 +407,7 @@ Partial Class GAScheduling
         'RadioButton3
         '
         Me.RadioButton3.AutoSize = True
+        Me.RadioButton3.Checked = True
         Me.RadioButton3.Location = New System.Drawing.Point(13, 69)
         Me.RadioButton3.Name = "RadioButton3"
         Me.RadioButton3.Size = New System.Drawing.Size(104, 17)
