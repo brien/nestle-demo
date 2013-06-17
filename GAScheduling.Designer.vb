@@ -62,6 +62,10 @@ Partial Class GAScheduling
         Me.Label18 = New System.Windows.Forms.Label()
         Me.cbShowStatus = New System.Windows.Forms.CheckBox()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.Label26 = New System.Windows.Forms.Label()
+        Me.Label23 = New System.Windows.Forms.Label()
+        Me.tbMeanDelay = New System.Windows.Forms.TextBox()
+        Me.tbDelayProb = New System.Windows.Forms.TextBox()
         Me.Label9 = New System.Windows.Forms.Label()
         Me.tbDeathRate = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
@@ -108,10 +112,6 @@ Partial Class GAScheduling
         Me.dgvSchedule = New System.Windows.Forms.DataGridView()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.tbDelayProb = New System.Windows.Forms.TextBox()
-        Me.tbMeanDelay = New System.Windows.Forms.TextBox()
-        Me.Label23 = New System.Windows.Forms.Label()
-        Me.Label26 = New System.Windows.Forms.Label()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -447,6 +447,7 @@ Partial Class GAScheduling
         Me.chkbox_GenerateDelay.Text = "Generate DelayJobs"
         Me.chkbox_GenerateDelay.TextAlign = System.Drawing.ContentAlignment.TopCenter
         Me.chkbox_GenerateDelay.UseVisualStyleBackColor = True
+        Me.chkbox_GenerateDelay.Visible = False
         '
         'GroupBox7
         '
@@ -576,6 +577,40 @@ Partial Class GAScheduling
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "Optimization Parameters"
         Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'Label26
+        '
+        Me.Label26.AutoSize = True
+        Me.Label26.Location = New System.Drawing.Point(26, 339)
+        Me.Label26.Name = "Label26"
+        Me.Label26.Size = New System.Drawing.Size(130, 13)
+        Me.Label26.TabIndex = 40
+        Me.Label26.Text = "Mean Delay (in unit hours)"
+        '
+        'Label23
+        '
+        Me.Label23.AutoSize = True
+        Me.Label23.Location = New System.Drawing.Point(26, 297)
+        Me.Label23.Name = "Label23"
+        Me.Label23.Size = New System.Drawing.Size(85, 13)
+        Me.Label23.TabIndex = 39
+        Me.Label23.Text = "Delay Probability"
+        '
+        'tbMeanDelay
+        '
+        Me.tbMeanDelay.Location = New System.Drawing.Point(29, 355)
+        Me.tbMeanDelay.Name = "tbMeanDelay"
+        Me.tbMeanDelay.Size = New System.Drawing.Size(100, 20)
+        Me.tbMeanDelay.TabIndex = 37
+        Me.tbMeanDelay.Text = "6.0"
+        '
+        'tbDelayProb
+        '
+        Me.tbDelayProb.Location = New System.Drawing.Point(29, 313)
+        Me.tbDelayProb.Name = "tbDelayProb"
+        Me.tbDelayProb.Size = New System.Drawing.Size(100, 20)
+        Me.tbDelayProb.TabIndex = 36
+        Me.tbDelayProb.Text = "0.25"
         '
         'Label9
         '
@@ -1038,40 +1073,6 @@ Partial Class GAScheduling
         'OpenFileDialog1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
-        'tbDelayProb
-        '
-        Me.tbDelayProb.Location = New System.Drawing.Point(29, 313)
-        Me.tbDelayProb.Name = "tbDelayProb"
-        Me.tbDelayProb.Size = New System.Drawing.Size(100, 20)
-        Me.tbDelayProb.TabIndex = 36
-        Me.tbDelayProb.Text = "0.25"
-        '
-        'tbMeanDelay
-        '
-        Me.tbMeanDelay.Location = New System.Drawing.Point(29, 355)
-        Me.tbMeanDelay.Name = "tbMeanDelay"
-        Me.tbMeanDelay.Size = New System.Drawing.Size(100, 20)
-        Me.tbMeanDelay.TabIndex = 37
-        Me.tbMeanDelay.Text = "6.0"
-        '
-        'Label23
-        '
-        Me.Label23.AutoSize = True
-        Me.Label23.Location = New System.Drawing.Point(26, 297)
-        Me.Label23.Name = "Label23"
-        Me.Label23.Size = New System.Drawing.Size(85, 13)
-        Me.Label23.TabIndex = 39
-        Me.Label23.Text = "Delay Probability"
-        '
-        'Label26
-        '
-        Me.Label26.AutoSize = True
-        Me.Label26.Location = New System.Drawing.Point(26, 339)
-        Me.Label26.Name = "Label26"
-        Me.Label26.Size = New System.Drawing.Size(130, 13)
-        Me.Label26.TabIndex = 40
-        Me.Label26.Text = "Mean Delay (in unit hours)"
         '
         'GAScheduling
         '
