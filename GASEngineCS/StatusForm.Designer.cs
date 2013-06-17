@@ -33,6 +33,7 @@
             this.lblGeneration = new System.Windows.Forms.Label();
             this.lblFeasible = new System.Windows.Forms.Label();
             this.lblCurrentValue = new System.Windows.Forms.Label();
+            this.lblAvgFitness = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnStop
@@ -83,11 +84,21 @@
             this.lblCurrentValue.TabIndex = 4;
             this.lblCurrentValue.Text = "Initialized";
             // 
+            // lblAvgFitness
+            // 
+            this.lblAvgFitness.AutoSize = true;
+            this.lblAvgFitness.Location = new System.Drawing.Point(57, 147);
+            this.lblAvgFitness.Name = "lblAvgFitness";
+            this.lblAvgFitness.Size = new System.Drawing.Size(86, 13);
+            this.lblAvgFitness.TabIndex = 5;
+            this.lblAvgFitness.Text = "Average Fitness:";
+            // 
             // StatusForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(292, 266);
+            this.Controls.Add(this.lblAvgFitness);
             this.Controls.Add(this.lblCurrentValue);
             this.Controls.Add(this.lblFeasible);
             this.Controls.Add(this.lblGeneration);
@@ -108,5 +119,6 @@
         public System.Windows.Forms.Label lblGeneration;
         public System.Windows.Forms.Label lblFeasible;
         public System.Windows.Forms.Label lblCurrentValue;
+        public System.Windows.Forms.Label lblAvgFitness;
     }
 }
