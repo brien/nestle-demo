@@ -1801,6 +1801,8 @@ namespace Junction
             //bool Stopped = false; //Allow for interruption of a scheduling run
             IsFeasible = false;
 
+            int seed;
+            seed = Environment.TickCount;
 
 
             //    'Randomly create a population to establish a starting point
@@ -1824,7 +1826,7 @@ namespace Junction
             // GeneticOptimizer.CGA is modified to remove delayjobs
             if (runRefactored)
             {
-                GA = new GeneticOptimizer.GA(1, NumJobs, popsize, popsize, mutarate);
+                GA = new GeneticOptimizer.GA(seed, NumJobs, popsize, popsize, mutarate);
                 GA.FitnessFunction = this.CalcFitness;
                 GA.EvaluatePopulation();
                 double avgf = 0;
@@ -1841,7 +1843,7 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(1, NumJobs, popsize, popsize, mutarate, delayRate, meanDelayTime);
+                CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(seed, NumJobs, popsize, popsize, mutarate, delayRate, meanDelayTime);
                 for (int i = 0; i < 10; i++)
                 {
                    CGA.GenRand();
@@ -1884,6 +1886,7 @@ namespace Junction
                     //Debug.Write(Environment.NewLine + CGA.population[0].fitness);
                     Debug.Write(Environment.NewLine + CGA.population[0].Genes[i] + "  " + CGA.population[0].Times[i] );
                 }
+                    Debug.Write(Environment.NewLine + "Seed = " + seed );
                 eliteFitness = CalcFitness(CGA.population[0].Genes, CGA.population[0].Times);
                 CreateScheduleDataTable(CGA.population[0].Genes, CGA.population[0].Times);
             }
@@ -3222,8 +3225,8 @@ namespace ConstrainedGeneticOptimizer
                     offspring[o].Genes[r] = temp;
                     // Mutate the delay time
                     r = _rand.Next(_length);
-                    //offspring[o].Times[r] = SimpleRNG.GetNormal(offspring[o].Times[r], 1.0);
-                    offspring[o].Times[r] = _rand.NextDouble() * _delayMean; //TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
+                    offspring[o].Times[r] = Math.Abs(SimpleRNG.GetNormal(offspring[o].Times[r], .5));
+                    //offspring[o].Times[r] = _rand.NextDouble() * _delayMean; //TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
                 }
             }
         }
