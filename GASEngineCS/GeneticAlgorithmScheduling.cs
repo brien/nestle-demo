@@ -3225,8 +3225,12 @@ namespace ConstrainedGeneticOptimizer
                     offspring[o].Genes[r] = temp;
                     // Mutate the delay time
                     r = _rand.Next(_length);
-                    offspring[o].Times[r] = Math.Abs(SimpleRNG.GetNormal(offspring[o].Times[r], .5));
+                    double mutatedDelay = SimpleRNG.GetNormal(offspring[o].Times[r], .5);
                     //offspring[o].Times[r] = _rand.NextDouble() * _delayMean; //TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
+                    if (mutatedDelay < 0.0)
+                    {
+                        mutatedDelay = 0.0;
+                    }
                 }
             }
         }
