@@ -94,8 +94,8 @@ namespace Junction
 
         public bool[] ConstrainedStart { get; set; }
 
-        public GeneticOptimizer.GA GA;
-        public ConstrainedGeneticOptimizer.ConstrainedGA CGA;
+        public SimpleGA GA;
+        public GeneticOptimizer CGA;
 
 
         private int NumberOfRealJobs;
@@ -1824,11 +1824,11 @@ namespace Junction
             int popsize = PopulationSize;
             double mutarate = MutationProbability;
             // BSM:
-            // GeneticOptimizer.GA is just a refactored version of the original
-            // GeneticOptimizer.CGA is modified to remove delayjobs
+            // SimpleGA is just a refactored version of the original
+            // GeneticOptimizer is modified to remove delayjobs
             if (runRefactored)
             {
-                GA = new GeneticOptimizer.GA(seed, NumJobs, popsize, popsize, mutarate);
+                GA = new SimpleGA(seed, NumJobs, popsize, popsize, mutarate);
                 GA.FitnessFunction = this.CalcFitness;
                 GA.EvaluatePopulation();
                 double avgf = 0;
@@ -1845,7 +1845,7 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new ConstrainedGeneticOptimizer.ConstrainedGA(seed, NumJobs, popsize, popsize, mutarate, DeathRate/100.0, delayRate, meanDelayTime);
+                CGA = new Junction.GeneticOptimizer(seed, NumJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
                 /* for (int i = 0; i < 10; i++)
                  {
                     CGA.GenRand();
@@ -2972,270 +2972,4 @@ namespace Junction
     }
 
 
-}
-
-namespace GeneticOptimizer
-{
-
-    /// <summary>
-    /// My first GA attempt. Roughly replicates the original nestle demo functionality.
-    /// </summary>
-    public class GA
-    {
-        public Func<int[], double> FitnessFunction { get; set; }
-        public Creature[] population;
-        private Creature[] offspring;
-        private Random _rand;
-        // GA parameters:
-        private int _seed;
-        private int _length;
-        private int _popsize;
-        private int _offsize;
-        private double _mutationRate;
-        public GA(int seed, int length, int popsize, int offsize, double mutationRate)
-        {
-            _seed = seed;
-            _rand = new Random(seed);
-            _length = length;
-            _popsize = popsize;
-            _offsize = offsize;
-            _mutationRate = mutationRate;
-            population = new Creature[_popsize];
-            offspring = new Creature[_offsize];
-            for (int i = 0; i < popsize; i++)
-            {
-                population[i] = new Creature(length);
-            }
-            for (int i = 0; i < offsize; i++)
-            {
-                offspring[i] = new Creature(length);
-            }
-
-        }
-        public double AverageFitness()
-        {
-            double avg = 0;
-            for (int i = 0; i < _popsize; i++)
-            {
-                avg += population[i].fitness;
-            }
-            avg = avg / _popsize;
-            return avg;
-        }
-
-        public void EvaluatePopulation()
-        {
-            for (int i = 0; i < _popsize; i++)
-            {
-                population[i].fitness = FitnessFunction(population[i].Genes);
-            }
-
-        }
-        public void GenerateOffspring()
-        {
-            for (int i = 0; i < _offsize; i += 2)
-            {
-                // Select two parents
-                int p1 = SelectParent(); // _rand.Next(_popsize);
-                int p2 = SelectParent(); // _rand.Next(_popsize);
-
-                // Crossover to create two offspring
-                Crossover(p1, p2, i, i + 1);
-
-                // Mutation chance
-                Mutate(i);
-                if (!offspring[i].IsValid())
-                {
-                    MessageBox.Show("Invalid mutation");
-                    //Array.Sort(offspring[i].Genes);
-                    //throw new ApplicationException("Invalid offspring");
-                }
-
-                Mutate(i + 1);
-                if (!offspring[i + 1].IsValid())
-                {
-                    //Array.Sort(offspring[i + 1].Genes);
-                    MessageBox.Show("Invalid mutation");
-                    // throw new ApplicationException("Invalid offspring");
-                }
-                offspring[i].fitness = FitnessFunction(offspring[i].Genes);
-                offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes);
-
-            }
-        }
-        private int SelectParent()
-        {
-            // Binary tourny for no reason
-            int p1 = _rand.Next(_popsize);
-            int p2 = _rand.Next(_popsize);
-            int p = 0;
-            if (population[p1].fitness > population[p2].fitness)
-            {
-                p = p1;
-            }
-            else
-            {
-                p = p2;
-            }
-            return p;
-        }
-        public void SurvivalSelection()
-        {
-            List<Creature> combo = new List<Creature>();
-            combo.AddRange(population);
-            combo.AddRange(offspring);
-            combo.Sort(new NewComp());
-            for (int i = 0; i < _popsize; i++)
-            {
-                population[i].fitness = combo[i].fitness;
-                for (int j = 0; j < _length; j++)
-                {
-                    population[i].Genes[j] = combo[i].Genes[j];
-                }
-            }
-            // This doesnt work due to shallow copy nonsense:
-            // Creature[] combo = new Creature[_popsize + _offsize];
-            // population.CopyTo(combo, 0);
-            // offspring.CopyTo(combo, _popsize);
-            // Array.Sort(combo, new NewComp());
-            // Array.Copy(combo, population, _popsize);
-        }
-        public void Crossover(int p1, int p2, int o1, int o2)
-        {
-            int cutpoint = _rand.Next(_length);
-            //population[p1].Genes.CopyTo(offspring[o1].Genes, 0);
-            //population[p2].Genes.CopyTo(offspring[o2].Genes, 0);
-
-            for (int i = 0; i < _length; i++)
-            {
-                offspring[o1].Genes[i] = population[p1].Genes[i];
-            }
-            for (int i = 0; i < _length; i++)
-            {
-                offspring[o2].Genes[i] = population[p2].Genes[i];
-            }
-            for (int i = 0; i < _length; i++)
-            {
-                if (population[p1].Genes[i] != offspring[o1].Genes[i])
-                {
-                    MessageBox.Show("Offspring 1 did not copy correctly");
-                    break;
-                }
-            }
-
-            if (!offspring[o1].IsValid())
-            {
-
-                MessageBox.Show("Invalid creature before crossover");
-                //Array.Sort(offspring[o1].Genes);
-                //throw new ApplicationException("Invalid offspring");
-            }
-            if (!offspring[o2].IsValid())
-            {
-                MessageBox.Show("Invalid creature before crossover");
-                //Array.Sort(offspring[o2].Genes);
-                //throw new ApplicationException("Invalid offspring");
-            }
-            List<int> remainder = new List<int>(population[p2].Genes);
-            //remainder = population[p2].Genes;
-            for (int i = 0; i < cutpoint; i++)
-            {
-                remainder.Remove(population[p1].Genes[i]);
-            }
-            for (int i = cutpoint; i < _length; i++)
-            {
-                offspring[o1].Genes[i] = remainder[i - cutpoint];
-            }
-
-            if (!offspring[o1].IsValid())
-            {
-                MessageBox.Show("Invalid offspring1 after crossover");
-                //Array.Sort(offspring[o1].Genes);
-                //throw new ApplicationException("Invalid offspring");
-            }
-            // Repeat for offspring 2
-            remainder = new List<int>(population[p1].Genes);
-            for (int i = cutpoint; i < _length; i++)
-            {
-                remainder.Remove(population[p2].Genes[i]);
-            }
-
-            for (int i = 0; i < cutpoint; i++)
-            {
-                offspring[o2].Genes[i] = remainder[i];
-            }
-            if (!offspring[o2].IsValid())
-            {
-                MessageBox.Show("Invalid offspring2 after crossover");
-                //Array.Sort(offspring[o1].Genes);
-                //throw new ApplicationException("Invalid offspring");
-            }
-        }
-        public void Mutate(int o)
-        {
-            for (int i = 0; i < _length; i++)
-            {
-                if (_rand.NextDouble() < _mutationRate)
-                {
-                    int r = _rand.Next(_length);
-                    int temp = offspring[o].Genes[i];
-                    offspring[o].Genes[i] = offspring[o].Genes[r];
-                    offspring[o].Genes[r] = temp;
-                }
-            }
-        }
-        public class Creature
-        {
-            static Random _rand = new Random();
-
-            public int[] Genes;
-            public double fitness;
-            public Creature(int length)
-            {
-                Genes = new int[length];
-                List<int> randarray = new List<int>();
-                for (int i = 0; i < length; i++)
-                {
-                    randarray.Add(i);
-                }
-                for (int i = 0; i < length; i++)
-                {
-                    int r = _rand.Next(0, length - i);
-                    Genes[i] = randarray[r];
-                    randarray.RemoveAt(r);
-                }
-                fitness = -1;
-            }
-            public Creature(Creature c)
-            {
-                // This doesn't work. Creates shallow copy.
-                //c.Genes.CopyTo(Genes, 0);
-                fitness = c.fitness;
-            }
-            public bool IsValid()
-            {
-                List<int> vals = new List<int>();
-                bool r = true;
-                foreach (int i in Genes)
-                {
-                    if (vals.Contains(i))
-                    {
-                        r = false;
-                        break;
-                    }
-                    vals.Add(i);
-                }
-                return r;
-            }
-
-        }
-        public sealed class NewComp : IComparer<Creature>
-        {
-            public int Compare(Creature x, Creature y)
-            {
-                return (y.fitness.CompareTo(x.fitness));
-            }
-        }
-
-    }
 }
