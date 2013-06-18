@@ -57,7 +57,7 @@ namespace Junction
         private double _deathRate;
         // Genetic Operator Flags:
         public enum RealCrossoverOp { Uniform, MeanWithNoise }
-        public enum SurvivalSelectionOp { Elitist, Generational }
+        public enum SurvivalSelectionOp { Elitist, Generational, Struggle }
         public RealCrossoverOp realCrossover { get; set; }
         public SurvivalSelectionOp survivalSelection { get; set; }
         // Problem specific parameters:
@@ -105,6 +105,8 @@ namespace Junction
         {
             population[0].GenRand(); //TestSimpleRNG.SimpleRNG.GetExponential();
         }
+
+
 
         public void EvaluatePopulation()
         {
@@ -181,6 +183,37 @@ namespace Junction
                     }
                     Array.Sort(population, new NewComp());
                     break;
+                case SurvivalSelectionOp.Struggle:
+                    // Struggle survival selection:
+                    // Replace Most-Similar if new is better
+                    int replaced = 0;
+                    for (int i = 0; i < _popsize; i++)
+                    {
+                        double d = 999999;
+                        int replacementIndex = -1;
+                        for (int j = 0; j < _popsize; j++)
+                        {
+                            // Find most similar
+                            double newd = 0;
+                            if (offspring[i].fitness > population[j].fitness)
+                            {
+                                newd = offspring[i].Distance(population[j]);
+                                if (newd < d)
+                                {
+                                    d = newd;
+                                    replacementIndex = j;
+                                }
+                            }
+                        }
+                        if (replacementIndex > -1 )
+                        {
+                            population[replacementIndex].Copy(offspring[i]);
+                            replaced++;
+                        }
+                    }
+                    Debug.Write(Environment.NewLine + "Replaced: " + replaced);
+                    Array.Sort(population, new NewComp());
+                    break;
             }
             /*
             // Percent replacement:
@@ -238,6 +271,8 @@ namespace Junction
             int cutpoint = _rand.Next(_length);
             //population[p1].Genes.CopyTo(offspring[o1].Genes, 0);
             //population[p2].Genes.CopyTo(offspring[o2].Genes, 0);
+
+            //Debug.Write(Environment.NewLine + "Distance between " + p1 + " - " + p2 + ": " + population[p1].Distance(population[p2]));
 
             for (int i = 0; i < _length; i++)
             {
@@ -365,6 +400,16 @@ namespace Junction
                     Genes[i] = c.Genes[i];
                     Times[i] = c.Times[i];
                 }
+            }
+
+            public double Distance(ConstrainedCreature c)
+            {
+                double d = 0;
+                for (int i = 0; i < Times.Length; i++)
+                {
+                    d += Math.Pow(Times[i] - c.Times[i], 2.0);
+                }
+                return Math.Sqrt(d);
             }
 
             public void GenRand()

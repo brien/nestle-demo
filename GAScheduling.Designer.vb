@@ -115,6 +115,7 @@ Partial Class GAScheduling
         Me.gbSurvival = New System.Windows.Forms.GroupBox()
         Me.rbElitist = New System.Windows.Forms.RadioButton()
         Me.rbGenerational = New System.Windows.Forms.RadioButton()
+        Me.rbStruggle = New System.Windows.Forms.RadioButton()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -1082,6 +1083,7 @@ Partial Class GAScheduling
         '
         'gbSurvival
         '
+        Me.gbSurvival.Controls.Add(Me.rbStruggle)
         Me.gbSurvival.Controls.Add(Me.rbGenerational)
         Me.gbSurvival.Controls.Add(Me.rbElitist)
         Me.gbSurvival.Location = New System.Drawing.Point(268, 170)
@@ -1112,6 +1114,18 @@ Partial Class GAScheduling
         Me.rbGenerational.TabIndex = 1
         Me.rbGenerational.Text = "Generational"
         Me.rbGenerational.UseVisualStyleBackColor = True
+        '
+        'rbStruggle
+        '
+        Me.rbStruggle.AutoSize = True
+        Me.rbStruggle.Location = New System.Drawing.Point(18, 75)
+        Me.rbStruggle.Name = "rbStruggle"
+        Me.rbStruggle.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.rbStruggle.Size = New System.Drawing.Size(64, 17)
+        Me.rbStruggle.TabIndex = 2
+        Me.rbStruggle.TabStop = True
+        Me.rbStruggle.Text = "Struggle"
+        Me.rbStruggle.UseVisualStyleBackColor = True
         '
         'GAScheduling
         '
@@ -1245,5 +1259,6 @@ Partial Class GAScheduling
     Friend WithEvents gbSurvival As System.Windows.Forms.GroupBox
     Friend WithEvents rbGenerational As System.Windows.Forms.RadioButton
     Friend WithEvents rbElitist As System.Windows.Forms.RadioButton
+    Friend WithEvents rbStruggle As System.Windows.Forms.RadioButton
 
 End Class

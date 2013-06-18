@@ -67,8 +67,8 @@ Public Class GAScheduling
                 .runConstrained = True
                 .meanDelayTime = CDbl(tbMeanDelay.Text)
                 .delayRate = CDbl(tbDelayProb.Text)
-                If (rbGenerational.Checked) Then
-                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Generational
+                If (rbStruggle.Checked) Then
+                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Struggle
                 Else
                     .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Elitist
                 End If
