@@ -37,7 +37,8 @@ namespace Junction
 {
 
     /// <summary>
-    /// Second GA attempt. Does not allow precedence contraint violations.
+    /// Second GA attempt. Includes the following improvements:
+    /// - Uses Delay Times instead of delay jobs.
     /// Didn't just replace the last one because I want to have them both available for comparison.
     /// </summary>
     public class GeneticOptimizer
@@ -121,15 +122,12 @@ namespace Junction
                 if (!offspring[i].IsValid())
                 {
                     Debug.Write("Invalid Mutation");
-                    //Array.Sort(offspring[i].Genes);
-                    //throw new ApplicationException("Invalid offspring");
                 }
 
                 Mutate(i + 1);
                 if (!offspring[i + 1].IsValid())
                 {
                     Debug.Write("Invalid Mutation");
-                    // throw new ApplicationException("Invalid offspring");
                 }
                 offspring[i].fitness = FitnessFunction(offspring[i].Genes, offspring[i].Times);
                 offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes, offspring[i + 1].Times);
@@ -155,7 +153,6 @@ namespace Junction
         public void SurvivalSelection()
         {
             // Elitist survival selection:
-            /*
             List<ConstrainedCreature> combo = new List<ConstrainedCreature>();
             combo.AddRange(population);
             combo.AddRange(offspring);
@@ -164,11 +161,15 @@ namespace Junction
             {
                 population[i].Copy(combo[i]);
             }
-           */
 
-            // ----
-
-
+            /*
+            // Generational survival selection:
+            for (int i = 0; i < _popsize; i++)
+            {
+                population[i].Copy(offspring[i]);
+            }
+             */
+            /*
             // Percent replacement:
             Array.Sort(population, new NewComp());
             Array.Sort(offspring, new NewComp());
@@ -177,7 +178,7 @@ namespace Junction
             {
                 population[i].Copy(offspring[i - cutpoint]);
             }
-
+            */
 
             // This doesnt work due to shallow copy nonsense:
             // Creature[] combo = new Creature[_popsize + _offsize];
