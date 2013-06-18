@@ -189,6 +189,24 @@ namespace Junction
         }
         public void DTCrossover(int p1, int p2, int o1, int o2)
         {
+            // Mean-with-noise Crossover:
+            for (int i = 0; i < _length; i++)
+            {
+                double mean = population[p1].Times[i] + population[p2].Times[i];
+                mean = mean / 2.0;
+                offspring[o1].Times[i] = SimpleRNG.GetNormal(mean, 1.0);
+                offspring[o2].Times[i] = SimpleRNG.GetNormal(mean, 1.0);
+                if (offspring[o1].Times[i] < 0.0)
+                {
+                    offspring[o1].Times[i] = 0.0;
+                }
+                if (offspring[o2].Times[i] < 0.0)
+                {
+                    offspring[o2].Times[i] = 0.0;
+                }
+            }
+            /*
+            // Uniform Crossover:
             int cutpoint = _rand.Next(_length + 1);
             for (int i = 0; i < cutpoint; i++)
             {
@@ -200,6 +218,7 @@ namespace Junction
                 offspring[o1].Times[i] = population[p2].Times[i];
                 offspring[o2].Times[i] = population[p1].Times[i];
             }
+            */
         }
         public void Crossover(int p1, int p2, int o1, int o2)
         {

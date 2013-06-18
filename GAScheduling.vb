@@ -6,7 +6,7 @@ Imports Microsoft.VisualBasic.Strings
 
 
 Public Class GAScheduling
-    Dim GA As New GeneticOptimizer.GA(1, 10, 100, 100, 0.04)
+    Dim GA As New Junction.SimpleGA(1, 10, 100, 100, 0.04)
 
     Public Const UNCONSTRAINED_TIME As Double = 999999
     Dim GAS As New Junction.GeneticAlgorithmSchedulingCS
