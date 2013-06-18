@@ -55,6 +55,11 @@ namespace Junction
         private int _offsize;
         private double _mutationRate;
         private double _deathRate;
+        // Genetic Operator Flags:
+        public enum RealCrossoverOp { Uniform, MeanWithNoise }
+        public enum SurvivalSelectionOp { Elitist, Generational }
+        public RealCrossoverOp realCrossover { get; set; }
+        public SurvivalSelectionOp survivalSelection { get; set; }
         // Problem specific parameters:
         private double _delayMean;
         double _delayRate;
@@ -81,6 +86,9 @@ namespace Junction
             {
                 offspring[i] = new ConstrainedCreature(length, _delayRate, _delayMean);
             }
+            // Default operator options:
+            realCrossover = RealCrossoverOp.Uniform;
+            survivalSelection = SurvivalSelectionOp.Elitist;
 
         }
         public double AverageFitness()
@@ -152,23 +160,28 @@ namespace Junction
         }
         public void SurvivalSelection()
         {
-            // Elitist survival selection:
-            List<ConstrainedCreature> combo = new List<ConstrainedCreature>();
-            combo.AddRange(population);
-            combo.AddRange(offspring);
-            combo.Sort(new NewComp());
-            for (int i = 0; i < _popsize; i++)
+            switch (survivalSelection)
             {
-                population[i].Copy(combo[i]);
+                case SurvivalSelectionOp.Elitist:
+                    // Elitist survival selection:
+                    List<ConstrainedCreature> combo = new List<ConstrainedCreature>();
+                    combo.AddRange(population);
+                    combo.AddRange(offspring);
+                    combo.Sort(new NewComp());
+                    for (int i = 0; i < _popsize; i++)
+                    {
+                        population[i].Copy(combo[i]);
+                    }
+                    break;
+                case SurvivalSelectionOp.Generational:
+                    // Generational survival selection:
+                    for (int i = 0; i < _popsize; i++)
+                    {
+                        population[i].Copy(offspring[i]);
+                    }
+                    Array.Sort(population, new NewComp());
+                    break;
             }
-
-            /*
-            // Generational survival selection:
-            for (int i = 0; i < _popsize; i++)
-            {
-                population[i].Copy(offspring[i]);
-            }
-             */
             /*
             // Percent replacement:
             Array.Sort(population, new NewComp());
@@ -194,8 +207,8 @@ namespace Junction
             {
                 double mean = population[p1].Times[i] + population[p2].Times[i];
                 mean = mean / 2.0;
-                offspring[o1].Times[i] = SimpleRNG.GetNormal(mean, 1.0);
-                offspring[o2].Times[i] = SimpleRNG.GetNormal(mean, 1.0);
+                offspring[o1].Times[i] = SimpleRNG.GetNormal(mean, 0.5);
+                offspring[o2].Times[i] = SimpleRNG.GetNormal(mean, 0.5);
                 if (offspring[o1].Times[i] < 0.0)
                 {
                     offspring[o1].Times[i] = 0.0;

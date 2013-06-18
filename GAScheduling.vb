@@ -67,6 +67,11 @@ Public Class GAScheduling
                 .runConstrained = True
                 .meanDelayTime = CDbl(tbMeanDelay.Text)
                 .delayRate = CDbl(tbDelayProb.Text)
+                If (rbGenerational.Checked) Then
+                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Generational
+                Else
+                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Elitist
+                End If
             End If
             'The next section of code loads worksheets into multiple data tables within a single data set
             'The dataset is then passed to the scheduler via the GAS.Masterdata Property.

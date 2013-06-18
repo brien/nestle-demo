@@ -112,6 +112,9 @@ Partial Class GAScheduling
         Me.dgvSchedule = New System.Windows.Forms.DataGridView()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.gbSurvival = New System.Windows.Forms.GroupBox()
+        Me.rbElitist = New System.Windows.Forms.RadioButton()
+        Me.rbGenerational = New System.Windows.Forms.RadioButton()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -128,6 +131,7 @@ Partial Class GAScheduling
         Me.GroupBox2.SuspendLayout()
         Me.TabPage4.SuspendLayout()
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.gbSurvival.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnSolve
@@ -555,6 +559,7 @@ Partial Class GAScheduling
         '
         'TabPage2
         '
+        Me.TabPage2.Controls.Add(Me.gbSurvival)
         Me.TabPage2.Controls.Add(Me.Label26)
         Me.TabPage2.Controls.Add(Me.Label23)
         Me.TabPage2.Controls.Add(Me.tbMeanDelay)
@@ -603,7 +608,7 @@ Partial Class GAScheduling
         Me.tbMeanDelay.Name = "tbMeanDelay"
         Me.tbMeanDelay.Size = New System.Drawing.Size(100, 20)
         Me.tbMeanDelay.TabIndex = 37
-        Me.tbMeanDelay.Text = "6.0"
+        Me.tbMeanDelay.Text = "9.0"
         '
         'tbDelayProb
         '
@@ -654,7 +659,7 @@ Partial Class GAScheduling
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(188, 172)
+        Me.Label8.Location = New System.Drawing.Point(148, 170)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(109, 13)
         Me.Label8.TabIndex = 33
@@ -671,11 +676,11 @@ Partial Class GAScheduling
         '
         'tbHerdSize
         '
-        Me.tbHerdSize.Location = New System.Drawing.Point(191, 188)
+        Me.tbHerdSize.Location = New System.Drawing.Point(148, 186)
         Me.tbHerdSize.Name = "tbHerdSize"
         Me.tbHerdSize.Size = New System.Drawing.Size(100, 20)
         Me.tbHerdSize.TabIndex = 32
-        Me.tbHerdSize.Text = "100"
+        Me.tbHerdSize.Text = "200"
         Me.ToolTip1.SetToolTip(Me.tbHerdSize, "The number of individuals per group. More individuals increase the chance of find" & _
         "ing a better solution, but also increases run time.")
         '
@@ -1075,6 +1080,39 @@ Partial Class GAScheduling
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
+        'gbSurvival
+        '
+        Me.gbSurvival.Controls.Add(Me.rbGenerational)
+        Me.gbSurvival.Controls.Add(Me.rbElitist)
+        Me.gbSurvival.Location = New System.Drawing.Point(268, 170)
+        Me.gbSurvival.Name = "gbSurvival"
+        Me.gbSurvival.Size = New System.Drawing.Size(115, 100)
+        Me.gbSurvival.TabIndex = 41
+        Me.gbSurvival.TabStop = False
+        Me.gbSurvival.Text = "Survival Selection"
+        '
+        'rbElitist
+        '
+        Me.rbElitist.AutoSize = True
+        Me.rbElitist.Checked = True
+        Me.rbElitist.Location = New System.Drawing.Point(18, 28)
+        Me.rbElitist.Name = "rbElitist"
+        Me.rbElitist.Size = New System.Drawing.Size(49, 17)
+        Me.rbElitist.TabIndex = 0
+        Me.rbElitist.TabStop = True
+        Me.rbElitist.Text = "Elitist"
+        Me.rbElitist.UseVisualStyleBackColor = True
+        '
+        'rbGenerational
+        '
+        Me.rbGenerational.AutoSize = True
+        Me.rbGenerational.Location = New System.Drawing.Point(18, 52)
+        Me.rbGenerational.Name = "rbGenerational"
+        Me.rbGenerational.Size = New System.Drawing.Size(85, 17)
+        Me.rbGenerational.TabIndex = 1
+        Me.rbGenerational.Text = "Generational"
+        Me.rbGenerational.UseVisualStyleBackColor = True
+        '
         'GAScheduling
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1110,6 +1148,8 @@ Partial Class GAScheduling
         Me.GroupBox2.PerformLayout()
         Me.TabPage4.ResumeLayout(False)
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.gbSurvival.ResumeLayout(False)
+        Me.gbSurvival.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1202,5 +1242,8 @@ Partial Class GAScheduling
     Friend WithEvents Label23 As System.Windows.Forms.Label
     Friend WithEvents tbMeanDelay As System.Windows.Forms.TextBox
     Friend WithEvents tbDelayProb As System.Windows.Forms.TextBox
+    Friend WithEvents gbSurvival As System.Windows.Forms.GroupBox
+    Friend WithEvents rbGenerational As System.Windows.Forms.RadioButton
+    Friend WithEvents rbElitist As System.Windows.Forms.RadioButton
 
 End Class

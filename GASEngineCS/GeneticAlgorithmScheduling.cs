@@ -44,6 +44,7 @@ namespace Junction
         public double meanDelayTime;
         // The rate at which delay times are generated (probablilty of non-zero delay time)
         public double delayRate;
+        public Junction.GeneticOptimizer.SurvivalSelectionOp survivalMode;
 
         //private double[] ProdRunTime;
         private double[] JobRunTime;
@@ -1851,6 +1852,7 @@ namespace Junction
                     CGA.GenRand();
                  }
                  */
+                CGA.survivalSelection = survivalMode;
                 CGA.FitnessFunction = this.CalcFitness;
                 CGA.EvaluatePopulation();
                 //double avgf = 0;
