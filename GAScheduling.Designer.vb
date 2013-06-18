@@ -611,7 +611,7 @@ Partial Class GAScheduling
         Me.tbDelayProb.Name = "tbDelayProb"
         Me.tbDelayProb.Size = New System.Drawing.Size(100, 20)
         Me.tbDelayProb.TabIndex = 36
-        Me.tbDelayProb.Text = "0.25"
+        Me.tbDelayProb.Text = "0.95"
         '
         'Label9
         '
