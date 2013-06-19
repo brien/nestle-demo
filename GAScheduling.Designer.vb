@@ -62,6 +62,10 @@ Partial Class GAScheduling
         Me.Label18 = New System.Windows.Forms.Label()
         Me.cbShowStatus = New System.Windows.Forms.CheckBox()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.gbSurvival = New System.Windows.Forms.GroupBox()
+        Me.rbStruggle = New System.Windows.Forms.RadioButton()
+        Me.rbGenerational = New System.Windows.Forms.RadioButton()
+        Me.rbElitist = New System.Windows.Forms.RadioButton()
         Me.Label26 = New System.Windows.Forms.Label()
         Me.Label23 = New System.Windows.Forms.Label()
         Me.tbMeanDelay = New System.Windows.Forms.TextBox()
@@ -112,10 +116,6 @@ Partial Class GAScheduling
         Me.dgvSchedule = New System.Windows.Forms.DataGridView()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.gbSurvival = New System.Windows.Forms.GroupBox()
-        Me.rbElitist = New System.Windows.Forms.RadioButton()
-        Me.rbGenerational = New System.Windows.Forms.RadioButton()
-        Me.rbStruggle = New System.Windows.Forms.RadioButton()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -124,6 +124,7 @@ Partial Class GAScheduling
         Me.GroupBox7.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
+        Me.gbSurvival.SuspendLayout()
         Me.TabPage3.SuspendLayout()
         Me.GroupBox6.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
@@ -132,7 +133,6 @@ Partial Class GAScheduling
         Me.GroupBox2.SuspendLayout()
         Me.TabPage4.SuspendLayout()
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.gbSurvival.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnSolve
@@ -585,6 +585,52 @@ Partial Class GAScheduling
         Me.TabPage2.Text = "Optimization Parameters"
         Me.TabPage2.UseVisualStyleBackColor = True
         '
+        'gbSurvival
+        '
+        Me.gbSurvival.Controls.Add(Me.rbStruggle)
+        Me.gbSurvival.Controls.Add(Me.rbGenerational)
+        Me.gbSurvival.Controls.Add(Me.rbElitist)
+        Me.gbSurvival.Location = New System.Drawing.Point(268, 170)
+        Me.gbSurvival.Name = "gbSurvival"
+        Me.gbSurvival.Size = New System.Drawing.Size(115, 100)
+        Me.gbSurvival.TabIndex = 41
+        Me.gbSurvival.TabStop = False
+        Me.gbSurvival.Text = "Survival Selection"
+        '
+        'rbStruggle
+        '
+        Me.rbStruggle.AutoSize = True
+        Me.rbStruggle.Location = New System.Drawing.Point(18, 75)
+        Me.rbStruggle.Name = "rbStruggle"
+        Me.rbStruggle.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.rbStruggle.Size = New System.Drawing.Size(64, 17)
+        Me.rbStruggle.TabIndex = 2
+        Me.rbStruggle.TabStop = True
+        Me.rbStruggle.Text = "Struggle"
+        Me.rbStruggle.UseVisualStyleBackColor = True
+        '
+        'rbGenerational
+        '
+        Me.rbGenerational.AutoSize = True
+        Me.rbGenerational.Location = New System.Drawing.Point(18, 52)
+        Me.rbGenerational.Name = "rbGenerational"
+        Me.rbGenerational.Size = New System.Drawing.Size(85, 17)
+        Me.rbGenerational.TabIndex = 1
+        Me.rbGenerational.Text = "Generational"
+        Me.rbGenerational.UseVisualStyleBackColor = True
+        '
+        'rbElitist
+        '
+        Me.rbElitist.AutoSize = True
+        Me.rbElitist.Checked = True
+        Me.rbElitist.Location = New System.Drawing.Point(18, 28)
+        Me.rbElitist.Name = "rbElitist"
+        Me.rbElitist.Size = New System.Drawing.Size(49, 17)
+        Me.rbElitist.TabIndex = 0
+        Me.rbElitist.TabStop = True
+        Me.rbElitist.Text = "Elitist"
+        Me.rbElitist.UseVisualStyleBackColor = True
+        '
         'Label26
         '
         Me.Label26.AutoSize = True
@@ -617,7 +663,7 @@ Partial Class GAScheduling
         Me.tbDelayProb.Name = "tbDelayProb"
         Me.tbDelayProb.Size = New System.Drawing.Size(100, 20)
         Me.tbDelayProb.TabIndex = 36
-        Me.tbDelayProb.Text = "0.95"
+        Me.tbDelayProb.Text = "1.0"
         '
         'Label9
         '
@@ -653,7 +699,7 @@ Partial Class GAScheduling
         Me.tbGenerations.Name = "tbGenerations"
         Me.tbGenerations.Size = New System.Drawing.Size(100, 20)
         Me.tbGenerations.TabIndex = 26
-        Me.tbGenerations.Text = "1000"
+        Me.tbGenerations.Text = "2000"
         Me.ToolTip1.SetToolTip(Me.tbGenerations, "An integer number that determines the number of generations that will run. A mini" & _
         "mum of 1000 is suggested.")
         '
@@ -1081,52 +1127,6 @@ Partial Class GAScheduling
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
-        'gbSurvival
-        '
-        Me.gbSurvival.Controls.Add(Me.rbStruggle)
-        Me.gbSurvival.Controls.Add(Me.rbGenerational)
-        Me.gbSurvival.Controls.Add(Me.rbElitist)
-        Me.gbSurvival.Location = New System.Drawing.Point(268, 170)
-        Me.gbSurvival.Name = "gbSurvival"
-        Me.gbSurvival.Size = New System.Drawing.Size(115, 100)
-        Me.gbSurvival.TabIndex = 41
-        Me.gbSurvival.TabStop = False
-        Me.gbSurvival.Text = "Survival Selection"
-        '
-        'rbElitist
-        '
-        Me.rbElitist.AutoSize = True
-        Me.rbElitist.Checked = True
-        Me.rbElitist.Location = New System.Drawing.Point(18, 28)
-        Me.rbElitist.Name = "rbElitist"
-        Me.rbElitist.Size = New System.Drawing.Size(49, 17)
-        Me.rbElitist.TabIndex = 0
-        Me.rbElitist.TabStop = True
-        Me.rbElitist.Text = "Elitist"
-        Me.rbElitist.UseVisualStyleBackColor = True
-        '
-        'rbGenerational
-        '
-        Me.rbGenerational.AutoSize = True
-        Me.rbGenerational.Location = New System.Drawing.Point(18, 52)
-        Me.rbGenerational.Name = "rbGenerational"
-        Me.rbGenerational.Size = New System.Drawing.Size(85, 17)
-        Me.rbGenerational.TabIndex = 1
-        Me.rbGenerational.Text = "Generational"
-        Me.rbGenerational.UseVisualStyleBackColor = True
-        '
-        'rbStruggle
-        '
-        Me.rbStruggle.AutoSize = True
-        Me.rbStruggle.Location = New System.Drawing.Point(18, 75)
-        Me.rbStruggle.Name = "rbStruggle"
-        Me.rbStruggle.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.rbStruggle.Size = New System.Drawing.Size(64, 17)
-        Me.rbStruggle.TabIndex = 2
-        Me.rbStruggle.TabStop = True
-        Me.rbStruggle.Text = "Struggle"
-        Me.rbStruggle.UseVisualStyleBackColor = True
-        '
         'GAScheduling
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1149,6 +1149,8 @@ Partial Class GAScheduling
         Me.GroupBox1.PerformLayout()
         Me.TabPage2.ResumeLayout(False)
         Me.TabPage2.PerformLayout()
+        Me.gbSurvival.ResumeLayout(False)
+        Me.gbSurvival.PerformLayout()
         Me.TabPage3.ResumeLayout(False)
         Me.GroupBox6.ResumeLayout(False)
         Me.GroupBox6.PerformLayout()
@@ -1162,8 +1164,6 @@ Partial Class GAScheduling
         Me.GroupBox2.PerformLayout()
         Me.TabPage4.ResumeLayout(False)
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.gbSurvival.ResumeLayout(False)
-        Me.gbSurvival.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
