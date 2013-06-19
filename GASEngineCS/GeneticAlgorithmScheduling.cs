@@ -1846,7 +1846,7 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new Junction.GeneticOptimizer(seed, NumJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
+                CGA = new Junction.GeneticOptimizer(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
                 /* for (int i = 0; i < 10; i++)
                  {
                     CGA.GenRand();

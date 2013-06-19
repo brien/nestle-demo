@@ -69,8 +69,10 @@ Public Class GAScheduling
                 .delayRate = CDbl(tbDelayProb.Text)
                 If (rbStruggle.Checked) Then
                     .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Struggle
-                Else
+                ElseIf (rbElitist.Checked) Then
                     .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Elitist
+                ElseIf (rbGenerational.Checked) Then
+                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Generational
                 End If
             End If
             'The next section of code loads worksheets into multiple data tables within a single data set

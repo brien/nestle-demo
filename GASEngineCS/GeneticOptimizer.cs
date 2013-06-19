@@ -64,7 +64,7 @@ namespace Junction
         private double _delayMean;
         double _delayRate;
         //double _delayVar;
-        public GeneticOptimizer(int seed, int length, int popsize, int offsize, double mutationRate, double deathRate, double delayRate, double delayMean)
+        public GeneticOptimizer(int seed, int length, int tl, int popsize, int offsize, double mutationRate, double deathRate, double delayRate, double delayMean)
         {
             _seed = seed;
             _rand = new Random(_seed);
@@ -80,11 +80,11 @@ namespace Junction
             offspring = new ConstrainedCreature[_offsize];
             for (int i = 0; i < popsize; i++)
             {
-                population[i] = new ConstrainedCreature(length, _delayRate, _delayMean);
+                population[i] = new ConstrainedCreature(length, tl, _delayRate, _delayMean);
             }
             for (int i = 0; i < offsize; i++)
             {
-                offspring[i] = new ConstrainedCreature(length, _delayRate, _delayMean);
+                offspring[i] = new ConstrainedCreature(length, tl, _delayRate, _delayMean);
             }
             // Default operator options:
             realCrossover = RealCrossoverOp.Uniform;
@@ -106,8 +106,6 @@ namespace Junction
             population[0].GenRand(); //TestSimpleRNG.SimpleRNG.GetExponential();
         }
 
-
-
         public void EvaluatePopulation()
         {
             for (int i = 0; i < _popsize; i++)
@@ -116,6 +114,7 @@ namespace Junction
             }
 
         }
+
         public void GenerateOffspring()
         {
             for (int i = 0; i < _offsize; i += 2)
@@ -144,6 +143,7 @@ namespace Junction
 
             }
         }
+
         private int SelectParent()
         {
             // Binary tourny for no reason
@@ -160,6 +160,7 @@ namespace Junction
             }
             return p;
         }
+
         public void SurvivalSelection()
         {
             switch (survivalSelection)
@@ -205,7 +206,7 @@ namespace Junction
                                 }
                             }
                         }
-                        if (replacementIndex > -1 )
+                        if (replacementIndex > -1)
                         {
                             population[replacementIndex].Copy(offspring[i]);
                             replaced++;
@@ -233,6 +234,7 @@ namespace Junction
             // Array.Sort(combo, new NewComp());
             // Array.Copy(combo, population, _popsize);
         }
+
         public void DTCrossover(int p1, int p2, int o1, int o2)
         {
             // Mean-with-noise Crossover:
@@ -266,6 +268,7 @@ namespace Junction
             }
             */
         }
+
         public void Crossover(int p1, int p2, int o1, int o2)
         {
             int cutpoint = _rand.Next(_length);
@@ -336,6 +339,7 @@ namespace Junction
             DTCrossover(p1, p2, o1, o2);
 
         }
+
         public void Mutate(int o)
         {
             for (int i = 0; i < _length; i++)
@@ -347,7 +351,7 @@ namespace Junction
                     offspring[o].Genes[i] = offspring[o].Genes[r];
                     offspring[o].Genes[r] = temp;
                     // Mutate the delay time
-                    r = _rand.Next(_length);
+                    r = _rand.Next(offspring[o].timesLength);
                     double mutatedDelay = SimpleRNG.GetNormal(offspring[o].Times[r], 1.0);
                     //offspring[o].Times[r] = _rand.NextDouble() * _delayMean; //TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
                     if (mutatedDelay < 0.0)
@@ -357,15 +361,18 @@ namespace Junction
                 }
             }
         }
+
         public class ConstrainedCreature
         {
             public int[] Genes;
             public double[] Times;
             public double fitness;
+            public int timesLength;
 
-            public ConstrainedCreature(int length, double delayRate, double delayMean)
+            public ConstrainedCreature(int length, int tl, double delayRate, double delayMean)
             {
                 Genes = new int[length];
+                timesLength = tl;
                 List<int> randarray = new List<int>();
                 for (int i = 0; i < length; i++)
                 {
@@ -405,7 +412,7 @@ namespace Junction
             public double Distance(ConstrainedCreature c)
             {
                 double d = 0;
-                for (int i = 0; i < Times.Length; i++)
+                for (int i = 0; i < timesLength; i++)
                 {
                     d += Math.Pow(Times[i] - c.Times[i], 2.0);
                 }
