@@ -238,7 +238,7 @@ namespace Junction
         public void DTCrossover(int p1, int p2, int o1, int o2)
         {
             // Mean-with-noise Crossover:
-            for (int i = 0; i < _length; i++)
+            for (int i = 0; i < population[p1].timesLength; i++)
             {
                 double mean = population[p1].Times[i] + population[p2].Times[i];
                 mean = mean / 2.0;
