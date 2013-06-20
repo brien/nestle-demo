@@ -358,6 +358,7 @@ namespace Junction
                     {
                         mutatedDelay = 0.0;
                     }
+                    offspring[o].Times[r] = mutatedDelay;
                 }
             }
         }
