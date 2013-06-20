@@ -600,6 +600,7 @@ Partial Class GAScheduling
         'rbStruggle
         '
         Me.rbStruggle.AutoSize = True
+        Me.rbStruggle.Checked = True
         Me.rbStruggle.Location = New System.Drawing.Point(18, 75)
         Me.rbStruggle.Name = "rbStruggle"
         Me.rbStruggle.RightToLeft = System.Windows.Forms.RightToLeft.No
@@ -622,12 +623,10 @@ Partial Class GAScheduling
         'rbElitist
         '
         Me.rbElitist.AutoSize = True
-        Me.rbElitist.Checked = True
         Me.rbElitist.Location = New System.Drawing.Point(18, 28)
         Me.rbElitist.Name = "rbElitist"
         Me.rbElitist.Size = New System.Drawing.Size(49, 17)
         Me.rbElitist.TabIndex = 0
-        Me.rbElitist.TabStop = True
         Me.rbElitist.Text = "Elitist"
         Me.rbElitist.UseVisualStyleBackColor = True
         '

@@ -120,6 +120,12 @@ Public Class GAScheduling
                 ds.Tables.Remove(dt)
                 ds2.Tables.Add(dt)
 
+                ' Add the pre-existing inventory
+                ds = Junction.ExcelAutomation.GetDataSetFromExcel(tbWorkBookName.Text, "Inventory")
+                dt = ds.Tables(0)
+                ds.Tables.Remove(dt)
+                ds2.Tables.Add(dt)
+
                 'Send the complete dataset to the scheduler
                 .MasterData = ds2
 

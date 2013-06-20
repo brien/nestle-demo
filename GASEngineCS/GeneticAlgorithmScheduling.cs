@@ -46,6 +46,9 @@ namespace Junction
         public double delayRate;
         public Junction.GeneticOptimizer.SurvivalSelectionOp survivalMode;
 
+        // Pre-existing inventory:
+        private int[] Inventory;
+
         //private double[] ProdRunTime;
         private double[] JobRunTime;
         private String[] ProductName;
@@ -142,6 +145,7 @@ namespace Junction
                 SetChangeOverPenaltyData(MasterData.Tables["Change Over Penalties"]);
                 SetOrderData(masterData.Tables["Orders"]);
                 SetBOMData(masterData.Tables["BOMItems"]);
+                SetInventoryData(masterData.Tables["Inventory"]);
             }
         }
 
@@ -1676,7 +1680,12 @@ namespace Junction
             // 3/24/13 changes
             // Display BOM Violations - Need to go back through the data set to find all potential BOM violaionns
             NumberOfBOMViolations = 0;
+            int[] myInventory = new int[Inventory.Length];
 
+            for (int i = 0; i < myInventory.Length; i++)
+            {
+                myInventory[i] = Inventory[i];
+            }
             //// List of production orders to support calculation of BOM Item requirements
             //List<ProdSchedule> pSched = new List<ProdSchedule>();
 
@@ -1745,6 +1754,10 @@ namespace Junction
                         pQty = ps.OrderQty;
                         pProd = ps.Product;
                         ps.AvailableQuantity = pQty;
+                    }                    if (Inventory[ps.Product] > 0)
+                    {
+                        ps.AvailableQuantity += myInventory[ps.Product];
+                        myInventory[ps.Product]--;
                     }
                     if (ps.AvailableQuantity < 0.0)
                     {
@@ -1893,8 +1906,8 @@ namespace Junction
                     Debug.Write(Environment.NewLine + CGA.population[0].Genes[i] + "  " + CGA.population[0].Times[i]);
                 }
                 Debug.Write(Environment.NewLine + "Seed = " + seed);
-                eliteFitness = CalcFitness(CGA.population[0].Genes, CGA.population[0].Times);
                 CreateScheduleDataTable(CGA.population[0].Genes, CGA.population[0].Times);
+                eliteFitness = CalcFitness(CGA.population[0].Genes, CGA.population[0].Times);
             }
             else
             {
@@ -2126,6 +2139,33 @@ namespace Junction
                     ResourcePreference[i, j] = (ResourcePref / 10) - (ResourcePref / 10);
                 }
             }
+        }
+
+        private void SetInventoryData(DataTable dt)
+        {
+            int numberOfItems = dt.Rows.Count;
+            Inventory = new int[numberOfItems];
+
+            int i = 0;
+            foreach (DataRow dr in dt.Rows)
+            {
+                string productNumber = dr["Product"].ToString();
+                //ProductNumberHash.Add(dr["Product Number"].ToString(), i);
+                int ProdIndex = (int)ProductNumberHash[productNumber];
+                Inventory[ProdIndex] = (int)(double)dr["Quantity"];
+                i++;
+            }
+            /*
+            for (int i = 0; i < numberOfItems; i++)
+            {
+                Inventory[i] = 0;
+            }
+            Inventory[0] = 1;
+             */
+
+            //redimension the arrays to hold the product data
+            //ProductName = new string[numberOfProducts];
+            //AllergensInProduct = new string[numberOfProducts];
         }
 
         private void SetBOMData(DataTable dt)
@@ -2721,6 +2761,12 @@ namespace Junction
             double ResourcePrefPenalties = 0;
             double SumOfChangeOverPenalties = 0;
             double EarlyStartFactor = 0;
+            int[] myInventory = new int[Inventory.Length];
+
+            for (int i = 0; i < myInventory.Length; i++)
+            {
+                myInventory[i] = Inventory[i];
+            }
 
             // List of production orders to support calculation of BOM Item requirements
             List<ProdSchedule> pSched = new List<ProdSchedule>();
@@ -2880,6 +2926,11 @@ namespace Junction
                         pQty = ps.OrderQty;
                         pProd = ps.Product;
                         ps.AvailableQuantity = pQty;
+                    }
+                    if (Inventory[ps.Product] > 0)
+                    {
+                        ps.AvailableQuantity += myInventory[ps.Product];
+                        myInventory[ps.Product]--;
                     }
                     if (ps.AvailableQuantity < 0.0)
                     {
