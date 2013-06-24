@@ -39,6 +39,7 @@ namespace Junction
     /// <summary>
     /// Second GA attempt. Includes the following improvements:
     /// - Uses Delay Times instead of delay jobs.
+    /// - Allow more than one kind of survival selection
     /// Didn't just replace the last one because I want to have them both available for comparison.
     /// </summary>
     public class GeneticOptimizer
@@ -238,6 +239,7 @@ namespace Junction
         public void DTCrossover(int p1, int p2, int o1, int o2)
         {
             // Mean-with-noise Crossover:
+            /*
             for (int i = 0; i < population[p1].timesLength; i++)
             {
                 double mean = population[p1].Times[i] + population[p2].Times[i];
@@ -252,8 +254,8 @@ namespace Junction
                 {
                     offspring[o2].Times[i] = 0.0;
                 }
-            }
-            /*
+            }*/
+            
             // Uniform Crossover:
             int cutpoint = _rand.Next(_length + 1);
             for (int i = 0; i < cutpoint; i++)
@@ -266,7 +268,7 @@ namespace Junction
                 offspring[o1].Times[i] = population[p2].Times[i];
                 offspring[o2].Times[i] = population[p1].Times[i];
             }
-            */
+            
         }
 
         public void Crossover(int p1, int p2, int o1, int o2)
@@ -352,8 +354,10 @@ namespace Junction
                     offspring[o].Genes[r] = temp;
                     // Mutate the delay time
                     r = _rand.Next(offspring[o].timesLength);
-                    double mutatedDelay = SimpleRNG.GetNormal(offspring[o].Times[r], 1.0);
-                    //offspring[o].Times[r] = _rand.NextDouble() * _delayMean; //TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
+                    double mutatedDelay = 0;
+                    //mutatedDelay = SimpleRNG.GetNormal(offspring[o].Times[r], 1.0);
+                    //mutatedDelay = _rand.NextDouble() * _delayMean;
+                    mutatedDelay = TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
                     if (mutatedDelay < 0.0)
                     {
                         mutatedDelay = 0.0;
