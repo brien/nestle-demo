@@ -47,6 +47,7 @@ namespace Junction
         public Func<int[], double[], double> FitnessFunction { get; set; }
         public ConstrainedCreature[] population;
         private ConstrainedCreature[] offspring;
+        public ConstrainedCreature elite;
         static private Random _rand;
         static private SimpleRNG _srng;
         // Generic GA parameters:
@@ -79,6 +80,7 @@ namespace Junction
             _delayMean = delayMean;
             population = new ConstrainedCreature[_popsize];
             offspring = new ConstrainedCreature[_offsize];
+            elite = new ConstrainedCreature(_length, tl, delayRate, delayMean);
             for (int i = 0; i < popsize; i++)
             {
                 population[i] = new ConstrainedCreature(length, tl, _delayRate, _delayMean);
@@ -112,6 +114,10 @@ namespace Junction
             for (int i = 0; i < _popsize; i++)
             {
                 population[i].fitness = FitnessFunction(population[i].Genes, population[i].Times);
+                if (population[i].fitness > elite.fitness)
+                {
+                    elite.Copy(population[i]);
+                }
             }
 
         }
@@ -255,7 +261,7 @@ namespace Junction
                     offspring[o2].Times[i] = 0.0;
                 }
             }*/
-            
+
             // Uniform Crossover:
             int cutpoint = _rand.Next(_length + 1);
             for (int i = 0; i < cutpoint; i++)
@@ -268,7 +274,7 @@ namespace Junction
                 offspring[o1].Times[i] = population[p2].Times[i];
                 offspring[o2].Times[i] = population[p1].Times[i];
             }
-            
+
         }
 
         public void Crossover(int p1, int p2, int o1, int o2)
