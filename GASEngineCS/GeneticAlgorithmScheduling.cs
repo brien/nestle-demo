@@ -45,6 +45,8 @@ namespace Junction
         // The rate at which delay times are generated (probablilty of non-zero delay time)
         public double delayRate;
         public Junction.GeneticOptimizer.SurvivalSelectionOp survivalMode;
+        // Just for debugging purposes:
+        bool shouldBreak = false;
 
         // Pre-existing inventory:
         private int[] Inventory;
@@ -436,12 +438,9 @@ namespace Junction
                 {
                     //int CurrentJob = (int)Schedule[0, i];
                     //CurrentProd = (int)Schedule[1, i];
-
                     int CurrentJob = genes[i]; // Population[BestIndex, i];
                     CurrentProd = JobsToSchedule[CurrentJob];
-
                     double co = 0;
-
                     if (PreviousProd != -1 & CurrentProd != -1)
                     {
                         co = ChangeOver[PreviousProd, CurrentProd];
@@ -1694,7 +1693,7 @@ namespace Junction
             if (BOMItems.Count > 0) //This is purely a speed enhancement to skip this section if there are no BOM items.
             {
                 List<ProdSchedule> pSched = new List<ProdSchedule>();
-                int rMax = dt.Rows.Count - 1;
+                int rMax = dt.Rows.Count;// -1;
                 for (int i = 0; i < rMax; i++)
                 {
                     dr = dt.Rows[i];
@@ -1707,7 +1706,18 @@ namespace Junction
                     //First create a new production schedule item
                     ProdSchedule p = new ProdSchedule(ProductIndex, StartTime, EndTime, OrderQuantity, JobNum);
                     //Second, add the new schedule item to the list
-                    if ((string)dr["Product Number"] != "9999") pSched.Add(p); //don't add slack jobs
+                    if ((string)dr["Product Number"] != "9999")
+                    {
+                        pSched.Add(p); //don't add slack jobs                    if (shouldBreak)
+                    {
+                        Debug.Write(Environment.NewLine +
+                            p.Product +
+                            " " + p.StartTime +
+                            " " + p.EndTime +
+                            " " + p.OrderQty +
+                            " " + p.AvailableQuantity);
+                    }
+                    }
                 }
 
 
@@ -1743,6 +1753,15 @@ namespace Junction
                 //Calculate the available quantities
                 foreach (ProdSchedule ps in pSched)
                 {
+                    if (shouldBreak)
+                    {
+                        Debug.Write(Environment.NewLine +
+                            ps.Product +
+                            " " + ps.StartTime +
+                            " " + ps.EndTime +
+                            " " + ps.OrderQty +
+                            " " + ps.AvailableQuantity);
+                    }
                     // Calculate the penalty
                     if (pProd == ps.Product)
                     {
@@ -1754,7 +1773,8 @@ namespace Junction
                         pQty = ps.OrderQty;
                         pProd = ps.Product;
                         ps.AvailableQuantity = pQty;
-                    }                    if (Inventory[ps.Product] > 0)
+                    }
+                    if (Inventory[ps.Product] > 0)
                     {
                         ps.AvailableQuantity += myInventory[ps.Product];
                         myInventory[ps.Product]--;
@@ -1859,7 +1879,7 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new Junction.GeneticOptimizer(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
+                CGA = new Junction.GeneticOptimizer(65709711, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
                 /* for (int i = 0; i < 10; i++)
                  {
                     CGA.GenRand();
@@ -1877,10 +1897,10 @@ namespace Junction
                     if (ShowStatusWhileRunning & (i % (NumberOfGenerations / 10) == 0))
                     {
                         //Update the status form
+                        CGA.FindElite();
                         frmStatus.lblGeneration.Text = "Generation " + i.ToString();
                         frmStatus.lblAvgFitness.Text = String.Format("Average Fitness ={0: #,###.00}", Math.Abs(CGA.AverageFitness()));
-                        eliteFitness = CGA.population[0].fitness;
-                        frmStatus.lblCurrentValue.Text = String.Format("Best Fitness ={0: #,###.00}", Math.Abs(eliteFitness));
+                        frmStatus.lblCurrentValue.Text = String.Format("Best Fitness ={0: #,###.00}", Math.Abs(CGA.elite.fitness));
                         if (IsFeasible)
                         {
                             frmStatus.lblFeasible.Text = "Feasible Solution Found";
@@ -1893,21 +1913,22 @@ namespace Junction
                     }
                 }
                 CGA.EvaluatePopulation();
+                CGA.FindElite();
 
                 // Close the status form
                 frmStatus.Close();
                 frmStatus = null;
                 // Create a data table with the best schedule
-                int[] best = new int[NumJobs];
+                Debug.Write(Environment.NewLine + CGA.elite.fitness);
                 for (int i = 0; i < NumJobs; i++)
                 {
-                    best[i] = CGA.population[0].Genes[i];
-                    //Debug.Write(Environment.NewLine + CGA.population[0].fitness);
-                    Debug.Write(Environment.NewLine + CGA.population[0].Genes[i] + "  " + CGA.population[0].Times[i]);
+                    Debug.Write(Environment.NewLine + CGA.elite.Genes[i] + "  " + CGA.elite.Times[i]);
                 }
                 Debug.Write(Environment.NewLine + "Seed = " + seed);
-                CreateScheduleDataTable(CGA.population[0].Genes, CGA.population[0].Times);
-                eliteFitness = CalcFitness(CGA.population[0].Genes, CGA.population[0].Times);
+                shouldBreak = true;
+                CreateScheduleDataTable(CGA.elite.Genes, CGA.elite.Times);
+                eliteFitness = CalcFitness(CGA.elite.Genes, CGA.elite.Times);
+                shouldBreak = false;
             }
             else
             {
@@ -2748,7 +2769,7 @@ namespace Junction
             double SumOfServiceLatePenalties = 0;
             double SumOfResourceLatePenalties = 0;
             double BOMPenalties = 0;
-            int Previous = -1;
+            int PreviousProd = -1;
             bool ScheduleViolationBOM = false;
             bool ScheduleViolationResourceLate = false;
             bool ScheduleViolationOrderLate = false;
@@ -2774,17 +2795,16 @@ namespace Junction
 
             for (int Resource = 0; Resource < NumberOfResources; Resource++)
             {
-                Time = ProdStartTime[Resource];
-                NonDelayTime = Time; // added to eliminate delay orders
-
+                //NonDelayTime = Time; // added to eliminate delay orders
                 if (ConstrainedStart[Resource])
                 {
-                    Previous = StartProduct[Resource];
+                    PreviousProd = StartProduct[Resource];
                 }
                 else
                 {
-                    Previous = -1;
+                    PreviousProd = -1;
                 }
+                Time = ProdStartTime[Resource];
                 // Calculate the time for the following jobs
                 int FirstGeneInResource = NumberOfRealJobs * Resource;
                 int LastGeneInResource = (NumberOfRealJobs * (Resource + 1)) - 1;
@@ -2793,27 +2813,24 @@ namespace Junction
                 {
                     CurrentJob = genes[i];
                     CurrentProd = JobsToSchedule[CurrentJob];
-                    if (Previous != -1 & CurrentProd != -1)
+                    if (PreviousProd != -1 & CurrentProd != -1)
                     {
-                        co = ChangeOver[Previous, CurrentProd];
-                        cop = ChangeOverPenalties[Previous, CurrentProd];
+                        co = ChangeOver[PreviousProd, CurrentProd];
+                        cop = ChangeOverPenalties[PreviousProd, CurrentProd];
                     }
                     else
                     {
                         co = 0;
                         cop = 0;
                     }
-                    // Change code to eliminate Delay Jobs from the fitness calculation as well as slack jobs
-                    // Delay jobs are being coded manually as product 9999
-                    //ToDo enhance input to give a better spread on delay jobs vs adding products and orders for delays. Get rid of the 9999 comparison.
-                    //if (CurrentProd != -1)  Changed on 3/24/2012
                     if (CurrentProd != -1)
                     {
-
-                        JobStartTime = Time + delayTimes[CurrentJob];
+                        Time += delayTimes[CurrentJob] + co;
+                        JobStartTime = Time;
                         // TODO: Verify that this logic is redundant and remove it.
                         // if currentProd != -1 && Previous != -1, then Time += JobRuntime[CurrentJob] + 0;
-                        if (Previous == -1)
+                        /*
+                        if (PreviousProd == -1)
                         {
                             //First job on the resource was a slack job
                             Time += JobRunTime[CurrentJob];
@@ -2822,8 +2839,9 @@ namespace Junction
                         {
                             //we have a real job in the previous variable
                             Time += JobRunTime[CurrentJob] + co;
-                        }
-                        JobEndTime = Time + delayTimes[CurrentJob];
+                        }*/
+                        Time += JobRunTime[CurrentJob];
+                        JobEndTime = Time;
 
                         // There are no longer DelayJobs
                         if (CurrentProd != DelayIndex)
@@ -2835,7 +2853,7 @@ namespace Junction
                             EarlyStartFactor += JobStartTime;
                         }
 
-                        Previous = JobsToSchedule[CurrentJob];
+                        PreviousProd = JobsToSchedule[CurrentJob];
 
                         //Calculate Service Early Cost
                         EarlyTime = EarlyStart[CurrentJob];
@@ -2887,7 +2905,15 @@ namespace Junction
             {
                 List<ProdSchedule> ComponentSchedule = new List<ProdSchedule>();
                 foreach (ProdSchedule ps in pSched)
-                {
+                {                    if (shouldBreak)
+                    {
+                        Debug.Write(Environment.NewLine +
+                            ps.Product +
+                            " " + ps.StartTime +
+                            " " + ps.EndTime +
+                            " " + ps.OrderQty +
+                            " " + ps.AvailableQuantity);
+                    }
                     //Find out if the item has components
                     int bIdx = BOMItemIndex[ps.Product];
                     if (bIdx == -1) continue;
@@ -2909,12 +2935,23 @@ namespace Junction
                 }
                 pSched.AddRange(ComponentSchedule);
                 pSched.Sort();
+
                 int pProd = -99; // set up a variable to hold the previous product
                 double pQty = 0; //set up a variable to hold the previous quantity
 
                 //Calculate the available quantities
                 foreach (ProdSchedule ps in pSched)
                 {
+
+                    if (shouldBreak)
+                    {
+                        Debug.Write(Environment.NewLine +
+                            ps.Product +
+                            " " + ps.StartTime +
+                            " " + ps.EndTime +
+                            " " + ps.OrderQty +
+                            " " + ps.AvailableQuantity);
+                    }
                     // Calculate the penalty
                     if (pProd == ps.Product)
                     {

@@ -3,7 +3,7 @@
 // Author: Brien Smith-Martinez
 // Summary:
 // Contains an implementation of the Junction Solutions GeneticOptimizer,
-// a genetic algorithm for finding production schedules.sing System;
+// a genetic algorithm for finding production schedules.
 
 using System;
 using System.Collections.Generic;
@@ -109,8 +109,23 @@ namespace Junction
             population[0].GenRand(); //TestSimpleRNG.SimpleRNG.GetExponential();
         }
 
+        // Copies best individual in population to elite.
+        // Assumes population has been evaluated. Use with caution.
+        public void FindElite()
+        {
+            elite.fitness = FitnessFunction(elite.Genes, elite.Times);
+            for (int i = 0; i < _popsize; i++)
+            {
+                if (population[i].fitness > elite.fitness)
+                {
+                    elite.Copy(population[i]);
+                }
+            } 
+        }
+
         public void EvaluatePopulation()
         {
+            elite.fitness = FitnessFunction(elite.Genes, elite.Times);
             for (int i = 0; i < _popsize; i++)
             {
                 population[i].fitness = FitnessFunction(population[i].Genes, population[i].Times);
@@ -245,7 +260,7 @@ namespace Junction
         public void DTCrossover(int p1, int p2, int o1, int o2)
         {
             // Mean-with-noise Crossover:
-            /*
+            
             for (int i = 0; i < population[p1].timesLength; i++)
             {
                 double mean = population[p1].Times[i] + population[p2].Times[i];
@@ -260,8 +275,8 @@ namespace Junction
                 {
                     offspring[o2].Times[i] = 0.0;
                 }
-            }*/
-
+            }
+            /*
             // Uniform Crossover:
             int cutpoint = _rand.Next(_length + 1);
             for (int i = 0; i < cutpoint; i++)
@@ -274,7 +289,7 @@ namespace Junction
                 offspring[o1].Times[i] = population[p2].Times[i];
                 offspring[o2].Times[i] = population[p1].Times[i];
             }
-
+            */
         }
 
         public void Crossover(int p1, int p2, int o1, int o2)
@@ -361,9 +376,9 @@ namespace Junction
                     // Mutate the delay time
                     r = _rand.Next(offspring[o].timesLength);
                     double mutatedDelay = 0;
-                    //mutatedDelay = SimpleRNG.GetNormal(offspring[o].Times[r], 1.0);
+                    mutatedDelay = SimpleRNG.GetNormal(offspring[o].Times[r], 1.0);
                     //mutatedDelay = _rand.NextDouble() * _delayMean;
-                    mutatedDelay = TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
+                    //mutatedDelay = TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
                     if (mutatedDelay < 0.0)
                     {
                         mutatedDelay = 0.0;
