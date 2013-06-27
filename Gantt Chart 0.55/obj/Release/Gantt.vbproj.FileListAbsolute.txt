@@ -58,3 +58,15 @@ C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\Gantt Chart 0.55\obj\Rel
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\Gantt Chart 0.55\obj\Release\Gantt.dll
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\Gantt Chart 0.55\obj\Release\Gantt.xml
 C:\Users\bsmithmartinez\Desktop\Nestle Demo\Nestle Demo\Gantt Chart 0.55\obj\Release\Gantt.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\bin\Release\Gantt.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\bin\Release\Gantt.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\bin\Release\Gantt.xml
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\bin\Release\GanttControl.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\bin\Release\GanttControl.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\obj\Release\Gantt.vbprojResolveAssemblyReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\obj\Release\Junction.GanttChart.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\obj\Release\Junction.Resources.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\obj\Release\Gantt.vbproj.GenerateResource.Cache
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\obj\Release\Gantt.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\obj\Release\Gantt.xml
+C:\Users\bsmithmartinez\work\Nestle Demo\Gantt Chart 0.55\obj\Release\Gantt.pdb

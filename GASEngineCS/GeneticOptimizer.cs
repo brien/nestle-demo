@@ -59,7 +59,7 @@ namespace Junction
         private double _deathRate;
         // Genetic Operator Flags:
         public enum RealCrossoverOp { Uniform, MeanWithNoise }
-        public enum SurvivalSelectionOp { Elitist, Generational, Struggle }
+        public enum SurvivalSelectionOp { ReplaceWorst, Elitist, Generational, Struggle }
         public RealCrossoverOp realCrossover { get; set; }
         public SurvivalSelectionOp survivalSelection { get; set; }
         // Problem specific parameters:
@@ -120,7 +120,7 @@ namespace Junction
                 {
                     elite.Copy(population[i]);
                 }
-            } 
+            }
         }
 
         public void EvaluatePopulation()
@@ -139,6 +139,10 @@ namespace Junction
 
         public void GenerateOffspring()
         {
+            if (survivalSelection == SurvivalSelectionOp.ReplaceWorst)
+            {
+                _offsize = (int)(_popsize * _deathRate);
+            }
             for (int i = 0; i < _offsize; i += 2)
             {
                 // Select two parents
@@ -168,7 +172,23 @@ namespace Junction
 
         private int SelectParent()
         {
+
+            double totalFitness = 0;
+            for (int i = 0; i < _popsize; i++)
+            {
+                totalFitness += population[i].fitness;
+            }
+            double r = _rand.NextDouble() * totalFitness;
+            int p = 0;
+            double runningTotal = population[p].fitness;
+            while (runningTotal > r)
+            {
+                p++;
+                runningTotal += population[p].fitness;
+            }
+
             // Binary tourny for no reason
+            /*
             int p1 = _rand.Next(_popsize);
             int p2 = _rand.Next(_popsize);
             int p = 0;
@@ -179,17 +199,26 @@ namespace Junction
             else
             {
                 p = p2;
-            }
+            }*/
             return p;
         }
-
+        
         public void SurvivalSelection()
         {
             switch (survivalSelection)
             {
+                case SurvivalSelectionOp.ReplaceWorst:
+                    // Replace worst _deathRate * populationSize with offspring.
+                    Array.Sort(population, new NewComp());
+                    int cutpoint = (int)(_popsize * (1.0 -_deathRate));
+                    for (int i = cutpoint; i < _popsize; i++)
+                    {
+                        population[i].Copy(offspring[i - cutpoint]);
+                    }
+                    break;
                 case SurvivalSelectionOp.Elitist:
                     // Elitist survival selection:
-                    List<ConstrainedCreature> combo = new List<ConstrainedCreature>();
+                   List<ConstrainedCreature> combo = new List<ConstrainedCreature>();
                     combo.AddRange(population);
                     combo.AddRange(offspring);
                     combo.Sort(new NewComp());
@@ -204,7 +233,7 @@ namespace Junction
                     {
                         population[i].Copy(offspring[i]);
                     }
-                    Array.Sort(population, new NewComp());
+                    //Array.Sort(population, new NewComp());
                     break;
                 case SurvivalSelectionOp.Struggle:
                     // Struggle survival selection:
@@ -235,7 +264,7 @@ namespace Junction
                         }
                     }
                     Debug.Write(Environment.NewLine + "Replaced: " + replaced);
-                    Array.Sort(population, new NewComp());
+                    //Array.Sort(population, new NewComp());
                     break;
             }
             /*
@@ -260,7 +289,7 @@ namespace Junction
         public void DTCrossover(int p1, int p2, int o1, int o2)
         {
             // Mean-with-noise Crossover:
-            
+
             for (int i = 0; i < population[p1].timesLength; i++)
             {
                 double mean = population[p1].Times[i] + population[p2].Times[i];
@@ -295,8 +324,6 @@ namespace Junction
         public void Crossover(int p1, int p2, int o1, int o2)
         {
             int cutpoint = _rand.Next(_length);
-            //population[p1].Genes.CopyTo(offspring[o1].Genes, 0);
-            //population[p2].Genes.CopyTo(offspring[o2].Genes, 0);
 
             //Debug.Write(Environment.NewLine + "Distance between " + p1 + " - " + p2 + ": " + population[p1].Distance(population[p2]));
 

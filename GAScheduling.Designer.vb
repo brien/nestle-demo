@@ -116,6 +116,7 @@ Partial Class GAScheduling
         Me.dgvSchedule = New System.Windows.Forms.DataGridView()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.rbReplaceWorst = New System.Windows.Forms.RadioButton()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -587,12 +588,13 @@ Partial Class GAScheduling
         '
         'gbSurvival
         '
+        Me.gbSurvival.Controls.Add(Me.rbReplaceWorst)
         Me.gbSurvival.Controls.Add(Me.rbStruggle)
         Me.gbSurvival.Controls.Add(Me.rbGenerational)
         Me.gbSurvival.Controls.Add(Me.rbElitist)
         Me.gbSurvival.Location = New System.Drawing.Point(268, 170)
         Me.gbSurvival.Name = "gbSurvival"
-        Me.gbSurvival.Size = New System.Drawing.Size(115, 100)
+        Me.gbSurvival.Size = New System.Drawing.Size(115, 125)
         Me.gbSurvival.TabIndex = 41
         Me.gbSurvival.TabStop = False
         Me.gbSurvival.Text = "Survival Selection"
@@ -606,7 +608,6 @@ Partial Class GAScheduling
         Me.rbStruggle.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.rbStruggle.Size = New System.Drawing.Size(64, 17)
         Me.rbStruggle.TabIndex = 2
-        Me.rbStruggle.TabStop = True
         Me.rbStruggle.Text = "Struggle"
         Me.rbStruggle.UseVisualStyleBackColor = True
         '
@@ -1126,6 +1127,17 @@ Partial Class GAScheduling
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
+        'rbReplaceWorst
+        '
+        Me.rbReplaceWorst.AutoSize = True
+        Me.rbReplaceWorst.Location = New System.Drawing.Point(18, 98)
+        Me.rbReplaceWorst.Name = "rbReplaceWorst"
+        Me.rbReplaceWorst.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.rbReplaceWorst.Size = New System.Drawing.Size(93, 17)
+        Me.rbReplaceWorst.TabIndex = 3
+        Me.rbReplaceWorst.Text = "ReplaceWorst"
+        Me.rbReplaceWorst.UseVisualStyleBackColor = True
+        '
         'GAScheduling
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1259,5 +1271,6 @@ Partial Class GAScheduling
     Friend WithEvents rbGenerational As System.Windows.Forms.RadioButton
     Friend WithEvents rbElitist As System.Windows.Forms.RadioButton
     Friend WithEvents rbStruggle As System.Windows.Forms.RadioButton
+    Friend WithEvents rbReplaceWorst As System.Windows.Forms.RadioButton
 
 End Class

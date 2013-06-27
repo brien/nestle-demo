@@ -1708,7 +1708,8 @@ namespace Junction
                     //Second, add the new schedule item to the list
                     if ((string)dr["Product Number"] != "9999")
                     {
-                        pSched.Add(p); //don't add slack jobs                    if (shouldBreak)
+                        pSched.Add(p); //don't add slack jobs
+                    if (shouldBreak)
                     {
                         Debug.Write(Environment.NewLine +
                             p.Product +
@@ -1879,7 +1880,7 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new Junction.GeneticOptimizer(65709711, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
+                CGA = new Junction.GeneticOptimizer(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
                 /* for (int i = 0; i < 10; i++)
                  {
                     CGA.GenRand();
@@ -1925,7 +1926,7 @@ namespace Junction
                     Debug.Write(Environment.NewLine + CGA.elite.Genes[i] + "  " + CGA.elite.Times[i]);
                 }
                 Debug.Write(Environment.NewLine + "Seed = " + seed);
-                shouldBreak = true;
+                //shouldBreak = true;
                 CreateScheduleDataTable(CGA.elite.Genes, CGA.elite.Times);
                 eliteFitness = CalcFitness(CGA.elite.Genes, CGA.elite.Times);
                 shouldBreak = false;
@@ -2905,7 +2906,8 @@ namespace Junction
             {
                 List<ProdSchedule> ComponentSchedule = new List<ProdSchedule>();
                 foreach (ProdSchedule ps in pSched)
-                {                    if (shouldBreak)
+                {
+                    if (shouldBreak)
                     {
                         Debug.Write(Environment.NewLine +
                             ps.Product +

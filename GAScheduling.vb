@@ -73,6 +73,8 @@ Public Class GAScheduling
                     .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Elitist
                 ElseIf (rbGenerational.Checked) Then
                     .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Generational
+                ElseIf (rbReplaceWorst.Checked) Then
+                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.ReplaceWorst
                 End If
             End If
             'The next section of code loads worksheets into multiple data tables within a single data set
