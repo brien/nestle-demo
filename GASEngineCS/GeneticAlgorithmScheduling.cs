@@ -1512,8 +1512,6 @@ namespace Junction
 
             int jMax = ScheduleResult.GetUpperBound(1) + 1;
 
-            int BestIndex = FindBestIndex();
-
             for (int i = 0; i < jMax; i++)
             {
                 int Job;
@@ -1694,6 +1692,10 @@ namespace Junction
             {
                 List<ProdSchedule> pSched = new List<ProdSchedule>();
                 int rMax = dt.Rows.Count;// -1;
+                if (shouldBreak)
+                {
+                    Debug.Write(Environment.NewLine + " ---DataTable pSched----");
+                }
                 for (int i = 0; i < rMax; i++)
                 {
                     dr = dt.Rows[i];
@@ -1709,15 +1711,15 @@ namespace Junction
                     if ((string)dr["Product Number"] != "9999")
                     {
                         pSched.Add(p); //don't add slack jobs
-                    if (shouldBreak)
-                    {
-                        Debug.Write(Environment.NewLine +
-                            p.Product +
-                            " " + p.StartTime +
-                            " " + p.EndTime +
-                            " " + p.OrderQty +
-                            " " + p.AvailableQuantity);
-                    }
+                        if (shouldBreak)
+                        {
+                            Debug.Write(Environment.NewLine +
+                                p.Product +
+                                " " + p.StartTime +
+                                " " + p.EndTime +
+                                " " + p.OrderQty +
+                                " " + p.AvailableQuantity);
+                        }
                     }
                 }
 
@@ -1750,7 +1752,10 @@ namespace Junction
 
                 int pProd = -99; // set up a variable to hold the previous product
                 double pQty = 0; //set up a variable to hold the previous quantity
-
+                if (shouldBreak)
+                {
+                    Debug.Write(Environment.NewLine + " ---DataTable BOM pSched----");
+                }
                 //Calculate the available quantities
                 foreach (ProdSchedule ps in pSched)
                 {
@@ -1787,7 +1792,7 @@ namespace Junction
                         NumberOfBOMViolations += 1;
 
                         // Update the output BOM Violations
-                        int rwMax = dt.Rows.Count - 1;
+                        int rwMax = dt.Rows.Count;// -1;
                         for (int i = 0; i < rwMax; i++)
                         {
                             dr = dt.Rows[i];
@@ -1926,7 +1931,7 @@ namespace Junction
                     Debug.Write(Environment.NewLine + CGA.elite.Genes[i] + "  " + CGA.elite.Times[i]);
                 }
                 Debug.Write(Environment.NewLine + "Seed = " + seed);
-                //shouldBreak = true;
+                shouldBreak = true;
                 CreateScheduleDataTable(CGA.elite.Genes, CGA.elite.Times);
                 eliteFitness = CalcFitness(CGA.elite.Genes, CGA.elite.Times);
                 shouldBreak = false;
@@ -2904,6 +2909,10 @@ namespace Junction
             //Get ready to check for BOM violations
             if (BOMItems.Count > 0) //This is purely a speed enhancement to skip this section if there are no BOM items.
             {
+                if (shouldBreak)
+                {
+                    Debug.Write(Environment.NewLine + " --- CalcFitness pSched --- ");
+                }
                 List<ProdSchedule> ComponentSchedule = new List<ProdSchedule>();
                 foreach (ProdSchedule ps in pSched)
                 {
@@ -2940,7 +2949,10 @@ namespace Junction
 
                 int pProd = -99; // set up a variable to hold the previous product
                 double pQty = 0; //set up a variable to hold the previous quantity
-
+                if (shouldBreak)
+                {
+                    Debug.Write(Environment.NewLine + " --- CalcFitness BOM pSched --- ");
+                }
                 //Calculate the available quantities
                 foreach (ProdSchedule ps in pSched)
                 {
