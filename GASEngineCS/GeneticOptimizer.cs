@@ -60,6 +60,8 @@ namespace Junction
         // Genetic Operator Flags:
         public enum RealCrossoverOp { Uniform, MeanWithNoise }
         public enum SurvivalSelectionOp { ReplaceWorst, Elitist, Generational, Struggle }
+        public enum ParentSelectionOp { Tournament, FitnessProportional }
+        public ParentSelectionOp parentSelection { get; set; }
         public RealCrossoverOp realCrossover { get; set; }
         public SurvivalSelectionOp survivalSelection { get; set; }
         // Problem specific parameters:
@@ -92,6 +94,7 @@ namespace Junction
             // Default operator options:
             realCrossover = RealCrossoverOp.Uniform;
             survivalSelection = SurvivalSelectionOp.Elitist;
+            parentSelection = ParentSelectionOp.Tournament;
 
         }
         public double AverageFitness()
@@ -172,37 +175,55 @@ namespace Junction
 
         private int SelectParent()
         {
-
-            double totalFitness = 0;
-            for (int i = 0; i < _popsize; i++)
-            {
-                totalFitness += population[i].fitness;
-            }
-            double r = _rand.NextDouble() * totalFitness;
             int p = 0;
-            double runningTotal = population[p].fitness;
-            while (runningTotal > r)
+            switch (parentSelection)
             {
-                p++;
-                runningTotal += population[p].fitness;
+                case ParentSelectionOp.FitnessProportional:
+                    double totalFitness = 0;
+                    for (int i = 0; i < _popsize; i++)
+                    {
+                        totalFitness += population[i].fitness;
+                    }
+                    double r = _rand.NextDouble() * totalFitness;
+                    double runningTotal = population[p].fitness;
+                    while (runningTotal > r)
+                    {
+                        p++;
+                        runningTotal += population[p].fitness;
+                    }
+                    break;
+                case ParentSelectionOp.Tournament:
+                    int k = _popsize / 10;
+                    p = _rand.Next(_popsize);
+                    double bestfitness = population[p].fitness;
+                    for (int i = 0; i < k; i++)
+                    {
+                        int px = _rand.Next(_popsize);
+                        if (population[px].fitness > bestfitness)
+                        {
+                            bestfitness = population[px].fitness;
+                            p = px;
+                        }
+                    }
+                    break;
+                    /*
+                    int p1 = _rand.Next(_popsize);
+                    int p2 = _rand.Next(_popsize);
+                    if (population[p1].fitness > population[p2].fitness)
+                    {
+                        p = p1;
+                    }
+                    else
+                    {
+                        p = p2;
+                    }
+                    break;
+                    */
             }
 
-            // Binary tourny for no reason
-            /*
-            int p1 = _rand.Next(_popsize);
-            int p2 = _rand.Next(_popsize);
-            int p = 0;
-            if (population[p1].fitness > population[p2].fitness)
-            {
-                p = p1;
-            }
-            else
-            {
-                p = p2;
-            }*/
             return p;
         }
-        
+
         public void SurvivalSelection()
         {
             switch (survivalSelection)
@@ -210,7 +231,7 @@ namespace Junction
                 case SurvivalSelectionOp.ReplaceWorst:
                     // Replace worst _deathRate * populationSize with offspring.
                     Array.Sort(population, new NewComp());
-                    int cutpoint = (int)(_popsize * (1.0 -_deathRate));
+                    int cutpoint = (int)(_popsize * (1.0 - _deathRate));
                     for (int i = cutpoint; i < _popsize; i++)
                     {
                         population[i].Copy(offspring[i - cutpoint]);
@@ -218,7 +239,7 @@ namespace Junction
                     break;
                 case SurvivalSelectionOp.Elitist:
                     // Elitist survival selection:
-                   List<ConstrainedCreature> combo = new List<ConstrainedCreature>();
+                    List<ConstrainedCreature> combo = new List<ConstrainedCreature>();
                     combo.AddRange(population);
                     combo.AddRange(offspring);
                     combo.Sort(new NewComp());
