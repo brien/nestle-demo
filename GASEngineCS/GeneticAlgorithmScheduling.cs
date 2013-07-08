@@ -50,6 +50,7 @@ namespace Junction
 
         // Pre-existing inventory:
         private int[] Inventory;
+        private double[] InventoryTime;
 
         //private double[] ProdRunTime;
         private double[] JobRunTime;
@@ -1792,7 +1793,7 @@ namespace Junction
                         NumberOfBOMViolations += 1;
 
                         // Update the output BOM Violations
-                        int rwMax = dt.Rows.Count;// -1;
+                        int rwMax = dt.Rows.Count; //- 1;
                         for (int i = 0; i < rwMax; i++)
                         {
                             dr = dt.Rows[i];
@@ -1830,7 +1831,7 @@ namespace Junction
             // The new function only exists to support "demo" code.
             DateTime now = new DateTime();
             now = DateTime.Today;
-            if (now > DateTime.Parse("7/01/2013"))
+            if (now > DateTime.Parse("8/01/2013"))
             {
                 throw new ApplicationException("***** Time limit for this demo version is exceeded.******\n\r Please contact Junction Solutions to obtain an updated and licensed version.\n\r");
             }
@@ -2172,6 +2173,7 @@ namespace Junction
         {
             int numberOfItems = dt.Rows.Count;
             Inventory = new int[numberOfItems];
+            InventoryTime = new double[numberOfItems];
 
             int i = 0;
             foreach (DataRow dr in dt.Rows)
@@ -2180,6 +2182,9 @@ namespace Junction
                 //ProductNumberHash.Add(dr["Product Number"].ToString(), i);
                 int ProdIndex = (int)ProductNumberHash[productNumber];
                 Inventory[ProdIndex] = (int)(double)dr["Quantity"];
+                //InventoryTimes[ProdIndex] = 
+                //productionStartTime[i] = (DateTime)dt.Rows[i]["Start_Date_Time"];
+                InventoryTime[ProdIndex] = Conversions.ConvertDateTimetoDecimalHours((DateTime)dr["Time Available"]);
                 i++;
             }
             /*
@@ -2942,7 +2947,12 @@ namespace Junction
                         ProdSchedule cd = new ProdSchedule(component, ps.StartTime, ps.StartTime + 0.0001, ComponentDemand);
                         ComponentSchedule.Add(cd);
                     }
-
+                    // Deal with inventory. It may be available at any time.
+                    /*
+                    foreach (int inv in Inventory)
+                    {
+                        ProdSchedule ips = new ProdSchedule(inv, ps.StartTime, ps.StartTime + 0.0001, -1);
+                    }*/
                 }
                 pSched.AddRange(ComponentSchedule);
                 pSched.Sort();
@@ -2978,7 +2988,7 @@ namespace Junction
                         pProd = ps.Product;
                         ps.AvailableQuantity = pQty;
                     }
-                    if (Inventory[ps.Product] > 0)
+                    if (Inventory[ps.Product] > 0 && ps.EndTime > InventoryTime[ps.Product])
                     {
                         ps.AvailableQuantity += myInventory[ps.Product];
                         myInventory[ps.Product]--;
