@@ -76,6 +76,12 @@ Public Class GAScheduling
                 ElseIf (rbReplaceWorst.Checked) Then
                     .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.ReplaceWorst
                 End If
+
+                If (rbFitnessProportional.Checked) Then
+                    .parentMode = Junction.GeneticOptimizer.ParentSelectionOp.FitnessProportional
+                ElseIf (rbTournament.Checked) Then
+                    .parentMode = Junction.GeneticOptimizer.ParentSelectionOp.Tournament
+                End If
             End If
             'The next section of code loads worksheets into multiple data tables within a single data set
             'The dataset is then passed to the scheduler via the GAS.Masterdata Property.

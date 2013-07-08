@@ -206,19 +206,6 @@ namespace Junction
                         }
                     }
                     break;
-                    /*
-                    int p1 = _rand.Next(_popsize);
-                    int p2 = _rand.Next(_popsize);
-                    if (population[p1].fitness > population[p2].fitness)
-                    {
-                        p = p1;
-                    }
-                    else
-                    {
-                        p = p2;
-                    }
-                    break;
-                    */
             }
 
             return p;

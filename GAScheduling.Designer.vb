@@ -63,6 +63,7 @@ Partial Class GAScheduling
         Me.cbShowStatus = New System.Windows.Forms.CheckBox()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.gbSurvival = New System.Windows.Forms.GroupBox()
+        Me.rbReplaceWorst = New System.Windows.Forms.RadioButton()
         Me.rbStruggle = New System.Windows.Forms.RadioButton()
         Me.rbGenerational = New System.Windows.Forms.RadioButton()
         Me.rbElitist = New System.Windows.Forms.RadioButton()
@@ -116,7 +117,9 @@ Partial Class GAScheduling
         Me.dgvSchedule = New System.Windows.Forms.DataGridView()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.rbReplaceWorst = New System.Windows.Forms.RadioButton()
+        Me.GroupBox9 = New System.Windows.Forms.GroupBox()
+        Me.rbFitnessProportional = New System.Windows.Forms.RadioButton()
+        Me.rbTournament = New System.Windows.Forms.RadioButton()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -134,6 +137,7 @@ Partial Class GAScheduling
         Me.GroupBox2.SuspendLayout()
         Me.TabPage4.SuspendLayout()
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox9.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnSolve
@@ -561,6 +565,7 @@ Partial Class GAScheduling
         '
         'TabPage2
         '
+        Me.TabPage2.Controls.Add(Me.GroupBox9)
         Me.TabPage2.Controls.Add(Me.gbSurvival)
         Me.TabPage2.Controls.Add(Me.Label26)
         Me.TabPage2.Controls.Add(Me.Label23)
@@ -599,6 +604,17 @@ Partial Class GAScheduling
         Me.gbSurvival.TabStop = False
         Me.gbSurvival.Text = "Survival Selection"
         '
+        'rbReplaceWorst
+        '
+        Me.rbReplaceWorst.AutoSize = True
+        Me.rbReplaceWorst.Location = New System.Drawing.Point(18, 98)
+        Me.rbReplaceWorst.Name = "rbReplaceWorst"
+        Me.rbReplaceWorst.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.rbReplaceWorst.Size = New System.Drawing.Size(93, 17)
+        Me.rbReplaceWorst.TabIndex = 3
+        Me.rbReplaceWorst.Text = "ReplaceWorst"
+        Me.rbReplaceWorst.UseVisualStyleBackColor = True
+        '
         'rbStruggle
         '
         Me.rbStruggle.AutoSize = True
@@ -608,6 +624,7 @@ Partial Class GAScheduling
         Me.rbStruggle.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.rbStruggle.Size = New System.Drawing.Size(64, 17)
         Me.rbStruggle.TabIndex = 2
+        Me.rbStruggle.TabStop = True
         Me.rbStruggle.Text = "Struggle"
         Me.rbStruggle.UseVisualStyleBackColor = True
         '
@@ -1127,16 +1144,38 @@ Partial Class GAScheduling
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
-        'rbReplaceWorst
+        'GroupBox9
         '
-        Me.rbReplaceWorst.AutoSize = True
-        Me.rbReplaceWorst.Location = New System.Drawing.Point(18, 98)
-        Me.rbReplaceWorst.Name = "rbReplaceWorst"
-        Me.rbReplaceWorst.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.rbReplaceWorst.Size = New System.Drawing.Size(93, 17)
-        Me.rbReplaceWorst.TabIndex = 3
-        Me.rbReplaceWorst.Text = "ReplaceWorst"
-        Me.rbReplaceWorst.UseVisualStyleBackColor = True
+        Me.GroupBox9.Controls.Add(Me.rbTournament)
+        Me.GroupBox9.Controls.Add(Me.rbFitnessProportional)
+        Me.GroupBox9.Location = New System.Drawing.Point(398, 170)
+        Me.GroupBox9.Name = "GroupBox9"
+        Me.GroupBox9.Size = New System.Drawing.Size(121, 85)
+        Me.GroupBox9.TabIndex = 42
+        Me.GroupBox9.TabStop = False
+        Me.GroupBox9.Text = "Parent Selection"
+        '
+        'rbFitnessProportional
+        '
+        Me.rbFitnessProportional.AutoSize = True
+        Me.rbFitnessProportional.Location = New System.Drawing.Point(6, 28)
+        Me.rbFitnessProportional.Name = "rbFitnessProportional"
+        Me.rbFitnessProportional.Size = New System.Drawing.Size(117, 17)
+        Me.rbFitnessProportional.TabIndex = 0
+        Me.rbFitnessProportional.Text = "Fitness Proportional"
+        Me.rbFitnessProportional.UseVisualStyleBackColor = True
+        '
+        'rbTournament
+        '
+        Me.rbTournament.AutoSize = True
+        Me.rbTournament.Checked = True
+        Me.rbTournament.Location = New System.Drawing.Point(6, 52)
+        Me.rbTournament.Name = "rbTournament"
+        Me.rbTournament.Size = New System.Drawing.Size(82, 17)
+        Me.rbTournament.TabIndex = 1
+        Me.rbTournament.TabStop = True
+        Me.rbTournament.Text = "Tournament"
+        Me.rbTournament.UseVisualStyleBackColor = True
         '
         'GAScheduling
         '
@@ -1175,6 +1214,8 @@ Partial Class GAScheduling
         Me.GroupBox2.PerformLayout()
         Me.TabPage4.ResumeLayout(False)
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox9.ResumeLayout(False)
+        Me.GroupBox9.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1272,5 +1313,8 @@ Partial Class GAScheduling
     Friend WithEvents rbElitist As System.Windows.Forms.RadioButton
     Friend WithEvents rbStruggle As System.Windows.Forms.RadioButton
     Friend WithEvents rbReplaceWorst As System.Windows.Forms.RadioButton
+    Friend WithEvents GroupBox9 As System.Windows.Forms.GroupBox
+    Friend WithEvents rbTournament As System.Windows.Forms.RadioButton
+    Friend WithEvents rbFitnessProportional As System.Windows.Forms.RadioButton
 
 End Class
