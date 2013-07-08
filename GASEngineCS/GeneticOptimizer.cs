@@ -92,7 +92,7 @@ namespace Junction
                 offspring[i] = new ConstrainedCreature(length, tl, _delayRate, _delayMean);
             }
             // Default operator options:
-            realCrossover = RealCrossoverOp.Uniform;
+            realCrossover = RealCrossoverOp.MeanWithNoise;
             survivalSelection = SurvivalSelectionOp.Elitist;
             parentSelection = ParentSelectionOp.Tournament;
 
@@ -296,37 +296,41 @@ namespace Junction
 
         public void DTCrossover(int p1, int p2, int o1, int o2)
         {
-            // Mean-with-noise Crossover:
-
-            for (int i = 0; i < population[p1].timesLength; i++)
+            switch (realCrossover)
             {
-                double mean = population[p1].Times[i] + population[p2].Times[i];
-                mean = mean / 2.0;
-                offspring[o1].Times[i] = SimpleRNG.GetNormal(mean, 0.5);
-                offspring[o2].Times[i] = SimpleRNG.GetNormal(mean, 0.5);
-                if (offspring[o1].Times[i] < 0.0)
-                {
-                    offspring[o1].Times[i] = 0.0;
-                }
-                if (offspring[o2].Times[i] < 0.0)
-                {
-                    offspring[o2].Times[i] = 0.0;
-                }
+                case RealCrossoverOp.MeanWithNoise:
+                    // Mean-with-noise Crossover:
+                    for (int i = 0; i < population[p1].timesLength; i++)
+                    {
+                        double mean = population[p1].Times[i] + population[p2].Times[i];
+                        mean = mean / 2.0;
+                        offspring[o1].Times[i] = SimpleRNG.GetNormal(mean, 0.5);
+                        offspring[o2].Times[i] = SimpleRNG.GetNormal(mean, 0.5);
+                        if (offspring[o1].Times[i] < 0.0)
+                        {
+                            offspring[o1].Times[i] = 0.0;
+                        }
+                        if (offspring[o2].Times[i] < 0.0)
+                        {
+                            offspring[o2].Times[i] = 0.0;
+                        }
+                    }
+                    break;
+                case RealCrossoverOp.Uniform:
+                    // Uniform Crossover:
+                    int cutpoint = _rand.Next(_length + 1);
+                    for (int i = 0; i < cutpoint; i++)
+                    {
+                        offspring[o1].Times[i] = population[p1].Times[i];
+                        offspring[o2].Times[i] = population[p2].Times[i];
+                    }
+                    for (int i = cutpoint; i < _length; i++)
+                    {
+                        offspring[o1].Times[i] = population[p2].Times[i];
+                        offspring[o2].Times[i] = population[p1].Times[i];
+                    }
+                    break;
             }
-            /*
-            // Uniform Crossover:
-            int cutpoint = _rand.Next(_length + 1);
-            for (int i = 0; i < cutpoint; i++)
-            {
-                offspring[o1].Times[i] = population[p1].Times[i];
-                offspring[o2].Times[i] = population[p2].Times[i];
-            }
-            for (int i = cutpoint; i < _length; i++)
-            {
-                offspring[o1].Times[i] = population[p2].Times[i];
-                offspring[o2].Times[i] = population[p1].Times[i];
-            }
-            */
         }
 
         public void Crossover(int p1, int p2, int o1, int o2)

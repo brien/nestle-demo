@@ -45,6 +45,7 @@ namespace Junction
         // The rate at which delay times are generated (probablilty of non-zero delay time)
         public double delayRate;
         public Junction.GeneticOptimizer.SurvivalSelectionOp survivalMode;
+        public Junction.GeneticOptimizer.RealCrossoverOp realCrossoverMode;
         public Junction.GeneticOptimizer.ParentSelectionOp parentMode;
         // Just for debugging purposes:
         bool shouldBreak = false;
@@ -1895,6 +1896,7 @@ namespace Junction
                  */
                 CGA.survivalSelection = survivalMode;
                 CGA.parentSelection = parentMode;
+                CGA.realCrossover = realCrossoverMode;
                 CGA.FitnessFunction = this.CalcFitness;
                 CGA.EvaluatePopulation();
                 //double avgf = 0;

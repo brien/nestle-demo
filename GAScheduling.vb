@@ -82,6 +82,13 @@ Public Class GAScheduling
                 ElseIf (rbTournament.Checked) Then
                     .parentMode = Junction.GeneticOptimizer.ParentSelectionOp.Tournament
                 End If
+
+                If (rbUniform.Checked) Then
+                    .realCrossoverMode = Junction.GeneticOptimizer.RealCrossoverOp.Uniform
+                ElseIf (rbMeanWithNoise.Checked) Then
+                    .realCrossoverMode = Junction.GeneticOptimizer.RealCrossoverOp.MeanWithNoise
+                End If
+
             End If
             'The next section of code loads worksheets into multiple data tables within a single data set
             'The dataset is then passed to the scheduler via the GAS.Masterdata Property.

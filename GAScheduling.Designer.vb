@@ -120,6 +120,9 @@ Partial Class GAScheduling
         Me.GroupBox9 = New System.Windows.Forms.GroupBox()
         Me.rbFitnessProportional = New System.Windows.Forms.RadioButton()
         Me.rbTournament = New System.Windows.Forms.RadioButton()
+        Me.GroupBox10 = New System.Windows.Forms.GroupBox()
+        Me.rbMeanWithNoise = New System.Windows.Forms.RadioButton()
+        Me.rbUniform = New System.Windows.Forms.RadioButton()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -138,6 +141,7 @@ Partial Class GAScheduling
         Me.TabPage4.SuspendLayout()
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox9.SuspendLayout()
+        Me.GroupBox10.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnSolve
@@ -565,6 +569,7 @@ Partial Class GAScheduling
         '
         'TabPage2
         '
+        Me.TabPage2.Controls.Add(Me.GroupBox10)
         Me.TabPage2.Controls.Add(Me.GroupBox9)
         Me.TabPage2.Controls.Add(Me.gbSurvival)
         Me.TabPage2.Controls.Add(Me.Label26)
@@ -607,7 +612,7 @@ Partial Class GAScheduling
         'rbReplaceWorst
         '
         Me.rbReplaceWorst.AutoSize = True
-        Me.rbReplaceWorst.Location = New System.Drawing.Point(18, 98)
+        Me.rbReplaceWorst.Location = New System.Drawing.Point(18, 75)
         Me.rbReplaceWorst.Name = "rbReplaceWorst"
         Me.rbReplaceWorst.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.rbReplaceWorst.Size = New System.Drawing.Size(93, 17)
@@ -619,7 +624,7 @@ Partial Class GAScheduling
         '
         Me.rbStruggle.AutoSize = True
         Me.rbStruggle.Checked = True
-        Me.rbStruggle.Location = New System.Drawing.Point(18, 75)
+        Me.rbStruggle.Location = New System.Drawing.Point(18, 52)
         Me.rbStruggle.Name = "rbStruggle"
         Me.rbStruggle.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.rbStruggle.Size = New System.Drawing.Size(64, 17)
@@ -631,7 +636,7 @@ Partial Class GAScheduling
         'rbGenerational
         '
         Me.rbGenerational.AutoSize = True
-        Me.rbGenerational.Location = New System.Drawing.Point(18, 52)
+        Me.rbGenerational.Location = New System.Drawing.Point(18, 98)
         Me.rbGenerational.Name = "rbGenerational"
         Me.rbGenerational.Size = New System.Drawing.Size(85, 17)
         Me.rbGenerational.TabIndex = 1
@@ -641,7 +646,7 @@ Partial Class GAScheduling
         'rbElitist
         '
         Me.rbElitist.AutoSize = True
-        Me.rbElitist.Location = New System.Drawing.Point(18, 28)
+        Me.rbElitist.Location = New System.Drawing.Point(18, 29)
         Me.rbElitist.Name = "rbElitist"
         Me.rbElitist.Size = New System.Drawing.Size(49, 17)
         Me.rbElitist.TabIndex = 0
@@ -1177,6 +1182,39 @@ Partial Class GAScheduling
         Me.rbTournament.Text = "Tournament"
         Me.rbTournament.UseVisualStyleBackColor = True
         '
+        'GroupBox10
+        '
+        Me.GroupBox10.Controls.Add(Me.rbMeanWithNoise)
+        Me.GroupBox10.Controls.Add(Me.rbUniform)
+        Me.GroupBox10.Location = New System.Drawing.Point(398, 261)
+        Me.GroupBox10.Name = "GroupBox10"
+        Me.GroupBox10.Size = New System.Drawing.Size(136, 85)
+        Me.GroupBox10.TabIndex = 43
+        Me.GroupBox10.TabStop = False
+        Me.GroupBox10.Text = "Delay Times Crossover"
+        '
+        'rbMeanWithNoise
+        '
+        Me.rbMeanWithNoise.AutoSize = True
+        Me.rbMeanWithNoise.Checked = True
+        Me.rbMeanWithNoise.Location = New System.Drawing.Point(6, 19)
+        Me.rbMeanWithNoise.Name = "rbMeanWithNoise"
+        Me.rbMeanWithNoise.Size = New System.Drawing.Size(104, 17)
+        Me.rbMeanWithNoise.TabIndex = 1
+        Me.rbMeanWithNoise.TabStop = True
+        Me.rbMeanWithNoise.Text = "Mean with Noise"
+        Me.rbMeanWithNoise.UseVisualStyleBackColor = True
+        '
+        'rbUniform
+        '
+        Me.rbUniform.AutoSize = True
+        Me.rbUniform.Location = New System.Drawing.Point(6, 42)
+        Me.rbUniform.Name = "rbUniform"
+        Me.rbUniform.Size = New System.Drawing.Size(61, 17)
+        Me.rbUniform.TabIndex = 0
+        Me.rbUniform.Text = "Uniform"
+        Me.rbUniform.UseVisualStyleBackColor = True
+        '
         'GAScheduling
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1216,6 +1254,8 @@ Partial Class GAScheduling
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox9.ResumeLayout(False)
         Me.GroupBox9.PerformLayout()
+        Me.GroupBox10.ResumeLayout(False)
+        Me.GroupBox10.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1316,5 +1356,8 @@ Partial Class GAScheduling
     Friend WithEvents GroupBox9 As System.Windows.Forms.GroupBox
     Friend WithEvents rbTournament As System.Windows.Forms.RadioButton
     Friend WithEvents rbFitnessProportional As System.Windows.Forms.RadioButton
+    Friend WithEvents GroupBox10 As System.Windows.Forms.GroupBox
+    Friend WithEvents rbMeanWithNoise As System.Windows.Forms.RadioButton
+    Friend WithEvents rbUniform As System.Windows.Forms.RadioButton
 
 End Class
