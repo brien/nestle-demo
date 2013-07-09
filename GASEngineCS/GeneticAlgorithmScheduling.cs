@@ -2323,17 +2323,9 @@ namespace Junction
 
         private void SetChangeOverData(DataTable dt)
         {
-            // This doesnt work for some reason:
-            // Read up on how this "DataTable" thing works with Excel
-            // int jMax = dt.Columns.Count - 1; //skip first column and then make zero based
-            // int iMax = dt.Rows.Count;
             int jMax = dt.Columns.Count - 1;
             int iMax = dt.Rows.Count;
 
-            for (int i = 0; i < dt.Columns.Count; i++)
-            {
-                Debug.Write(Environment.NewLine + dt.Columns[i].ColumnName);
-            }
             // Make sure the changeover matrix is valid
             int NumberOfProducts = ProductName.GetUpperBound(0) + 1;
             if (iMax != NumberOfProducts | jMax != NumberOfProducts)
@@ -2362,10 +2354,6 @@ namespace Junction
 
         private void SetChangeOverPenaltyData(DataTable dt)
         {
-            // This doesnt work for some reason:
-            // Read up on how this "DataTable" thing works with Excel
-            // int jMax = dt.Columns.Count - 1; //skip first column and then make zero based
-            // int iMax = dt.Rows.Count;
             int jMax = dt.Columns.Count - 1;
             int iMax = dt.Rows.Count;
 
