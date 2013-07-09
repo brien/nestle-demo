@@ -2759,7 +2759,7 @@ namespace Junction
         private double CalcFitness(int[] genes, double[] delayTimes)
         {
             double Time = ProdStartTime[0];
-            double NonDelayTime = Time; //Added 3/24 to elim delay time
+            //double NonDelayTime = Time; //Added 3/24 to elim delay time
             double JobStartTime, JobEndTime;
             double Fitness;
             double SumOfServiceEarlyPenalties = 0;
