@@ -285,13 +285,7 @@ namespace Junction
                 population[i].Copy(offspring[i - cutpoint]);
             }
             */
-
-            // This doesnt work due to shallow copy nonsense:
-            // Creature[] combo = new Creature[_popsize + _offsize];
-            // population.CopyTo(combo, 0);
-            // offspring.CopyTo(combo, _popsize);
-            // Array.Sort(combo, new NewComp());
-            // Array.Copy(combo, population, _popsize);
+            
         }
 
         public void DTCrossover(int p1, int p2, int o1, int o2)

@@ -1889,22 +1889,16 @@ namespace Junction
             else if (runConstrained)
             {
                 CGA = new Junction.GeneticOptimizer(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
-                /* for (int i = 0; i < 10; i++)
-                 {
-                    CGA.GenRand();
-                 }
-                 */
+                
                 CGA.survivalSelection = survivalMode;
                 CGA.parentSelection = parentMode;
                 CGA.realCrossover = realCrossoverMode;
                 CGA.FitnessFunction = this.CalcFitness;
                 CGA.EvaluatePopulation();
-                //double avgf = 0;
                 for (int i = 0; i < NumberOfGenerations; i++)
                 {
                     CGA.GenerateOffspring();
                     CGA.SurvivalSelection();
-                    //avgf = CGA.AverageFitness();
                     if (ShowStatusWhileRunning & (i % (NumberOfGenerations / 10) == 0))
                     {
                         //Update the status form
