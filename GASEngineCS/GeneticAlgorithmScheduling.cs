@@ -1889,7 +1889,7 @@ namespace Junction
             else if (runConstrained)
             {
                 CGA = new Junction.GeneticOptimizer(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
-                
+
                 CGA.survivalSelection = survivalMode;
                 CGA.parentSelection = parentMode;
                 CGA.realCrossover = realCrossoverMode;
@@ -2824,31 +2824,12 @@ namespace Junction
                     {
                         Time += delayTimes[CurrentJob] + co;
                         JobStartTime = Time;
-                        // TODO: Verify that this logic is redundant and remove it.
-                        // if currentProd != -1 && Previous != -1, then Time += JobRuntime[CurrentJob] + 0;
-                        /*
-                        if (PreviousProd == -1)
-                        {
-                            //First job on the resource was a slack job
-                            Time += JobRunTime[CurrentJob];
-                        }
-                        else
-                        {
-                            //we have a real job in the previous variable
-                            Time += JobRunTime[CurrentJob] + co;
-                        }*/
                         Time += JobRunTime[CurrentJob];
                         JobEndTime = Time;
 
-                        // There are no longer DelayJobs
-                        if (CurrentProd != DelayIndex)
-                        {
-                            //Used to find the last real job running on a resource
-                            //NonDelayTime = Time - delayTimes[CurrentJob];
-                            //Used to encourage jobs to start as soon as possible
-                            //Todo  Turn Early start facto into a configurable factor (by resorce?)
-                            EarlyStartFactor += JobStartTime;
-                        }
+                        //Used to encourage jobs to start as soon as possible
+                        //Todo  Turn Early start facto into a configurable factor (by resorce?)
+                        EarlyStartFactor += JobStartTime;
 
                         PreviousProd = JobsToSchedule[CurrentJob];
 
