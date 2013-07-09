@@ -2914,12 +2914,6 @@ namespace Junction
                         ProdSchedule cd = new ProdSchedule(component, ps.StartTime, ps.StartTime + 0.0001, ComponentDemand);
                         ComponentSchedule.Add(cd);
                     }
-                    // Deal with inventory. It may be available at any time.
-                    /*
-                    foreach (int inv in Inventory)
-                    {
-                        ProdSchedule ips = new ProdSchedule(inv, ps.StartTime, ps.StartTime + 0.0001, -1);
-                    }*/
                 }
                 pSched.AddRange(ComponentSchedule);
                 pSched.Sort();
