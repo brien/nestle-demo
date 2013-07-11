@@ -2759,7 +2759,6 @@ namespace Junction
         private double CalcFitness(int[] genes, double[] delayTimes)
         {
             double Time = ProdStartTime[0];
-            //double NonDelayTime = Time; //Added 3/24 to elim delay time
             double JobStartTime, JobEndTime;
             double Fitness;
             double SumOfServiceEarlyPenalties = 0;
@@ -2792,7 +2791,6 @@ namespace Junction
 
             for (int Resource = 0; Resource < NumberOfResources; Resource++)
             {
-                //NonDelayTime = Time; // added to eliminate delay orders
                 if (ConstrainedStart[Resource])
                 {
                     PreviousProd = StartProduct[Resource];
@@ -2875,7 +2873,6 @@ namespace Junction
                 }
                 // Calculate the total production time required
                 TotalTimeAllResources += Time - ProdStartTime[Resource];
-                //TotalTimeAllResources += NonDelayTime - ProdStartTime[Resource];
             }
 
             //Get ready to check for BOM violations

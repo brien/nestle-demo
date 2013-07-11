@@ -409,9 +409,9 @@ namespace Junction
                     // Mutate the delay time
                     r = _rand.Next(offspring[o].timesLength);
                     double mutatedDelay = 0;
+                    //mutatedDelay = SimpleRNG.GetExponential(_delayMean);
                     mutatedDelay = SimpleRNG.GetNormal(offspring[o].Times[r], 1.0);
                     //mutatedDelay = _rand.NextDouble() * _delayMean;
-                    //mutatedDelay = TestSimpleRNG.SimpleRNG.GetExponential(_delayMean);
                     if (mutatedDelay < 0.0)
                     {
                         mutatedDelay = 0.0;
