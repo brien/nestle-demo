@@ -62,6 +62,12 @@ Partial Class GAScheduling
         Me.Label18 = New System.Windows.Forms.Label()
         Me.cbShowStatus = New System.Windows.Forms.CheckBox()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.GroupBox10 = New System.Windows.Forms.GroupBox()
+        Me.rbMeanWithNoise = New System.Windows.Forms.RadioButton()
+        Me.rbUniform = New System.Windows.Forms.RadioButton()
+        Me.GroupBox9 = New System.Windows.Forms.GroupBox()
+        Me.rbTournament = New System.Windows.Forms.RadioButton()
+        Me.rbFitnessProportional = New System.Windows.Forms.RadioButton()
         Me.gbSurvival = New System.Windows.Forms.GroupBox()
         Me.rbReplaceWorst = New System.Windows.Forms.RadioButton()
         Me.rbStruggle = New System.Windows.Forms.RadioButton()
@@ -117,12 +123,6 @@ Partial Class GAScheduling
         Me.dgvSchedule = New System.Windows.Forms.DataGridView()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.GroupBox9 = New System.Windows.Forms.GroupBox()
-        Me.rbFitnessProportional = New System.Windows.Forms.RadioButton()
-        Me.rbTournament = New System.Windows.Forms.RadioButton()
-        Me.GroupBox10 = New System.Windows.Forms.GroupBox()
-        Me.rbMeanWithNoise = New System.Windows.Forms.RadioButton()
-        Me.rbUniform = New System.Windows.Forms.RadioButton()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -131,6 +131,8 @@ Partial Class GAScheduling
         Me.GroupBox7.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
+        Me.GroupBox10.SuspendLayout()
+        Me.GroupBox9.SuspendLayout()
         Me.gbSurvival.SuspendLayout()
         Me.TabPage3.SuspendLayout()
         Me.GroupBox6.SuspendLayout()
@@ -140,8 +142,6 @@ Partial Class GAScheduling
         Me.GroupBox2.SuspendLayout()
         Me.TabPage4.SuspendLayout()
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.GroupBox9.SuspendLayout()
-        Me.GroupBox10.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnSolve
@@ -596,6 +596,72 @@ Partial Class GAScheduling
         Me.TabPage2.Text = "Optimization Parameters"
         Me.TabPage2.UseVisualStyleBackColor = True
         '
+        'GroupBox10
+        '
+        Me.GroupBox10.Controls.Add(Me.rbMeanWithNoise)
+        Me.GroupBox10.Controls.Add(Me.rbUniform)
+        Me.GroupBox10.Location = New System.Drawing.Point(398, 261)
+        Me.GroupBox10.Name = "GroupBox10"
+        Me.GroupBox10.Size = New System.Drawing.Size(136, 85)
+        Me.GroupBox10.TabIndex = 43
+        Me.GroupBox10.TabStop = False
+        Me.GroupBox10.Text = "Delay Times Crossover"
+        '
+        'rbMeanWithNoise
+        '
+        Me.rbMeanWithNoise.AutoSize = True
+        Me.rbMeanWithNoise.Checked = True
+        Me.rbMeanWithNoise.Location = New System.Drawing.Point(6, 19)
+        Me.rbMeanWithNoise.Name = "rbMeanWithNoise"
+        Me.rbMeanWithNoise.Size = New System.Drawing.Size(104, 17)
+        Me.rbMeanWithNoise.TabIndex = 1
+        Me.rbMeanWithNoise.TabStop = True
+        Me.rbMeanWithNoise.Text = "Mean with Noise"
+        Me.rbMeanWithNoise.UseVisualStyleBackColor = True
+        '
+        'rbUniform
+        '
+        Me.rbUniform.AutoSize = True
+        Me.rbUniform.Location = New System.Drawing.Point(6, 42)
+        Me.rbUniform.Name = "rbUniform"
+        Me.rbUniform.Size = New System.Drawing.Size(61, 17)
+        Me.rbUniform.TabIndex = 0
+        Me.rbUniform.Text = "Uniform"
+        Me.rbUniform.UseVisualStyleBackColor = True
+        '
+        'GroupBox9
+        '
+        Me.GroupBox9.Controls.Add(Me.rbTournament)
+        Me.GroupBox9.Controls.Add(Me.rbFitnessProportional)
+        Me.GroupBox9.Location = New System.Drawing.Point(398, 170)
+        Me.GroupBox9.Name = "GroupBox9"
+        Me.GroupBox9.Size = New System.Drawing.Size(121, 85)
+        Me.GroupBox9.TabIndex = 42
+        Me.GroupBox9.TabStop = False
+        Me.GroupBox9.Text = "Parent Selection"
+        '
+        'rbTournament
+        '
+        Me.rbTournament.AutoSize = True
+        Me.rbTournament.Checked = True
+        Me.rbTournament.Location = New System.Drawing.Point(6, 52)
+        Me.rbTournament.Name = "rbTournament"
+        Me.rbTournament.Size = New System.Drawing.Size(82, 17)
+        Me.rbTournament.TabIndex = 1
+        Me.rbTournament.TabStop = True
+        Me.rbTournament.Text = "Tournament"
+        Me.rbTournament.UseVisualStyleBackColor = True
+        '
+        'rbFitnessProportional
+        '
+        Me.rbFitnessProportional.AutoSize = True
+        Me.rbFitnessProportional.Location = New System.Drawing.Point(6, 28)
+        Me.rbFitnessProportional.Name = "rbFitnessProportional"
+        Me.rbFitnessProportional.Size = New System.Drawing.Size(117, 17)
+        Me.rbFitnessProportional.TabIndex = 0
+        Me.rbFitnessProportional.Text = "Fitness Proportional"
+        Me.rbFitnessProportional.UseVisualStyleBackColor = True
+        '
         'gbSurvival
         '
         Me.gbSurvival.Controls.Add(Me.rbReplaceWorst)
@@ -759,7 +825,7 @@ Partial Class GAScheduling
         Me.tbMutationProbability.Name = "tbMutationProbability"
         Me.tbMutationProbability.Size = New System.Drawing.Size(100, 20)
         Me.tbMutationProbability.TabIndex = 24
-        Me.tbMutationProbability.Text = "0.2"
+        Me.tbMutationProbability.Text = "0.05"
         Me.ToolTip1.SetToolTip(Me.tbMutationProbability, "A number between 0 and 1.0 that sets the frequency of random gene mutations when " & _
         "producing offspring")
         '
@@ -1149,72 +1215,6 @@ Partial Class GAScheduling
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
-        'GroupBox9
-        '
-        Me.GroupBox9.Controls.Add(Me.rbTournament)
-        Me.GroupBox9.Controls.Add(Me.rbFitnessProportional)
-        Me.GroupBox9.Location = New System.Drawing.Point(398, 170)
-        Me.GroupBox9.Name = "GroupBox9"
-        Me.GroupBox9.Size = New System.Drawing.Size(121, 85)
-        Me.GroupBox9.TabIndex = 42
-        Me.GroupBox9.TabStop = False
-        Me.GroupBox9.Text = "Parent Selection"
-        '
-        'rbFitnessProportional
-        '
-        Me.rbFitnessProportional.AutoSize = True
-        Me.rbFitnessProportional.Location = New System.Drawing.Point(6, 28)
-        Me.rbFitnessProportional.Name = "rbFitnessProportional"
-        Me.rbFitnessProportional.Size = New System.Drawing.Size(117, 17)
-        Me.rbFitnessProportional.TabIndex = 0
-        Me.rbFitnessProportional.Text = "Fitness Proportional"
-        Me.rbFitnessProportional.UseVisualStyleBackColor = True
-        '
-        'rbTournament
-        '
-        Me.rbTournament.AutoSize = True
-        Me.rbTournament.Checked = True
-        Me.rbTournament.Location = New System.Drawing.Point(6, 52)
-        Me.rbTournament.Name = "rbTournament"
-        Me.rbTournament.Size = New System.Drawing.Size(82, 17)
-        Me.rbTournament.TabIndex = 1
-        Me.rbTournament.TabStop = True
-        Me.rbTournament.Text = "Tournament"
-        Me.rbTournament.UseVisualStyleBackColor = True
-        '
-        'GroupBox10
-        '
-        Me.GroupBox10.Controls.Add(Me.rbMeanWithNoise)
-        Me.GroupBox10.Controls.Add(Me.rbUniform)
-        Me.GroupBox10.Location = New System.Drawing.Point(398, 261)
-        Me.GroupBox10.Name = "GroupBox10"
-        Me.GroupBox10.Size = New System.Drawing.Size(136, 85)
-        Me.GroupBox10.TabIndex = 43
-        Me.GroupBox10.TabStop = False
-        Me.GroupBox10.Text = "Delay Times Crossover"
-        '
-        'rbMeanWithNoise
-        '
-        Me.rbMeanWithNoise.AutoSize = True
-        Me.rbMeanWithNoise.Checked = True
-        Me.rbMeanWithNoise.Location = New System.Drawing.Point(6, 19)
-        Me.rbMeanWithNoise.Name = "rbMeanWithNoise"
-        Me.rbMeanWithNoise.Size = New System.Drawing.Size(104, 17)
-        Me.rbMeanWithNoise.TabIndex = 1
-        Me.rbMeanWithNoise.TabStop = True
-        Me.rbMeanWithNoise.Text = "Mean with Noise"
-        Me.rbMeanWithNoise.UseVisualStyleBackColor = True
-        '
-        'rbUniform
-        '
-        Me.rbUniform.AutoSize = True
-        Me.rbUniform.Location = New System.Drawing.Point(6, 42)
-        Me.rbUniform.Name = "rbUniform"
-        Me.rbUniform.Size = New System.Drawing.Size(61, 17)
-        Me.rbUniform.TabIndex = 0
-        Me.rbUniform.Text = "Uniform"
-        Me.rbUniform.UseVisualStyleBackColor = True
-        '
         'GAScheduling
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1237,6 +1237,10 @@ Partial Class GAScheduling
         Me.GroupBox1.PerformLayout()
         Me.TabPage2.ResumeLayout(False)
         Me.TabPage2.PerformLayout()
+        Me.GroupBox10.ResumeLayout(False)
+        Me.GroupBox10.PerformLayout()
+        Me.GroupBox9.ResumeLayout(False)
+        Me.GroupBox9.PerformLayout()
         Me.gbSurvival.ResumeLayout(False)
         Me.gbSurvival.PerformLayout()
         Me.TabPage3.ResumeLayout(False)
@@ -1252,10 +1256,6 @@ Partial Class GAScheduling
         Me.GroupBox2.PerformLayout()
         Me.TabPage4.ResumeLayout(False)
         CType(Me.dgvSchedule, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.GroupBox9.ResumeLayout(False)
-        Me.GroupBox9.PerformLayout()
-        Me.GroupBox10.ResumeLayout(False)
-        Me.GroupBox10.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
