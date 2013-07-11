@@ -48,43 +48,43 @@ namespace Junction
         public Junction.GeneticOptimizer.RealCrossoverOp realCrossoverMode;
         public Junction.GeneticOptimizer.ParentSelectionOp parentMode;
         // Just for debugging purposes:
-        bool shouldBreak = false;
+        static bool shouldBreak = false;
 
         // Pre-existing inventory:
-        private int[] Inventory;
-        private double[] InventoryTime;
+        private static int[] Inventory;
+        private static double[] InventoryTime;
 
         //private double[] ProdRunTime;
-        private double[] JobRunTime;
+        private static double[] JobRunTime;
         private String[] ProductName;
-        private int[] BOMItemIndex; //Used to hold the index from the product to the BOMItem list
+        private static int[] BOMItemIndex; //Used to hold the index from the product to the BOMItem list
         private System.Collections.Hashtable ProductNumberHash;
         private string[] AllergensInProduct;
-        private double[,] ChangeOver;
-        private double[,] ChangeOverPenalties;
-        private int[] JobsToSchedule;
-        private double[] OrderQty;
+        private static double[,] ChangeOver;
+        private static double[,] ChangeOverPenalties;
+        private static int[] JobsToSchedule;
+        private static double[] OrderQty;
         private object[,] ScheduleResult;
         private int[,] Offspring;
         private int[,] Population;
-        private double[] Priority; //The due time in decimal hours
-        private double[] EarlyStart; //Earliest start time in decimal hours
+        private static double[] Priority; //The due time in decimal hours
+        private static double[] EarlyStart; //Earliest start time in decimal hours
         private double[] FitnessArray;
         private DateTime[] productionEndTime;
         private String[] ResourceName;
-        private double[] ProdEndTime;
+        private static double[] ProdEndTime;
         private DateTime[] productionStartTime;
-        private double[] ProdStartTime;
-        private int[] StartProduct;
-        private double[] RLCMin; //Minimum Resource Late Cost
-        private double[] RLCMax; //Maximum Resource Late Cost
-        private double[] RLCRatePerHour; //increase in late cost for each hour late
-        private double[] MinLateCost;
-        private double[] MaxLateCost;
-        private double[] LateCostPerHour;
-        private double[] MinEarlyCost;
-        private double[] MaxEarlyCost;
-        private double[] EarlyCostPerHour;
+        private static double[] ProdStartTime;
+        private static int[] StartProduct;
+        private static double[] RLCMin; //Minimum Resource Late Cost
+        private static double[] RLCMax; //Maximum Resource Late Cost
+        private static double[] RLCRatePerHour; //increase in late cost for each hour late
+        private static double[] MinLateCost;
+        private static double[] MaxLateCost;
+        private static double[] LateCostPerHour;
+        private static double[] MinEarlyCost;
+        private static double[] MaxEarlyCost;
+        private static double[] EarlyCostPerHour;
         private double[] MaxVolume;
         private double[] MinVolume;
         private double[] MaxFlowIn;
@@ -99,15 +99,15 @@ namespace Junction
         }
         private ResourceTypes[] ResourceType;
 
-        private List<BOMItem> BOMItems = new List<BOMItem>();
+        private static List<BOMItem> BOMItems = new List<BOMItem>();
 
-        public bool[] ConstrainedStart { get; set; }
+        public static bool[] ConstrainedStart { get; set; }
 
         public SimpleGA GA;
         public GeneticOptimizer CGA;
 
 
-        private int NumberOfRealJobs;
+        private static int NumberOfRealJobs;
         //todo   get an improvement over DelayIndex
         private int DelayIndex = -1; //Initialize to a negative value so that we can tell if there is not a delay product.
         private DataSet masterData;
@@ -115,7 +115,7 @@ namespace Junction
 
         public bool ValidDataInput { get; set; }
         public bool ShowStatusWhileRunning { get; set; }
-        public int NumberOfResources { get; set; }
+        public static int NumberOfResources { get; set; }
         public double TotalTime { get; private set; }
         public int NumberOfResourceLateJobs { get; private set; }
         public int NumberOfServiceLateJobs { get; private set; }
@@ -125,12 +125,12 @@ namespace Junction
         public double RunTime { get; private set; }
         public double ChangeOverTime { get; private set; }
         public DataSet ScheduleDataSet { get; private set; }
-        public bool IsFeasible { get; private set; }
+        public static bool IsFeasible { get; private set; }
         //public double LateCost { get; set; }
-        public double BOMPenaltyCost { get; set; }
-        public double ResourceNotFeasible { get; set; }
+        public static double BOMPenaltyCost { get; set; }
+        public static double ResourceNotFeasible { get; set; }
         public double ResourcePref { get; set; }
-        public double[,] ResourcePreference;
+        public static double[,] ResourcePreference;
         public double WashTime { get; set; }
         //public double RinseTime { get; set; }
 
@@ -1893,7 +1893,7 @@ namespace Junction
                 CGA.survivalSelection = survivalMode;
                 CGA.parentSelection = parentMode;
                 CGA.realCrossover = realCrossoverMode;
-                CGA.FitnessFunction = this.CalcFitness;
+                CGA.FitnessFunction = CalcFitness;
                 CGA.EvaluatePopulation();
                 for (int i = 0; i < NumberOfGenerations; i++)
                 {
@@ -2363,14 +2363,14 @@ namespace Junction
                 throw new ApplicationException("Wrong number of rows or columns in the Change Over Penalty matrix.\r\n The number of rows and columns must be equal to the number of products. There were " + iMax + " rows, " + jMax + " columns, and " + (ProductName.GetUpperBound(0) + 1) + " Products found. \r\n Make sure there is no stray input, including blanks, on the changeover penalty matrix spreadsheet.\r\n");
             }
 
-            this.ChangeOverPenalties = new double[iMax, jMax];
+            ChangeOverPenalties = new double[iMax, jMax];
             for (int i = 0; i < iMax; i++)
             {
                 for (int j = 0; j < jMax; j++)
                 {
                     try
                     {
-                        this.ChangeOverPenalties[i, j] = (double)dt.Rows[i].ItemArray[j + 1];// / 60.0;
+                        ChangeOverPenalties[i, j] = (double)dt.Rows[i].ItemArray[j + 1];// / 60.0;
                         //this.ChangeOverPenalties[i, j] += CalcAllergenChangeOver(i, j);
                     }
                     catch (Exception)
@@ -2756,7 +2756,7 @@ namespace Junction
             return (-1.0 * Fitness);
         }
 
-        private double CalcFitness(int[] genes, double[] delayTimes)
+        private static double CalcFitness(int[] genes, double[] delayTimes)
         {
             double Time = ProdStartTime[0];
             double JobStartTime, JobEndTime;
