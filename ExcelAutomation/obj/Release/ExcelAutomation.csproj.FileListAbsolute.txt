@@ -21,3 +21,9 @@ C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\ExcelAutomation
 C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\ExcelAutomation\obj\Release\ExcelAutomation.csproj.ResolveComReference.cache
 C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\ExcelAutomation\obj\Release\ExcelAutomation.dll
 C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\ExcelAutomation\obj\Release\ExcelAutomation.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\ExcelAutomation\bin\Release\ExcelAutomation.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\ExcelAutomation\bin\Release\ExcelAutomation.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\ExcelAutomation\obj\Release\ExcelAutomation.csprojResolveAssemblyReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\ExcelAutomation\obj\Release\ExcelAutomation.csproj.ResolveComReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\ExcelAutomation\obj\Release\ExcelAutomation.dll
+C:\Users\bsmithmartinez\work\Nestle Demo\ExcelAutomation\obj\Release\ExcelAutomation.pdb

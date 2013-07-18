@@ -125,6 +125,7 @@ namespace Junction
         public double RunTime { get; private set; }
         public double ChangeOverTime { get; private set; }
         public DataSet ScheduleDataSet { get; private set; }
+        public DataSet GAResult { get; private set; }
         public static bool IsFeasible { get; private set; }
         //public double LateCost { get; set; }
         public static double BOMPenaltyCost { get; set; }
@@ -151,6 +152,7 @@ namespace Junction
                 SetOrderData(masterData.Tables["Orders"]);
                 SetBOMData(masterData.Tables["BOMItems"]);
                 SetInventoryData(masterData.Tables["Inventory"]);
+                SetExistingSchedule(masterData.Tables["Schedule Results"]);
             }
         }
 
@@ -1349,6 +1351,14 @@ namespace Junction
             //Add the new DataTable to the dataset
             ScheduleDataSet.Tables.Add(dt);
         }
+
+        private void ReadScheduleDataTable(DataSet existingSchedule)
+        {
+            foreach (DataRow dr in existingSchedule.Tables[0].Rows)
+            {
+                Debug.Write( Environment.NewLine + dr["Job Number"]);
+            }
+        }
         private void CreateScheduleDataTable(int[] genes, double[] delayTimes)
         {
             DataTable dt = new DataTable();
@@ -1824,6 +1834,35 @@ namespace Junction
             ScheduleDataSet = new DataSet();
             //Add the new DataTable to the dataset
             ScheduleDataSet.Tables.Add(dt);
+            SaveRawElite(genes, delayTimes);
+        }
+        public void SaveRawElite(int[] genes, double[] delayTimes)
+        {
+            GAResult = new DataSet();
+
+            //Add the raw elite genome.
+            DataTable dt2 = new DataTable();
+
+            DataColumn geneCol = new DataColumn();
+            geneCol.DataType = Type.GetType("System.Int32");
+            geneCol.ColumnName = "Genes";
+            dt2.Columns.Add(geneCol);
+
+            DataColumn timeCol = new DataColumn();
+            timeCol.DataType = Type.GetType("System.Double");
+            timeCol.ColumnName = "DelayTime";
+            dt2.Columns.Add(timeCol);
+
+            for (int i = 0; i < genes.Length; i++)
+            {
+
+                DataRow dr2 = dt2.NewRow();
+                dr2["Genes"] = genes[i];
+                dr2["DelayTime"] = delayTimes[i];
+                dt2.Rows.Add(dr2);
+            }
+
+            GAResult.Tables.Add(dt2);
         }
 
         // This is the main method invoked to begin the scheduling process
@@ -2166,7 +2205,35 @@ namespace Junction
                 }
             }
         }
+        private void SetExistingSchedule(DataTable dt)
+        {
+            //int numberOfItems = dt.Rows.Count;
+            //Inventory = new int[numberOfItems];
+           // InventoryTime = new double[numberOfItems];
 
+            int i = 0;
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                Debug.Write( Environment.NewLine + dr["Job Number"] );
+                Debug.Write( Environment.NewLine + dr["Resource Number"] );
+                Debug.Write(Environment.NewLine + dr["End Time"]);
+                Debug.Write(Environment.NewLine + Conversions.ConvertDateTimetoDecimalHours((DateTime)dr["End Time"]));
+
+                /*
+                string productNumber = dr["Product"].ToString();
+                //ProductNumberHash.Add(dr["Product Number"].ToString(), i);
+                int ProdIndex = (int)ProductNumberHash[productNumber];
+                Inventory[ProdIndex] = (int)(double)dr["Quantity"];
+                //InventoryTimes[ProdIndex] = 
+                //productionStartTime[i] = (DateTime)dt.Rows[i]["Start_Date_Time"];
+                InventoryTime[ProdIndex] = Conversions.ConvertDateTimetoDecimalHours((DateTime)dr["Time Available"]);
+                i++;
+                 */
+            }
+         
+
+        }
         private void SetInventoryData(DataTable dt)
         {
             int numberOfItems = dt.Rows.Count;
@@ -2756,9 +2823,9 @@ namespace Junction
             return (-1.0 * Fitness);
         }
 
-        private static double CalcFitness(int[] genes, double[] delayTimes)
+        private static double BackwardCalcFitness(int[] genes, double[] delayTimes)
         {
-            double Time = ProdStartTime[0];
+            double Time = ProdEndTime[0];
             double JobStartTime, JobEndTime;
             double Fitness;
             double SumOfServiceEarlyPenalties = 0;
@@ -2799,7 +2866,7 @@ namespace Junction
                 {
                     PreviousProd = -1;
                 }
-                Time = ProdStartTime[Resource];
+                Time = ProdEndTime[Resource];
                 // Calculate the time for the following jobs
                 int FirstGeneInResource = NumberOfRealJobs * Resource;
                 int LastGeneInResource = (NumberOfRealJobs * (Resource + 1)) - 1;
@@ -2873,6 +2940,225 @@ namespace Junction
                 }
                 // Calculate the total production time required
                 TotalTimeAllResources += Time - ProdStartTime[Resource];
+            }
+
+            //Get ready to check for BOM violations
+            if (BOMItems.Count > 0) //This is purely a speed enhancement to skip this section if there are no BOM items.
+            {
+                if (shouldBreak)
+                {
+                    Debug.Write(Environment.NewLine + " --- CalcFitness pSched --- ");
+                }
+                List<ProdSchedule> ComponentSchedule = new List<ProdSchedule>();
+                foreach (ProdSchedule ps in pSched)
+                {
+                    if (shouldBreak)
+                    {
+                        Debug.Write(Environment.NewLine +
+                            ps.Product +
+                            " " + ps.StartTime +
+                            " " + ps.EndTime +
+                            " " + ps.OrderQty +
+                            " " + ps.AvailableQuantity);
+                    }
+                    //Find out if the item has components
+                    int bIdx = BOMItemIndex[ps.Product];
+                    if (bIdx == -1) continue;
+                    int cIdx = -1;
+                    BOMItem bi = BOMItems[bIdx];
+                    foreach (int component in bi.Components)
+                    {
+                        cIdx++;
+                        //add the demand of the component quantity to the schedule
+                        double ComponentDemand = -(ps.OrderQty * bi.Percent[cIdx]);
+                        //Note: StartTime is used twice in the line below. This is not a mistake.
+                        //Component demand is not a real scheduled job.
+                        //This simplification makes sure the demand occurs at the start of the parent job.
+                        //Adding .0001 keeps the posting sequence = (debit inventory first at any given time then credit)
+                        ProdSchedule cd = new ProdSchedule(component, ps.StartTime, ps.StartTime + 0.0001, ComponentDemand);
+                        ComponentSchedule.Add(cd);
+                    }
+                }
+                pSched.AddRange(ComponentSchedule);
+                pSched.Sort();
+
+                int pProd = -99; // set up a variable to hold the previous product
+                double pQty = 0; //set up a variable to hold the previous quantity
+                if (shouldBreak)
+                {
+                    Debug.Write(Environment.NewLine + " --- CalcFitness BOM pSched --- ");
+                }
+                //Calculate the available quantities
+                foreach (ProdSchedule ps in pSched)
+                {
+
+                    if (shouldBreak)
+                    {
+                        Debug.Write(Environment.NewLine +
+                            ps.Product +
+                            " " + ps.StartTime +
+                            " " + ps.EndTime +
+                            " " + ps.OrderQty +
+                            " " + ps.AvailableQuantity);
+                    }
+                    // Calculate the penalty
+                    if (pProd == ps.Product)
+                    {
+                        pQty += ps.OrderQty;
+                        ps.AvailableQuantity = pQty;
+                    }
+                    else
+                    {
+                        pQty = ps.OrderQty;
+                        pProd = ps.Product;
+                        ps.AvailableQuantity = pQty;
+                    }
+                    if (Inventory[ps.Product] > 0 && ps.EndTime > InventoryTime[ps.Product])
+                    {
+                        ps.AvailableQuantity += myInventory[ps.Product];
+                        myInventory[ps.Product]--;
+                    }
+                    if (ps.AvailableQuantity < 0.0)
+                    {
+                        BOMPenalties += BOMPenaltyCost;
+                        ScheduleViolationBOM = true;
+                    }
+                }
+            }
+
+            if (!(ScheduleViolationBOM | ScheduleViolationResourceLate | ScheduleViolationOrderLate | ScheduleViolationResourceFeasiblilty | ScheduleViolationEarlyTime))
+            {
+                IsFeasible = true;
+            }
+
+            //Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
+            //    + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties; 
+            Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
+             + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties + EarlyStartFactor;
+
+            return (-1.0 * Fitness);
+        }
+
+        private static double CalcFitness(int[] genes, double[] delayTimes)
+        {
+            double Time = ProdStartTime[0];
+            double JobStartTime, JobEndTime;
+            double Fitness;
+            double SumOfServiceEarlyPenalties = 0;
+            double SumOfServiceLatePenalties = 0;
+            double SumOfResourceLatePenalties = 0;
+            double BOMPenalties = 0;
+            int PreviousProd = -1;
+            bool ScheduleViolationBOM = false;
+            bool ScheduleViolationResourceLate = false;
+            bool ScheduleViolationOrderLate = false;
+            bool ScheduleViolationResourceFeasiblilty = false;
+            bool ScheduleViolationEarlyTime = false;
+            double LateTime, EarlyTime;
+            int CurrentProd;
+            double TotalTimeAllResources = 0;
+            int CurrentJob;
+            double ResourcePrefPenalties = 0;
+            double SumOfChangeOverPenalties = 0;
+            double EarlyStartFactor = 0;
+            int[] myInventory = new int[Inventory.Length];
+
+            for (int i = 0; i < myInventory.Length; i++)
+            {
+                myInventory[i] = Inventory[i];
+            }
+
+            // List of production orders to support calculation of BOM Item requirements
+            List<ProdSchedule> pSched = new List<ProdSchedule>();
+
+
+            for (int Resource = 0; Resource < NumberOfResources; Resource++)
+            {
+                if (ConstrainedStart[Resource])
+                {
+                    PreviousProd = StartProduct[Resource];
+                }
+                else
+                {
+                    PreviousProd = -1;
+                }
+                Time = ProdStartTime[Resource];
+                // Calculate the time for the following jobs
+                int FirstGeneInResource = NumberOfRealJobs * Resource;
+                int LastGeneInResource = (NumberOfRealJobs * (Resource + 1)) - 1;
+                double co, cop;
+                for (int i = FirstGeneInResource; i <= LastGeneInResource; i++)
+                {
+                    CurrentJob = genes[i];
+                    CurrentProd = JobsToSchedule[CurrentJob];
+                    if (PreviousProd != -1 & CurrentProd != -1)
+                    {
+                        co = ChangeOver[PreviousProd, CurrentProd];
+                        cop = ChangeOverPenalties[PreviousProd, CurrentProd];
+                    }
+                    else
+                    {
+                        co = 0;
+                        cop = 0;
+                    }
+                    if (CurrentProd != -1)
+                    {
+                        Time += delayTimes[CurrentJob] + co;
+                        JobStartTime = Time;
+                        Time += JobRunTime[CurrentJob];
+                        JobEndTime = Time;
+
+                        //Used to encourage jobs to start as soon as possible
+                        //Todo  Turn Early start facto into a configurable factor (by resorce?)
+                        //if (JobStartTime > ProdEndTime[NumberOfResources - 1])
+                        //{
+                        EarlyStartFactor += JobStartTime;
+                        //}
+
+                        PreviousProd = JobsToSchedule[CurrentJob];
+
+                        //Calculate Service Early Cost
+                        EarlyTime = EarlyStart[CurrentJob];
+                        if (JobStartTime < EarlyTime & EarlyTime != 0.0)
+                        {
+                            SumOfServiceEarlyPenalties += Math.Min(MaxEarlyCost[CurrentJob], MinEarlyCost[CurrentJob] + EarlyCostPerHour[CurrentJob] * (EarlyTime - (JobStartTime)));
+                            ScheduleViolationEarlyTime = true;
+                        }
+
+                        //Calculate Service Late Cost
+                        LateTime = Priority[CurrentJob];
+                        if (Time > LateTime)
+                        {
+                            SumOfServiceLatePenalties += Math.Min(MaxLateCost[CurrentJob], MinLateCost[CurrentJob] + LateCostPerHour[CurrentJob] * (JobEndTime - Priority[CurrentJob]));
+                            ScheduleViolationOrderLate = true;
+                        }
+
+                        //Calculate Resource Late Cost
+                        if (Time > ProdEndTime[Resource])
+                        {
+                            SumOfResourceLatePenalties += Math.Min(RLCMax[Resource], RLCMin[Resource] + RLCRatePerHour[Resource] * (Time - ProdEndTime[Resource]));
+                            ScheduleViolationResourceLate = true;
+                        }
+
+                        // Add the resource preference penalties
+                        ResourcePrefPenalties += ResourcePreference[CurrentProd, Resource];
+                        if (ResourcePreference[CurrentProd, Resource] == ResourceNotFeasible)
+                        {
+                            ScheduleViolationResourceFeasiblilty = true;
+                        }
+
+                        //Sum up the changeover penalties
+                        SumOfChangeOverPenalties += cop;
+
+                        //Build the output schedule for BOM Items
+                        //First create a new production schedule item
+                        ProdSchedule p = new ProdSchedule(CurrentProd, JobStartTime, JobEndTime, OrderQty[CurrentJob]);
+                        //Second, add the new schedule item to the list
+                        pSched.Add(p);
+                    }
+                }
+                // Calculate the total production time required
+                // TotalTimeAllResources += Time - ProdStartTime[Resource];
             }
 
             //Get ready to check for BOM violations

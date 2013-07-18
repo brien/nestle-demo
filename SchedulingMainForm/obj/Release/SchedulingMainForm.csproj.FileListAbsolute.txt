@@ -30,3 +30,11 @@ C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\SchedulingMainF
 C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\SchedulingMainForm\obj\Release\SchedulingMainForm.csproj.GenerateResource.Cache
 C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\SchedulingMainForm\obj\Release\SchedulingMainForm.exe
 C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\SchedulingMainForm\obj\Release\SchedulingMainForm.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\SchedulingMainForm\bin\Release\SchedulingMainForm.exe
+C:\Users\bsmithmartinez\work\Nestle Demo\SchedulingMainForm\bin\Release\SchedulingMainForm.pdb
+C:\Users\bsmithmartinez\work\Nestle Demo\SchedulingMainForm\obj\Release\SchedulingMainForm.csprojResolveAssemblyReference.cache
+C:\Users\bsmithmartinez\work\Nestle Demo\SchedulingMainForm\obj\Release\SchedulingMainForm.Form1.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\SchedulingMainForm\obj\Release\SchedulingMainForm.Properties.Resources.resources
+C:\Users\bsmithmartinez\work\Nestle Demo\SchedulingMainForm\obj\Release\SchedulingMainForm.csproj.GenerateResource.Cache
+C:\Users\bsmithmartinez\work\Nestle Demo\SchedulingMainForm\obj\Release\SchedulingMainForm.exe
+C:\Users\bsmithmartinez\work\Nestle Demo\SchedulingMainForm\obj\Release\SchedulingMainForm.pdb

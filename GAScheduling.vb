@@ -141,6 +141,13 @@ Public Class GAScheduling
                 ds.Tables.Remove(dt)
                 ds2.Tables.Add(dt)
 
+                ' Add the pre-existing schedule
+                ds = Junction.ExcelAutomation.GetDataSetFromExcel(tbWorkBookName.Text, "Schedule Results")
+                dt = ds.Tables(0)
+                ds.Tables.Remove(dt)
+                ds2.Tables.Add(dt)
+
+
                 'Send the complete dataset to the scheduler
                 .MasterData = ds2
 
@@ -233,7 +240,9 @@ Public Class GAScheduling
 
     Private Sub btnOutputToExcel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnOutputToExcel.Click
         'Open a spreadsheet that shows the solution
-        Junction.ExcelAutomation.CreateResultsWorksheet(GAS.ScheduleDataSet)
+        'Junction.ExcelAutomation.CreateResultsWorksheet(GAS.ScheduleDataSet)
+        'Junction.ExcelAutomation.CreateResultsWorksheet(GAS.GAResult)
+        Junction.ExcelAutomation.CreateResultsWorksheet(GAS.ScheduleDataSet, GAS.GAResult)
     End Sub
 
 
