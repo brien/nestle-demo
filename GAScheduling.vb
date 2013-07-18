@@ -33,6 +33,7 @@ Public Class GAScheduling
         tbWorkBookName.Text = My.Application.Info.DirectoryPath & "\TestImport.xlsx"
         'Brien being dumb:
         ' GA.GenerateOffspring()
+        GAS.seededRun = False
     End Sub
 
     Private Sub btnSolve_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSolve.Click
@@ -141,11 +142,13 @@ Public Class GAScheduling
                 ds.Tables.Remove(dt)
                 ds2.Tables.Add(dt)
 
-                ' Add the pre-existing schedule
-                ds = Junction.ExcelAutomation.GetDataSetFromExcel(tbWorkBookName.Text, "Schedule Results")
-                dt = ds.Tables(0)
-                ds.Tables.Remove(dt)
-                ds2.Tables.Add(dt)
+                If GAS.seededRun Then
+                    ' Add the pre-existing schedule
+                    ds = Junction.ExcelAutomation.GetDataSetFromExcel(tbStartingScheduleName.Text, "Raw Genome")
+                    dt = ds.Tables(0)
+                    ds.Tables.Remove(dt)
+                    ds2.Tables.Add(dt)
+                End If
 
 
                 'Send the complete dataset to the scheduler
@@ -287,6 +290,8 @@ Public Class GAScheduling
         Else
             MsgBox("Error Selecting File", MsgBoxStyle.Exclamation)
         End If
+        tbStartingScheduleName.Text = ""
+        GAS.seededRun = False
     End Sub
 
     Private Sub dtpProductionDate_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles dtpProductionDate.ValueChanged
@@ -315,6 +320,22 @@ Public Class GAScheduling
                 'dgvr.DefaultCellStyle.BackColor =
             End If
         Next
+    End Sub
+
+    Private Sub btnSelectStartingSchedule_Click(sender As Object, e As EventArgs) Handles btnSelectStartingSchedule.Click
+        Dim DefaultDir As String = My.Application.Info.DirectoryPath
+        Dim LoadedOK As Boolean = False
+        OpenFileDialog1.InitialDirectory = DefaultDir
+        OpenFileDialog1.FileName = "TestImport.xlsx"
+        OpenFileDialog1.Filter = "Excel 2007 Workbooks (*.xlsx)|*.xlsx|Excel 98-2005 Workbooks (*.xls)|*.xls"
+        OpenFileDialog1.CheckFileExists() = True
+        OpenFileDialog1.ShowReadOnly() = True
+        If OpenFileDialog1.ShowDialog = DialogResult.OK Then
+            tbStartingScheduleName.Text = OpenFileDialog1.FileName
+        Else
+            MsgBox("Error Selecting File", MsgBoxStyle.Exclamation)
+        End If
+        GAS.seededRun = True
     End Sub
 End Class
 

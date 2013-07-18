@@ -105,7 +105,9 @@ namespace Junction
 
         public SimpleGA GA;
         public GeneticOptimizer CGA;
-
+        private int[] Genes;
+        private double[] Times;
+        public bool seededRun;
 
         private static int NumberOfRealJobs;
         //todo   get an improvement over DelayIndex
@@ -152,7 +154,7 @@ namespace Junction
                 SetOrderData(masterData.Tables["Orders"]);
                 SetBOMData(masterData.Tables["BOMItems"]);
                 SetInventoryData(masterData.Tables["Inventory"]);
-                SetExistingSchedule(masterData.Tables["Schedule Results"]);
+                SetExistingSchedule(masterData.Tables["Raw Genome"]);
             }
         }
 
@@ -1352,13 +1354,6 @@ namespace Junction
             ScheduleDataSet.Tables.Add(dt);
         }
 
-        private void ReadScheduleDataTable(DataSet existingSchedule)
-        {
-            foreach (DataRow dr in existingSchedule.Tables[0].Rows)
-            {
-                Debug.Write( Environment.NewLine + dr["Job Number"]);
-            }
-        }
         private void CreateScheduleDataTable(int[] genes, double[] delayTimes)
         {
             DataTable dt = new DataTable();
@@ -1928,7 +1923,10 @@ namespace Junction
             else if (runConstrained)
             {
                 CGA = new Junction.GeneticOptimizer(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
-
+                if (seededRun)
+                {
+                    CGA.SeedPopulation(Genes, Times);
+                }
                 CGA.survivalSelection = survivalMode;
                 CGA.parentSelection = parentMode;
                 CGA.realCrossover = realCrossoverMode;
@@ -1968,7 +1966,7 @@ namespace Junction
                 {
                     Debug.Write(Environment.NewLine + CGA.elite.Genes[i] + "  " + CGA.elite.Times[i]);
                 }
-                Debug.Write(Environment.NewLine + "Seed = " + seed);
+                Debug.Write(Environment.NewLine + "Random Seed = " + seed);
                 shouldBreak = true;
                 CreateScheduleDataTable(CGA.elite.Genes, CGA.elite.Times);
                 eliteFitness = CalcFitness(CGA.elite.Genes, CGA.elite.Times);
@@ -2210,29 +2208,19 @@ namespace Junction
             //int numberOfItems = dt.Rows.Count;
             //Inventory = new int[numberOfItems];
            // InventoryTime = new double[numberOfItems];
-
-            int i = 0;
-
-            foreach (DataRow dr in dt.Rows)
+            if (seededRun)
             {
-                Debug.Write( Environment.NewLine + dr["Job Number"] );
-                Debug.Write( Environment.NewLine + dr["Resource Number"] );
-                Debug.Write(Environment.NewLine + dr["End Time"]);
-                Debug.Write(Environment.NewLine + Conversions.ConvertDateTimetoDecimalHours((DateTime)dr["End Time"]));
-
-                /*
-                string productNumber = dr["Product"].ToString();
-                //ProductNumberHash.Add(dr["Product Number"].ToString(), i);
-                int ProdIndex = (int)ProductNumberHash[productNumber];
-                Inventory[ProdIndex] = (int)(double)dr["Quantity"];
-                //InventoryTimes[ProdIndex] = 
-                //productionStartTime[i] = (DateTime)dt.Rows[i]["Start_Date_Time"];
-                InventoryTime[ProdIndex] = Conversions.ConvertDateTimetoDecimalHours((DateTime)dr["Time Available"]);
-                i++;
-                 */
+                int NumJobs = JobsToSchedule.GetUpperBound(0) + 1;
+                Genes = new int[NumJobs];
+                Times = new double[NumJobs];
+                int i = 0;
+                foreach (DataRow dr in dt.Rows)
+                {
+                    Genes[i] = (int)(double)dr["Genes"];
+                    Times[i] = (double)dr["DelayTime"];
+                    i++;
+                }
             }
-         
-
         }
         private void SetInventoryData(DataTable dt)
         {

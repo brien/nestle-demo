@@ -97,6 +97,17 @@ namespace Junction
             parentSelection = ParentSelectionOp.Tournament;
 
         }
+        public void SeedPopulation(int[] genes, double[] times)
+        {
+            population[0] = new ConstrainedCreature(_length, _length, genes, times);
+            /*
+            for (int i = 1; i < _popsize; i++)
+            {
+                population[i] = new ConstrainedCreature(_length, _length, genes, times);
+                Mutate(i);
+            }
+             */
+        }
         public double AverageFitness()
         {
             double avg = 0;
@@ -427,6 +438,22 @@ namespace Junction
             public double[] Times;
             public double fitness;
             public int timesLength;
+
+            public ConstrainedCreature(int length, int tl, int[] geneSeeds, double[] timeSeeds)
+            {
+                Genes = new int[length];
+                Times = new double[tl];
+                timesLength = tl;
+                for (int i = 0; i < length; i++)
+                {
+                    Genes[i] = geneSeeds[i];
+                }
+                for (int i = 0; i < tl; i++)
+                {
+                    Times[i] = timeSeeds[i];
+                }
+                fitness = -1;
+            }
 
             public ConstrainedCreature(int length, int tl, double delayRate, double delayMean)
             {
