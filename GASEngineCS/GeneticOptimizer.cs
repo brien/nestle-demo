@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Diagnostics;
 
 using TestSimpleRNG;
@@ -168,22 +169,55 @@ namespace Junction
 
                 // Mutation chance
                 Mutate(i);
-                if (!offspring[i].IsValid())
-                {
-                    Debug.Write("Invalid Mutation");
-                }
-
+                Debug.Assert(offspring[i].IsValid(), "Invalid mutation");
                 Mutate(i + 1);
-                if (!offspring[i + 1].IsValid())
-                {
-                    Debug.Write("Invalid Mutation");
-                }
+                Debug.Assert(offspring[i+1].IsValid(), "Invalid mutation");
+
                 offspring[i].fitness = FitnessFunction(offspring[i].Genes, offspring[i].Times);
                 offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes, offspring[i + 1].Times);
-
             }
-        }
+            /*
+            int threadcount = 20;
+            int ck = 0;
+            while (ck < _offsize)
+            {
+                ManualResetEvent[] doneEvents = new ManualResetEvent[threadcount];
+                for (int k = 0; k < threadcount; k++)
+                {
+                    if (ck < _offsize)
+                    {
+                        doneEvents[k] = new ManualResetEvent(false);
+                        FitnessEvaluationThread f = new FitnessEvaluationThread(ck, this, doneEvents[k]);
+                        ThreadPool.QueueUserWorkItem(f.Evaluate);
+                        ck++;
+                    }
+                }
+                //WaitHandle.WaitAll(doneEvents);
+                foreach (var e in doneEvents) e.WaitOne();
+            }*/
 
+        }
+        public class FitnessEvaluationThread
+        {
+            public Func<int[], double[], double> FitnessFunction { get; set; }
+            GeneticOptimizer _reftoGO;
+            public double Fitness { get { return _fitness; } }
+            private double _fitness;
+            private int _i;
+            private ManualResetEvent _doneEvent;
+            public FitnessEvaluationThread(int i, GeneticOptimizer reftoGO, ManualResetEvent doneEvent)
+            {
+                _reftoGO = reftoGO;
+                _i = i;
+                _doneEvent = doneEvent;
+            }
+            public void Evaluate(Object threadContext)
+            {
+                _reftoGO.offspring[_i].fitness = _reftoGO.FitnessFunction(_reftoGO.offspring[_i].Genes, _reftoGO.offspring[_i].Times);
+                _doneEvent.Set();
+            }
+
+        }
         private int SelectParent()
         {
             int p = 0;
@@ -296,7 +330,7 @@ namespace Junction
                 population[i].Copy(offspring[i - cutpoint]);
             }
             */
-            
+
         }
 
         public void DTCrossover(int p1, int p2, int o1, int o2)
@@ -352,23 +386,10 @@ namespace Junction
             {
                 offspring[o2].Genes[i] = population[p2].Genes[i];
             }
-            for (int i = 0; i < _length; i++)
-            {
-                if (population[p1].Genes[i] != offspring[o1].Genes[i])
-                {
-                    Debug.Write("Offspring 1 did not copy correctly");
-                    break;
-                }
-            }
 
-            if (!offspring[o1].IsValid())
-            {
-                Debug.Write("Invalid creature before crossover");
-            }
-            if (!offspring[o2].IsValid())
-            {
-                Debug.Write("Invalid creature before crossover");
-            }
+            Debug.Assert(offspring[o1].IsValid(), "Invalid creature before crossover");
+            Debug.Assert(offspring[o2].IsValid(), "Invalid creature before crossover");
+
             List<int> remainder = new List<int>(population[p2].Genes);
             //remainder = population[p2].Genes;
             for (int i = 0; i < cutpoint; i++)
@@ -380,12 +401,8 @@ namespace Junction
                 offspring[o1].Genes[i] = remainder[i - cutpoint];
             }
 
-            if (!offspring[o1].IsValid())
-            {
-                Debug.Write("Invalid offspring1 after crossover");
-                //Array.Sort(offspring[o1].Genes);
-                //throw new ApplicationException("Invalid offspring");
-            }
+            Debug.Assert(offspring[o1].IsValid(), "Invalid creature after crossover");
+           
             // Repeat for offspring 2
             remainder = new List<int>(population[p1].Genes);
             for (int i = cutpoint; i < _length; i++)
@@ -397,14 +414,9 @@ namespace Junction
             {
                 offspring[o2].Genes[i] = remainder[i];
             }
-            if (!offspring[o2].IsValid())
-            {
-                Debug.Write("Invalid offspring2 after crossover");
-                //Array.Sort(offspring[o1].Genes);
-                //throw new ApplicationException("Invalid offspring");
-            }
+            Debug.Assert(offspring[o2].IsValid(), "Invalid creature after crossover");
+           
             DTCrossover(p1, p2, o1, o2);
-
         }
 
         public void Mutate(int o)
