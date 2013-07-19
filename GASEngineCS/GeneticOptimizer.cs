@@ -173,10 +173,9 @@ namespace Junction
                 Mutate(i + 1);
                 Debug.Assert(offspring[i+1].IsValid(), "Invalid mutation");
 
-                offspring[i].fitness = FitnessFunction(offspring[i].Genes, offspring[i].Times);
-                offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes, offspring[i + 1].Times);
+                //offspring[i].fitness = FitnessFunction(offspring[i].Genes, offspring[i].Times);
+                //offspring[i + 1].fitness = FitnessFunction(offspring[i + 1].Genes, offspring[i + 1].Times);
             }
-            /*
             int threadcount = 20;
             int ck = 0;
             while (ck < _offsize)
@@ -194,7 +193,7 @@ namespace Junction
                 }
                 //WaitHandle.WaitAll(doneEvents);
                 foreach (var e in doneEvents) e.WaitOne();
-            }*/
+            }
 
         }
         public class FitnessEvaluationThread
@@ -317,7 +316,6 @@ namespace Junction
                         }
                     }
                     Debug.Write(Environment.NewLine + "Replaced: " + replaced);
-                    //Array.Sort(population, new NewComp());
                     break;
             }
             /*
