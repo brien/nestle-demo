@@ -192,7 +192,13 @@ namespace Junction
                     }
                 }
                 //WaitHandle.WaitAll(doneEvents);
-                foreach (var e in doneEvents) e.WaitOne();
+                for (int i = 0; i < threadcount; i++)
+                {
+                    if (doneEvents[i] != null)
+                    {
+                        doneEvents[i].WaitOne();
+                    }
+                }
             }
 
         }

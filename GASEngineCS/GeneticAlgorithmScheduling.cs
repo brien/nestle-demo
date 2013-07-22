@@ -3027,6 +3027,40 @@ namespace Junction
             return (-1.0 * Fitness);
         }
 
+        private static double CalcFitness_Backwards(int[] genes, double[] delayTimes)
+        {
+            for (int resource = 0; resource < NumberOfResources; resource++)
+            {
+                int previousProd = -1;
+                if (ConstrainedStart[resource])
+                {
+                    previousProd = StartProduct[resource];
+                }
+                double time = ProdEndTime[resource];
+                int firstGeneInResource = NumberOfRealJobs * resource;
+                int lastGeneInResource = (NumberOfRealJobs * (resource + 1)) - 1;
+                for (int i = lastGeneInResource; i >= firstGeneInResource; i--)
+                {
+                    int currentJob = genes[i];
+                    int currentProd = JobsToSchedule[currentJob];
+                    double co = 0;
+                    double cop = 0;
+                    if (previousProd != -1 & currentProd != -1)
+                    {
+                        co = ChangeOver[previousProd, currentProd];
+                        cop = ChangeOverPenalties[previousProd, currentProd];
+                    }
+                    if (currentProd != -1)
+                    {
+                        time -= delayTimes[currentJob] + co;
+
+                    }
+                }
+            }
+
+            double fitness = 0;
+            return fitness;
+        }
         private static double CalcFitness(int[] genes, double[] delayTimes)
         {
             double Time = ProdStartTime[0];
