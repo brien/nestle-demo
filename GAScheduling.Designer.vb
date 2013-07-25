@@ -57,6 +57,9 @@ Partial Class GAScheduling
         Me.Label5 = New System.Windows.Forms.Label()
         Me.btnDisplayGantt = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.tbStartingScheduleName = New System.Windows.Forms.TextBox()
+        Me.Label29 = New System.Windows.Forms.Label()
+        Me.btnSelectStartingSchedule = New System.Windows.Forms.Button()
         Me.btnSelectSpreadSheet = New System.Windows.Forms.Button()
         Me.tbWorkBookName = New System.Windows.Forms.TextBox()
         Me.Label18 = New System.Windows.Forms.Label()
@@ -123,9 +126,6 @@ Partial Class GAScheduling
         Me.dgvSchedule = New System.Windows.Forms.DataGridView()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.btnSelectStartingSchedule = New System.Windows.Forms.Button()
-        Me.tbStartingScheduleName = New System.Windows.Forms.TextBox()
-        Me.Label29 = New System.Windows.Forms.Label()
         Me.gbResults.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tcGAFormTabs.SuspendLayout()
@@ -533,6 +533,33 @@ Partial Class GAScheduling
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Run Conditions"
         '
+        'tbStartingScheduleName
+        '
+        Me.tbStartingScheduleName.Location = New System.Drawing.Point(9, 85)
+        Me.tbStartingScheduleName.Name = "tbStartingScheduleName"
+        Me.tbStartingScheduleName.Size = New System.Drawing.Size(251, 20)
+        Me.tbStartingScheduleName.TabIndex = 20
+        Me.ToolTip1.SetToolTip(Me.tbStartingScheduleName, "Name of the Excel Workbook Containing the Orders, Change Over, and Product Info")
+        '
+        'Label29
+        '
+        Me.Label29.AutoSize = True
+        Me.Label29.Location = New System.Drawing.Point(6, 69)
+        Me.Label29.Name = "Label29"
+        Me.Label29.Size = New System.Drawing.Size(118, 13)
+        Me.Label29.TabIndex = 21
+        Me.Label29.Text = "Load Starting Schedule"
+        '
+        'btnSelectStartingSchedule
+        '
+        Me.btnSelectStartingSchedule.AccessibleName = ""
+        Me.btnSelectStartingSchedule.Location = New System.Drawing.Point(281, 83)
+        Me.btnSelectStartingSchedule.Name = "btnSelectStartingSchedule"
+        Me.btnSelectStartingSchedule.Size = New System.Drawing.Size(75, 23)
+        Me.btnSelectStartingSchedule.TabIndex = 19
+        Me.btnSelectStartingSchedule.Text = "Browse"
+        Me.btnSelectStartingSchedule.UseVisualStyleBackColor = True
+        '
         'btnSelectSpreadSheet
         '
         Me.btnSelectSpreadSheet.AccessibleName = ""
@@ -695,13 +722,11 @@ Partial Class GAScheduling
         'rbStruggle
         '
         Me.rbStruggle.AutoSize = True
-        Me.rbStruggle.Checked = True
         Me.rbStruggle.Location = New System.Drawing.Point(18, 52)
         Me.rbStruggle.Name = "rbStruggle"
         Me.rbStruggle.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.rbStruggle.Size = New System.Drawing.Size(64, 17)
         Me.rbStruggle.TabIndex = 2
-        Me.rbStruggle.TabStop = True
         Me.rbStruggle.Text = "Struggle"
         Me.rbStruggle.UseVisualStyleBackColor = True
         '
@@ -718,10 +743,12 @@ Partial Class GAScheduling
         'rbElitist
         '
         Me.rbElitist.AutoSize = True
+        Me.rbElitist.Checked = True
         Me.rbElitist.Location = New System.Drawing.Point(18, 29)
         Me.rbElitist.Name = "rbElitist"
         Me.rbElitist.Size = New System.Drawing.Size(49, 17)
         Me.rbElitist.TabIndex = 0
+        Me.rbElitist.TabStop = True
         Me.rbElitist.Text = "Elitist"
         Me.rbElitist.UseVisualStyleBackColor = True
         '
@@ -749,7 +776,7 @@ Partial Class GAScheduling
         Me.tbMeanDelay.Name = "tbMeanDelay"
         Me.tbMeanDelay.Size = New System.Drawing.Size(100, 20)
         Me.tbMeanDelay.TabIndex = 37
-        Me.tbMeanDelay.Text = "9.0"
+        Me.tbMeanDelay.Text = "24.0"
         '
         'tbDelayProb
         '
@@ -1220,33 +1247,6 @@ Partial Class GAScheduling
         'OpenFileDialog1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
-        'btnSelectStartingSchedule
-        '
-        Me.btnSelectStartingSchedule.AccessibleName = ""
-        Me.btnSelectStartingSchedule.Location = New System.Drawing.Point(281, 83)
-        Me.btnSelectStartingSchedule.Name = "btnSelectStartingSchedule"
-        Me.btnSelectStartingSchedule.Size = New System.Drawing.Size(75, 23)
-        Me.btnSelectStartingSchedule.TabIndex = 19
-        Me.btnSelectStartingSchedule.Text = "Browse"
-        Me.btnSelectStartingSchedule.UseVisualStyleBackColor = True
-        '
-        'tbStartingScheduleName
-        '
-        Me.tbStartingScheduleName.Location = New System.Drawing.Point(9, 85)
-        Me.tbStartingScheduleName.Name = "tbStartingScheduleName"
-        Me.tbStartingScheduleName.Size = New System.Drawing.Size(251, 20)
-        Me.tbStartingScheduleName.TabIndex = 20
-        Me.ToolTip1.SetToolTip(Me.tbStartingScheduleName, "Name of the Excel Workbook Containing the Orders, Change Over, and Product Info")
-        '
-        'Label29
-        '
-        Me.Label29.AutoSize = True
-        Me.Label29.Location = New System.Drawing.Point(6, 69)
-        Me.Label29.Name = "Label29"
-        Me.Label29.Size = New System.Drawing.Size(118, 13)
-        Me.Label29.TabIndex = 21
-        Me.Label29.Text = "Load Starting Schedule"
         '
         'GAScheduling
         '

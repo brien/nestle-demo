@@ -2352,7 +2352,7 @@ namespace Junction
                     }
 
                     myComponents.Add(ComponentIndex);
-                    myPercent.Add((double)dr[i + 1]);
+                    myPercent.Add(Convert.ToDouble(dr[i + 1]));
                 }
                 BOMItem bi = new BOMItem(ParentIndex, myComponents, myPercent);
                 BOMItems.Add(bi);
