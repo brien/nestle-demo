@@ -1926,7 +1926,7 @@ namespace Junction
             // The new function only exists to support "demo" code.
             DateTime now = new DateTime();
             now = DateTime.Today;
-            if (now > DateTime.Parse("8/01/2013"))
+            if (now > DateTime.Parse("9/01/2013"))
             {
                 throw new ApplicationException("***** Time limit for this demo version is exceeded.******\n\r Please contact Junction Solutions to obtain an updated and licensed version.\n\r");
             }
@@ -1995,7 +1995,7 @@ namespace Junction
                 {
                     CGA.GenerateOffspring();
                     CGA.SurvivalSelection();
-                    if (ShowStatusWhileRunning & (i % (NumberOfGenerations / 10) == 0))
+                    if (ShowStatusWhileRunning & (i % (NumberOfGenerations / 100) == 0))
                     {
                         //Update the status form
                         CGA.FindElite();

@@ -32,7 +32,7 @@ namespace Junction
             hrs = DateTimeValue.Hour;
             mins = DateTimeValue.Minute;
             DateTime e = new DateTime();
-            e = DateTime.Parse("8/1/2013");
+            e = DateTime.Parse("9/1/2013");
             if (DateTime.Today > e){throw new Exception("Time is up.  See your vendor for a valid copy of this program. ");}
             double t = (double)days * 24.0 + (double)hrs + (((double)mins) / 60);
             return t;
