@@ -29,6 +29,5 @@ C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\BarInfo\obj\Deb
 C:\Users\nbova\Documents\Visual Studio 2012\Projects\Nestle Demo\BarInfo\obj\Debug\GanttControl.pdb
 C:\Users\bsmithmartinez\work\Nestle Demo\BarInfo\bin\Debug\GanttControl.dll
 C:\Users\bsmithmartinez\work\Nestle Demo\BarInfo\bin\Debug\GanttControl.pdb
-C:\Users\bsmithmartinez\work\Nestle Demo\BarInfo\obj\Debug\GanttControl.csprojResolveAssemblyReference.cache
 C:\Users\bsmithmartinez\work\Nestle Demo\BarInfo\obj\Debug\GanttControl.dll
 C:\Users\bsmithmartinez\work\Nestle Demo\BarInfo\obj\Debug\GanttControl.pdb

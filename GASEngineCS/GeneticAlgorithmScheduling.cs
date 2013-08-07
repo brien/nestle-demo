@@ -3447,6 +3447,9 @@ namespace Junction
 
                 int pProd = -99; // set up a variable to hold the previous product
                 double pQty = 0; //set up a variable to hold the previous quantity
+                bool pBomViolation = false;
+                double pStartTime = 0.0;
+                double timeDiff = 0.0; //variable to hold BOM violation time delta
                 if (shouldBreak)
                 {
                     Debug.Write(Environment.NewLine + " --- CalcFitness BOM pSched --- ");
@@ -3454,7 +3457,6 @@ namespace Junction
                 //Calculate the available quantities
                 foreach (ProdSchedule ps in pSched)
                 {
-
                     if (shouldBreak)
                     {
                         Debug.Write(Environment.NewLine +
@@ -3464,17 +3466,29 @@ namespace Junction
                             " " + ps.OrderQty +
                             " " + ps.AvailableQuantity);
                     }
+                   
                     // Calculate the penalty
                     if (pProd == ps.Product)
                     {
+                        timeDiff = ps.EndTime - pStartTime;
                         pQty += ps.OrderQty;
                         ps.AvailableQuantity = pQty;
                     }
                     else
                     {
+                        //timeDiff = 0.0;
+                        pStartTime = ps.StartTime;
                         pQty = ps.OrderQty;
                         pProd = ps.Product;
                         ps.AvailableQuantity = pQty;
+                    }
+                    if (shouldBreak) Debug.Write(" " + timeDiff);
+                    if (pBomViolation == true)
+                    {
+                        if (shouldBreak) Debug.Write(" VP: " + timeDiff * 10);
+                        BOMPenalties += timeDiff * 10;
+                        pBomViolation = false;
+                        timeDiff = 0.0;
                     }
                     if (Inventory[ps.Product] > 0 && ps.EndTime > InventoryTime[ps.Product])
                     {
@@ -3483,7 +3497,9 @@ namespace Junction
                     }
                     if (ps.AvailableQuantity < 0.0)
                     {
-                        BOMPenalties += BOMPenaltyCost;
+                        if (shouldBreak) Debug.Write(" BOM VIOLATION");
+                        pBomViolation = true;
+                        BOMPenalties += BOMPenaltyCost; 
                         ScheduleViolationBOM = true;
                     }
                 }
@@ -3499,6 +3515,7 @@ namespace Junction
             Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
              + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties + EarlyStartFactor;
 
+            Debug.Assert(Fitness > 0.0, "Fitness < 0.0");
             return (-1.0 * Fitness);
         }
     }
