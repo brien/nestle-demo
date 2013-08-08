@@ -2447,13 +2447,14 @@ namespace Junction
             int NumberOfProducts = ProductName.GetUpperBound(0) + 1;
             if (iMax != NumberOfProducts | jMax != NumberOfProducts)
             {
-                throw new ApplicationException("Wrong number of rows or columns in the Change Over matrix.\r\n The number of rows and columns must be equal to the number of products. There were " + iMax + " rows, " + jMax + " columns, and " + NumberOfProducts + " Products found. \r\n Make sure there is no stray input, including blanks, on the changeover matrix spreadsheet.\r\n");
+                //throw new ApplicationException("Wrong number of rows or columns in the Change Over matrix.\r\n The number of rows and columns must be equal to the number of products. There were " + iMax + " rows, " + jMax + " columns, and " + NumberOfProducts + " Products found. \r\n Make sure there is no stray input, including blanks, on the changeover matrix spreadsheet.\r\n");
             }
 
-            ChangeOver = new double[iMax, jMax];
-            for (int i = 0; i < iMax; i++)
+            //ChangeOver = new double[iMax, jMax];
+            ChangeOver = new double[NumberOfProducts, NumberOfProducts];
+            for (int i = 0; i < NumberOfProducts; i++)
             {
-                for (int j = 0; j < jMax; j++)
+                for (int j = 0; j < NumberOfProducts; j++)
                 {
                     try
                     {
@@ -2475,15 +2476,16 @@ namespace Junction
             int iMax = dt.Rows.Count;
 
             // Make sure the changeover matrix is valid
+            int NumberOfProducts = ProductName.GetUpperBound(0) + 1;
             if (iMax != ProductName.GetUpperBound(0) + 1 | jMax != ProductName.GetUpperBound(0) + 1)
             {
-                throw new ApplicationException("Wrong number of rows or columns in the Change Over Penalty matrix.\r\n The number of rows and columns must be equal to the number of products. There were " + iMax + " rows, " + jMax + " columns, and " + (ProductName.GetUpperBound(0) + 1) + " Products found. \r\n Make sure there is no stray input, including blanks, on the changeover penalty matrix spreadsheet.\r\n");
+                //throw new ApplicationException("Wrong number of rows or columns in the Change Over Penalty matrix.\r\n The number of rows and columns must be equal to the number of products. There were " + iMax + " rows, " + jMax + " columns, and " + (ProductName.GetUpperBound(0) + 1) + " Products found. \r\n Make sure there is no stray input, including blanks, on the changeover penalty matrix spreadsheet.\r\n");
             }
 
-            ChangeOverPenalties = new double[iMax, jMax];
-            for (int i = 0; i < iMax; i++)
+            ChangeOverPenalties = new double[NumberOfProducts, NumberOfProducts];
+            for (int i = 0; i < NumberOfProducts; i++)
             {
-                for (int j = 0; j < jMax; j++)
+                for (int j = 0; j < NumberOfProducts; j++)
                 {
                     try
                     {
