@@ -1912,7 +1912,10 @@ namespace Junction
 
                 DataRow dr2 = dt2.NewRow();
                 dr2["Genes"] = genes[i];
-                dr2["DelayTime"] = delayTimes[i];
+                if (i < delayTimes.Length)
+                {
+                    dr2["DelayTime"] = delayTimes[i];
+                }
                 dt2.Rows.Add(dr2);
             }
 

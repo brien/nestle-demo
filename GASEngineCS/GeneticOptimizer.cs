@@ -361,13 +361,13 @@ namespace Junction
                     break;
                 case RealCrossoverOp.Uniform:
                     // Uniform Crossover:
-                    int cutpoint = _rand.Next(_length + 1);
+                    int cutpoint = _rand.Next(population[p1].timesLength + 1);
                     for (int i = 0; i < cutpoint; i++)
                     {
                         offspring[o1].Times[i] = population[p1].Times[i];
                         offspring[o2].Times[i] = population[p2].Times[i];
                     }
-                    for (int i = cutpoint; i < _length; i++)
+                    for (int i = cutpoint; i < population[p1].timesLength; i++)
                     {
                         offspring[o1].Times[i] = population[p2].Times[i];
                         offspring[o2].Times[i] = population[p1].Times[i];
@@ -474,6 +474,7 @@ namespace Junction
             public ConstrainedCreature(int length, int tl, double delayRate, double delayMean)
             {
                 Genes = new int[length];
+                Times = new double[tl];
                 timesLength = tl;
                 List<int> randarray = new List<int>();
                 for (int i = 0; i < length; i++)
@@ -487,8 +488,7 @@ namespace Junction
                     randarray.RemoveAt(r);
                 }
                 fitness = -1;
-                Times = new double[length];
-                for (int i = 0; i < length; i++)
+                for (int i = 0; i < tl; i++)
                 {
                     if (_rand.NextDouble() < delayRate)
                     {
@@ -507,7 +507,10 @@ namespace Junction
                 for (int i = 0; i < Genes.Length; i++)
                 {
                     Genes[i] = c.Genes[i];
-                    Times[i] = c.Times[i];
+                    if (i < timesLength)
+                    {
+                        Times[i] = c.Times[i];
+                    }
                 }
             }
 
