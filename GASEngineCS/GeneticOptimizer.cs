@@ -54,6 +54,7 @@ namespace Junction
         // Generic GA parameters:
         private int _seed;
         private int _length;
+        private int _tl;
         private int _popsize;
         private int _offsize;
         private double _mutationRate;
@@ -75,6 +76,7 @@ namespace Junction
             _rand = new Random(_seed);
             _srng = new SimpleRNG((uint)_seed);
             _length = length;
+            _tl = tl;
             _popsize = popsize;
             _offsize = offsize;
             _mutationRate = mutationRate;
@@ -100,7 +102,7 @@ namespace Junction
         }
         public void SeedPopulation(int[] genes, double[] times)
         {
-            population[0] = new ConstrainedCreature(_length, _length, genes, times);
+            population[0] = new ConstrainedCreature(_length, _tl, genes, times);
             /*
             for (int i = 1; i < _popsize; i++)
             {

@@ -2279,7 +2279,10 @@ namespace Junction
                 foreach (DataRow dr in dt.Rows)
                 {
                     Genes[i] = (int)(double)dr["Genes"];
-                    Times[i] = (double)dr["DelayTime"];
+                    if (i < NumberOfRealJobs)
+                    {
+                        Times[i] = (double)dr["DelayTime"];
+                    }
                     i++;
                 }
             }
@@ -3361,7 +3364,7 @@ namespace Junction
                         //Todo  Turn Early start facto into a configurable factor (by resorce?)
                         //if (JobStartTime > ProdEndTime[NumberOfResources - 1])
                         //{
-                        EarlyStartFactor += JobStartTime;
+                        //EarlyStartFactor += JobStartTime;
                         //}
 
                         PreviousProd = JobsToSchedule[CurrentJob];
@@ -3407,7 +3410,7 @@ namespace Junction
                     }
                 }
                 // Calculate the total production time required
-                // TotalTimeAllResources += Time - ProdStartTime[Resource];
+                //TotalTimeAllResources += Time - ProdStartTime[Resource];
             }
 
             //Get ready to check for BOM violations
@@ -3491,7 +3494,7 @@ namespace Junction
                     if (pBomViolation == true)
                     {
                         if (shouldBreak) Debug.Write(" VP: " + timeDiff * 10);
-                        BOMPenalties += timeDiff * 10;
+                        BOMPenalties += timeDiff * 20;
                         pBomViolation = false;
                         timeDiff = 0.0;
                     }
@@ -3517,8 +3520,10 @@ namespace Junction
 
             //Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
             //    + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties; 
-            Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
-             + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties + EarlyStartFactor;
+            //Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
+            // + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties + EarlyStartFactor;
+            Fitness = BOMPenalties + ResourcePrefPenalties;// +SumOfChangeOverPenalties + SumOfServiceEarlyPenalties;
+
 
             Debug.Assert(Fitness > 0.0, "Fitness < 0.0");
             return (-1.0 * Fitness);
