@@ -3410,7 +3410,7 @@ namespace Junction
                     }
                 }
                 // Calculate the total production time required
-                //TotalTimeAllResources += Time - ProdStartTime[Resource];
+                TotalTimeAllResources += Time - ProdStartTime[Resource];
             }
 
             //Get ready to check for BOM violations
@@ -3520,9 +3520,8 @@ namespace Junction
 
             //Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
             //    + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties; 
-            //Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
-            // + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties + EarlyStartFactor;
-            Fitness = BOMPenalties + ResourcePrefPenalties;// +SumOfChangeOverPenalties + SumOfServiceEarlyPenalties;
+            Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties + EarlyStartFactor;
+            //Fitness = BOMPenalties + ResourcePrefPenalties;// +SumOfChangeOverPenalties + SumOfServiceEarlyPenalties;
 
 
             Debug.Assert(Fitness > 0.0, "Fitness < 0.0");
