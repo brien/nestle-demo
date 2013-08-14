@@ -69,25 +69,25 @@ Public Class GAScheduling
                 .meanDelayTime = CDbl(tbMeanDelay.Text)
                 .delayRate = CDbl(tbDelayProb.Text)
                 If (rbStruggle.Checked) Then
-                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Struggle
+                    .survivalMode = Junction.NewGeneticOptimizer.SurvivalSelectionOp.Struggle
                 ElseIf (rbElitist.Checked) Then
-                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Elitist
+                    .survivalMode = Junction.NewGeneticOptimizer.SurvivalSelectionOp.Elitist
                 ElseIf (rbGenerational.Checked) Then
-                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Generational
+                    .survivalMode = Junction.NewGeneticOptimizer.SurvivalSelectionOp.Generational
                 ElseIf (rbReplaceWorst.Checked) Then
-                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.ReplaceWorst
+                    .survivalMode = Junction.NewGeneticOptimizer.SurvivalSelectionOp.ReplaceWorst
                 End If
 
                 If (rbFitnessProportional.Checked) Then
-                    .parentMode = Junction.GeneticOptimizer.ParentSelectionOp.FitnessProportional
+                    .parentMode = Junction.NewGeneticOptimizer.ParentSelectionOp.FitnessProportional
                 ElseIf (rbTournament.Checked) Then
-                    .parentMode = Junction.GeneticOptimizer.ParentSelectionOp.Tournament
+                    .parentMode = Junction.NewGeneticOptimizer.ParentSelectionOp.Tournament
                 End If
 
                 If (rbUniform.Checked) Then
-                    .realCrossoverMode = Junction.GeneticOptimizer.RealCrossoverOp.Uniform
+                    .realCrossoverMode = Junction.NewGeneticOptimizer.RealCrossoverOp.Uniform
                 ElseIf (rbMeanWithNoise.Checked) Then
-                    .realCrossoverMode = Junction.GeneticOptimizer.RealCrossoverOp.MeanWithNoise
+                    .realCrossoverMode = Junction.NewGeneticOptimizer.RealCrossoverOp.MeanWithNoise
                 End If
 
             End If

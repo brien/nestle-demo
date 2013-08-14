@@ -44,9 +44,9 @@ namespace Junction
         public double meanDelayTime;
         // The rate at which delay times are generated (probablilty of non-zero delay time)
         public double delayRate;
-        public Junction.GeneticOptimizer.SurvivalSelectionOp survivalMode;
-        public Junction.GeneticOptimizer.RealCrossoverOp realCrossoverMode;
-        public Junction.GeneticOptimizer.ParentSelectionOp parentMode;
+        public Junction.NewGeneticOptimizer.SurvivalSelectionOp survivalMode;
+        public Junction.NewGeneticOptimizer.RealCrossoverOp realCrossoverMode;
+        public Junction.NewGeneticOptimizer.ParentSelectionOp parentMode;
         // Just for debugging purposes:
         static bool shouldBreak = false;
 
@@ -104,7 +104,7 @@ namespace Junction
         public static bool[] ConstrainedStart { get; set; }
 
         public SimpleGA GA;
-        public GeneticOptimizer CGA;
+        public NewGeneticOptimizer CGA;
         private int[] Genes;
         private double[] Times;
         public bool seededRun;
@@ -1984,7 +1984,7 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new Junction.GeneticOptimizer(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
+                CGA = new Junction.NewGeneticOptimizer(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
                 if (seededRun)
                 {
                     CGA.SeedPopulation(Genes, Times);
@@ -3290,6 +3290,31 @@ namespace Junction
 
 
             return fitness * -1.0;
+        }
+        private static void Transform(int[] genes, double[] delayTimes, out int[] jobs, out int[] delays)
+        {
+            Array.Sort(genes);
+            jobs = new int[NumberOfRealJobs * NumberOfResources];
+            int[,] schedule = new int[NumberOfResources,NumberOfRealJobs];
+            delays = new int[NumberOfRealJobs];
+
+            for (int g = 0; g < NumberOfRealJobs; g++)
+            {
+                schedule[genes[g], g] = g;
+            }
+            for (int Resource = 0; Resource < NumberOfResources; Resource++)
+            {
+               // Calculate the time for the following jobs
+                int FirstGeneInResource = NumberOfRealJobs * Resource;
+                int LastGeneInResource = (NumberOfRealJobs * (Resource + 1)) - 1;
+                double co, cop;
+                for (int i = FirstGeneInResource; i <= LastGeneInResource; i++)
+                {
+                    jobs[i] = genes[i];
+                }
+
+            }            
+
         }
         private static double CalcFitness(int[] genes, double[] delayTimes)
         {
