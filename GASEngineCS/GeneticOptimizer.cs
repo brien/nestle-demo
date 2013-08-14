@@ -98,11 +98,13 @@ namespace Junction
                 {
                     population[i] = new ScheduleGenome(length, tl, mutationRate, _delayRate, _delayMean);
                     population[i].realCrossover = realCrossover;
+                    population[i].maxModes = length / tl - 1;
                 }
                 for (int i = 0; i < offsize; i++)
                 {
                     offspring[i] = new ScheduleGenome(length, tl, mutationRate, _delayRate, _delayMean);
                     offspring[i].realCrossover = realCrossover;
+                    offspring[i].maxModes = length / tl - 1;
                 }
 
             }
@@ -464,6 +466,8 @@ namespace Junction
             {
                 public int[] Genes;
                 public double[] Times;
+                public int[] Modes;
+                public int maxModes;
                 private double _mutationRate;
                 public double fitness;
                 public int _timesLength;
@@ -476,6 +480,7 @@ namespace Junction
                     _length = length;
                     Genes = new int[length];
                     Times = new double[tl];
+                    Modes = new int[tl];
                     _timesLength = tl;
                     _mutationRate = mut;
                     for (int i = 0; i < length; i++)
@@ -493,6 +498,7 @@ namespace Junction
                 {
                     Genes = new int[length];
                     Times = new double[tl];
+                    Modes = new int[tl];
                     _length = length;
                     _timesLength = tl;
                     _mutationRate = mut;
@@ -530,6 +536,7 @@ namespace Junction
                         if (i < _timesLength)
                         {
                             Times[i] = c.Times[i];
+                            Modes[i] = c.Modes[i];
                         }
                     }
                 }
@@ -606,6 +613,20 @@ namespace Junction
                     Debug.Assert(o1.IsValid(), "Invalid creature after crossover");
 
                     DTCrossover(ref p2, ref o1);
+                    CombinationCrossover(ref p2, ref o1);
+                }
+                public void CombinationCrossover(ref ScheduleGenome p2, ref ScheduleGenome o1)
+                {
+                    int cutpoint = _rand.Next(_timesLength);
+
+                    for (int i = 0; i < cutpoint; i++)
+                    {
+                        o1.Modes[i] = p2.Modes[i];
+                    }
+                    for (int i = cutpoint; i < _timesLength; i++)
+                    {
+                        o1.Modes[i] = Modes[i];
+                    }
                 }
                 public void Mutate()
                 {
@@ -630,6 +651,15 @@ namespace Junction
                             Times[r] = mutatedDelay;
                         }
                     }
+                    //Mutate the Mode vector:
+                    for (int i = 0; i < _timesLength; i++)
+                    {
+                        if (_rand.NextDouble() < _mutationRate)
+                        {
+                            Modes[i] = _rand.Next(maxModes);
+                        }
+                    }
+
                 }
                 public bool IsValid()
                 {
