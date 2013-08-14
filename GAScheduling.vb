@@ -6,7 +6,7 @@ Imports Microsoft.VisualBasic.Strings
 
 
 Public Class GAScheduling
-    Dim GA As New Junction.SimpleGA(1, 10, 100, 100, 0.04)
+    Dim GA As New Junction.GeneticOptimizer.SimpleGA(1, 10, 100, 100, 0.04)
 
     Public Const UNCONSTRAINED_TIME As Double = 999999
     Dim GAS As New Junction.GeneticAlgorithmSchedulingCS
@@ -69,25 +69,25 @@ Public Class GAScheduling
                 .meanDelayTime = CDbl(tbMeanDelay.Text)
                 .delayRate = CDbl(tbDelayProb.Text)
                 If (rbStruggle.Checked) Then
-                    .survivalMode = Junction.NewGeneticOptimizer.SurvivalSelectionOp.Struggle
+                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Struggle
                 ElseIf (rbElitist.Checked) Then
-                    .survivalMode = Junction.NewGeneticOptimizer.SurvivalSelectionOp.Elitist
+                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Elitist
                 ElseIf (rbGenerational.Checked) Then
-                    .survivalMode = Junction.NewGeneticOptimizer.SurvivalSelectionOp.Generational
+                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.Generational
                 ElseIf (rbReplaceWorst.Checked) Then
-                    .survivalMode = Junction.NewGeneticOptimizer.SurvivalSelectionOp.ReplaceWorst
+                    .survivalMode = Junction.GeneticOptimizer.SurvivalSelectionOp.ReplaceWorst
                 End If
 
                 If (rbFitnessProportional.Checked) Then
-                    .parentMode = Junction.NewGeneticOptimizer.ParentSelectionOp.FitnessProportional
+                    .parentMode = Junction.GeneticOptimizer.ParentSelectionOp.FitnessProportional
                 ElseIf (rbTournament.Checked) Then
-                    .parentMode = Junction.NewGeneticOptimizer.ParentSelectionOp.Tournament
+                    .parentMode = Junction.GeneticOptimizer.ParentSelectionOp.Tournament
                 End If
 
                 If (rbUniform.Checked) Then
-                    .realCrossoverMode = Junction.NewGeneticOptimizer.RealCrossoverOp.Uniform
+                    .realCrossoverMode = Junction.GeneticOptimizer.RealCrossoverOp.Uniform
                 ElseIf (rbMeanWithNoise.Checked) Then
-                    .realCrossoverMode = Junction.NewGeneticOptimizer.RealCrossoverOp.MeanWithNoise
+                    .realCrossoverMode = Junction.GeneticOptimizer.RealCrossoverOp.MeanWithNoise
                 End If
 
             End If

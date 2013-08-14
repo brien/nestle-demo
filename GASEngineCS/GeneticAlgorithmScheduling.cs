@@ -44,9 +44,9 @@ namespace Junction
         public double meanDelayTime;
         // The rate at which delay times are generated (probablilty of non-zero delay time)
         public double delayRate;
-        public Junction.NewGeneticOptimizer.SurvivalSelectionOp survivalMode;
-        public Junction.NewGeneticOptimizer.RealCrossoverOp realCrossoverMode;
-        public Junction.NewGeneticOptimizer.ParentSelectionOp parentMode;
+        public Junction.GeneticOptimizer.SurvivalSelectionOp survivalMode;
+        public Junction.GeneticOptimizer.RealCrossoverOp realCrossoverMode;
+        public Junction.GeneticOptimizer.ParentSelectionOp parentMode;
         // Just for debugging purposes:
         static bool shouldBreak = false;
 
@@ -103,8 +103,8 @@ namespace Junction
 
         public static bool[] ConstrainedStart { get; set; }
 
-        public SimpleGA GA;
-        public NewGeneticOptimizer CGA;
+        public GeneticOptimizer.SimpleGA GA;
+        public GeneticOptimizer.GA CGA;
         private int[] Genes;
         private double[] Times;
         public bool seededRun;
@@ -1967,7 +1967,7 @@ namespace Junction
             // GeneticOptimizer is modified to remove delayjobs
             if (runRefactored)
             {
-                GA = new SimpleGA(seed, NumJobs, popsize, popsize, mutarate);
+                GA = new GeneticOptimizer.SimpleGA(seed, NumJobs, popsize, popsize, mutarate);
                 GA.FitnessFunction = this.CalcFitness;
                 GA.EvaluatePopulation();
                 double avgf = 0;
@@ -1984,7 +1984,7 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new Junction.NewGeneticOptimizer(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
+                CGA = new GeneticOptimizer.GA(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
                 if (seededRun)
                 {
                     CGA.SeedPopulation(Genes, Times);
@@ -2459,16 +2459,22 @@ namespace Junction
             {
                 for (int j = 0; j < NumberOfProducts; j++)
                 {
-                    try
+                    //try
+                    if( i >= iMax || j >= jMax)
+                    {
+                        ChangeOver[i, j] = 0;
+                    }
+                    else
                     {
                         ChangeOver[i, j] = (double)dt.Rows[i].ItemArray[j + 1] / 60.0;
                         ChangeOver[i, j] += CalcAllergenChangeOver(i, j);
                     }
+                    /*
                     catch (Exception)
                     {
                         ValidDataInput = false;
                         throw new ApplicationException("Invalid changeover time at row " + (i + 2) + " column " + (j + 2) + ". \r\n");
-                    }
+                    }*/
                 }
             }
         }
@@ -2490,16 +2496,21 @@ namespace Junction
             {
                 for (int j = 0; j < NumberOfProducts; j++)
                 {
-                    try
+                    if( i >= iMax || j >= jMax)
+                    {
+                        ChangeOver[i, j] = 0;
+                    }
+                    else
+                    //try
                     {
                         ChangeOverPenalties[i, j] = (double)dt.Rows[i].ItemArray[j + 1];// / 60.0;
                         //this.ChangeOverPenalties[i, j] += CalcAllergenChangeOver(i, j);
                     }
-                    catch (Exception)
+                    /*catch (Exception)
                     {
                         ValidDataInput = false;
                         throw new ApplicationException("Invalid changeover penalty at row " + (i + 2) + " column " + (j + 2) + ". \r\n");
-                    }
+                    }*/
                 }
             }
         }
