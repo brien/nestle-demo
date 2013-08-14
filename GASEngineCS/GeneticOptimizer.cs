@@ -51,7 +51,7 @@ namespace Junction
 
         public class GA
         {
-            public Func<int[], double[], double> FitnessFunction { get; set; }
+            public Func<int[], double[], int[], double> FitnessFunction { get; set; }
             public ScheduleGenome[] population;
             private ScheduleGenome[] offspring;
             public ScheduleGenome elite;
@@ -61,6 +61,7 @@ namespace Junction
             private int _seed;
             private int _length;
             private int _tl;
+            private int _mModes;
             private int _popsize;
             private int _offsize;
             private double _mutationRate;
@@ -73,13 +74,14 @@ namespace Junction
             private double _delayMean;
             double _delayRate;
             //double _delayVar;
-            public GA(int seed, int length, int tl, int popsize, int offsize, double mutationRate, double deathRate, double delayRate, double delayMean)
+            public GA(int seed, int length, int tl, int modes, int popsize, int offsize, double mutationRate, double deathRate, double delayRate, double delayMean)
             {
                 _seed = seed;
                 _rand = new Random(_seed);
                 _srng = new SimpleRNG((uint)_seed);
                 _length = length;
                 _tl = tl;
+                _mModes = modes;
                 _popsize = popsize;
                 _offsize = offsize;
                 _mutationRate = mutationRate;
@@ -93,24 +95,24 @@ namespace Junction
                 survivalSelection = SurvivalSelectionOp.Elitist;
                 parentSelection = ParentSelectionOp.Tournament;
 
-                elite = new ScheduleGenome(_length, tl, mutationRate, delayRate, delayMean);
+                elite = new ScheduleGenome(_length, tl, modes, mutationRate, delayRate, delayMean);
                 for (int i = 0; i < popsize; i++)
                 {
-                    population[i] = new ScheduleGenome(length, tl, mutationRate, _delayRate, _delayMean);
+                    population[i] = new ScheduleGenome(length, tl, modes, mutationRate, _delayRate, _delayMean);
                     population[i].realCrossover = realCrossover;
-                    population[i].maxModes = length / tl - 1;
+                    //population[i].maxModes = length / tl - 1;
                 }
                 for (int i = 0; i < offsize; i++)
                 {
-                    offspring[i] = new ScheduleGenome(length, tl, mutationRate, _delayRate, _delayMean);
+                    offspring[i] = new ScheduleGenome(length, tl, modes, mutationRate, _delayRate, _delayMean);
                     offspring[i].realCrossover = realCrossover;
-                    offspring[i].maxModes = length / tl - 1;
+                    //offspring[i].maxModes = length / tl - 1;
                 }
 
             }
             public void SeedPopulation(int[] genes, double[] times)
             {
-                population[0] = new ScheduleGenome(_length, _tl, _mutationRate, genes, times);
+                population[0] = new ScheduleGenome(_length, _tl, _mModes, _mutationRate, genes, times);
                 /*
                 for (int i = 1; i < _popsize; i++)
                 {
@@ -138,7 +140,7 @@ namespace Junction
             // Assumes population has been evaluated. Use with caution.
             public void FindElite()
             {
-                elite.fitness = FitnessFunction(elite.Genes, elite.Times);
+                elite.fitness = FitnessFunction(elite.Genes, elite.Times, elite.Modes);
                 for (int i = 0; i < _popsize; i++)
                 {
                     if (population[i].fitness > elite.fitness)
@@ -150,10 +152,10 @@ namespace Junction
 
             public void EvaluatePopulation()
             {
-                elite.fitness = FitnessFunction(elite.Genes, elite.Times);
+                elite.fitness = FitnessFunction(elite.Genes, elite.Times, elite.Modes);
                 for (int i = 0; i < _popsize; i++)
                 {
-                    population[i].fitness = FitnessFunction(population[i].Genes, population[i].Times);
+                    population[i].fitness = FitnessFunction(population[i].Genes, population[i].Times, elite.Modes);
                     if (population[i].fitness > elite.fitness)
                     {
                         elite.Copy(population[i]);
@@ -232,7 +234,7 @@ namespace Junction
                 }
                 public void Evaluate(Object threadContext)
                 {
-                    _reftoGO.offspring[_i].fitness = _reftoGO.FitnessFunction(_reftoGO.offspring[_i].Genes, _reftoGO.offspring[_i].Times);
+                    _reftoGO.offspring[_i].fitness = _reftoGO.FitnessFunction(_reftoGO.offspring[_i].Genes, _reftoGO.offspring[_i].Times, _reftoGO.offspring[_i].Modes);
                     _doneEvent.Set();
                 }
 
@@ -475,12 +477,13 @@ namespace Junction
                 public RealCrossoverOp realCrossover;
 
 
-                public ScheduleGenome(int length, int tl, double mut, int[] geneSeeds, double[] timeSeeds)
+                public ScheduleGenome(int length, int tl, int mModes, double mut, int[] geneSeeds, double[] timeSeeds)
                 {
                     _length = length;
                     Genes = new int[length];
                     Times = new double[tl];
                     Modes = new int[tl];
+                    maxModes = mModes;
                     _timesLength = tl;
                     _mutationRate = mut;
                     for (int i = 0; i < length; i++)
@@ -494,11 +497,12 @@ namespace Junction
                     fitness = -1;
                 }
 
-                public ScheduleGenome(int length, int tl, double mut, double delayRate, double delayMean)
+                public ScheduleGenome(int length, int tl, int mModes, double mut, double delayRate, double delayMean)
                 {
                     Genes = new int[length];
                     Times = new double[tl];
                     Modes = new int[tl];
+                    maxModes = mModes;
                     _length = length;
                     _timesLength = tl;
                     _mutationRate = mut;
@@ -524,6 +528,7 @@ namespace Junction
                         {
                             Times[i] = 0.0;
                         }
+                        Modes[i] = _rand.Next(maxModes);
                     }
                 }
 

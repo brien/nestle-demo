@@ -412,7 +412,7 @@ namespace Junction
 
             return Fitness;
         }
-    private void CalcTime_Backwards(ref object[,] Schedule, int TimeColumn, int SetupColumn, int[] genes, double[] delayTimes)
+        private void CalcTime_Backwards(ref object[,] Schedule, int TimeColumn, int SetupColumn, int[] genes, double[] delayTimes)
         {
             //Calculates Time Only - For Fitness use the the CalcFitness method
             double Time = ProdEndTime[0];
@@ -472,7 +472,7 @@ namespace Junction
                 PreviousProd = -1;
             }
         }
-        private void CalcTime(ref object[,] Schedule, int TimeColumn, int SetupColumn, int[] genes, double[] delayTimes)
+        private void CalcTime(ref object[,] Schedule, int TimeColumn, int SetupColumn, int[] genes, double[] delayTimes, int[] modes)
         {
             //Calculates Time Only - For Fitness use the the CalcFitness method
             double Time = ProdStartTime[0];
@@ -500,11 +500,13 @@ namespace Junction
                 int FirstGeneInResource = NumberOfRealJobs * Resource;
                 int LastGeneInResource = (NumberOfRealJobs * (Resource + 1)) - 1;
 
+                int[] output = new int[NumberOfResources * NumberOfRealJobs];
+                Transform(genes, modes, ref output);
                 for (int i = FirstGeneInResource; i <= LastGeneInResource; i++)
                 {
                     //int CurrentJob = (int)Schedule[0, i];
                     //CurrentProd = (int)Schedule[1, i];
-                    int CurrentJob = genes[i]; // Population[BestIndex, i];
+                    int CurrentJob = output[i]; // Population[BestIndex, i];
                     CurrentProd = JobsToSchedule[CurrentJob];
                     double co = 0;
                     if (PreviousProd != -1 & CurrentProd != -1)
@@ -1413,7 +1415,7 @@ namespace Junction
             ScheduleDataSet.Tables.Add(dt);
         }
 
-        private void CreateScheduleDataTable(int[] genes, double[] delayTimes)
+        private void CreateScheduleDataTable(int[] genes, double[] delayTimes, int[] modes)
         {
             DataTable dt = new DataTable();
             DataRow dr;
@@ -1576,7 +1578,9 @@ namespace Junction
             DateTime d = DateTime.Today;
 
             //**************************************************************
+            int[] output = new int[NumberOfResources * NumberOfRealJobs];
 
+            Transform(genes, modes, ref output);
             int jMax = ScheduleResult.GetUpperBound(1) + 1;
 
             for (int i = 0; i < jMax; i++)
@@ -1584,7 +1588,7 @@ namespace Junction
                 int Job;
                 int Product;
                 //Job = Population[BestIndex, i];
-                Job = genes[i];
+                Job = output[i];
                 Product = JobsToSchedule[Job];
                 ScheduleResult[0, i] = Job;
                 ScheduleResult[1, i] = Product;
@@ -1601,7 +1605,7 @@ namespace Junction
                 ScheduleResult[5, i] = (int)(Math.Truncate((double)i / (double)NumberOfRealJobs)) + 1;
             }
             //put the time and setuptime into the schedule
-            CalcTime(ref ScheduleResult, 3, 6, genes, delayTimes);
+            CalcTime(ref ScheduleResult, 3, 6, genes, delayTimes, modes);
 
             //Update the number of late jobs
             NumberOfServiceLateJobs = 0;
@@ -1984,7 +1988,7 @@ namespace Junction
             }
             else if (runConstrained)
             {
-                CGA = new GeneticOptimizer.GA(seed, NumJobs, NumberOfRealJobs, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
+                CGA = new GeneticOptimizer.GA(seed, NumberOfRealJobs, NumberOfRealJobs, NumberOfResources, popsize, popsize, mutarate, DeathRate / 100.0, delayRate, meanDelayTime);
                 if (seededRun)
                 {
                     CGA.SeedPopulation(Genes, Times);
@@ -2030,8 +2034,8 @@ namespace Junction
                 }
                 Debug.Write(Environment.NewLine + "Random Seed = " + seed);
                 shouldBreak = true;
-                CreateScheduleDataTable(CGA.elite.Genes, CGA.elite.Times);
-                eliteFitness = CGA.FitnessFunction(CGA.elite.Genes, CGA.elite.Times);
+                CreateScheduleDataTable(CGA.elite.Genes, CGA.elite.Times, CGA.elite.Modes);
+                eliteFitness = CGA.FitnessFunction(CGA.elite.Genes, CGA.elite.Times, CGA.elite.Modes);
                 shouldBreak = false;
             }
             else
@@ -2460,7 +2464,7 @@ namespace Junction
                 for (int j = 0; j < NumberOfProducts; j++)
                 {
                     //try
-                    if( i >= iMax || j >= jMax)
+                    if (i >= iMax || j >= jMax)
                     {
                         ChangeOver[i, j] = 0;
                     }
@@ -2496,7 +2500,7 @@ namespace Junction
             {
                 for (int j = 0; j < NumberOfProducts; j++)
                 {
-                    if( i >= iMax || j >= jMax)
+                    if (i >= iMax || j >= jMax)
                     {
                         ChangeOver[i, j] = 0;
                     }
@@ -3112,7 +3116,7 @@ namespace Junction
             // that job is last and ends at the end of the resource run time - the job's delay time.
             // The most important difference between backwards and forwards schedule is the meaning of the delay time
             // in a backwards schedule, a job's delay time comes AFTER the job.
-            
+
             double sumOfServiceLatePenalties = 0;
             double sumOfResourceLatePenalties = 0;
             double sumOfChangeOverPenalties = 0;
@@ -3289,7 +3293,7 @@ namespace Junction
                 }
             }
 
-            if (!(scheduleViolationBOM | scheduleViolationResourceLate | scheduleViolationOrderLate | scheduleViolationResourceFeasiblilty ))
+            if (!(scheduleViolationBOM | scheduleViolationResourceLate | scheduleViolationOrderLate | scheduleViolationResourceFeasiblilty))
             {
                 IsFeasible = true;
             }
@@ -3302,32 +3306,37 @@ namespace Junction
 
             return fitness * -1.0;
         }
-        private static void Transform(int[] genes, double[] delayTimes, out int[] jobs, out int[] delays)
+        private static void Transform(int[] genes, int[] modes, ref int[] output)
         {
-            Array.Sort(genes);
-            jobs = new int[NumberOfRealJobs * NumberOfResources];
-            int[,] schedule = new int[NumberOfResources,NumberOfRealJobs];
-            delays = new int[NumberOfRealJobs];
-
-            for (int g = 0; g < NumberOfRealJobs; g++)
+            for (int i = 0; i < NumberOfResources * NumberOfRealJobs; i++)
             {
-                schedule[genes[g], g] = g;
+                output[i] = NumberOfRealJobs + 1;
             }
-            for (int Resource = 0; Resource < NumberOfResources; Resource++)
+            int[] used = new int[NumberOfResources];
+            for (int i = 0; i < NumberOfRealJobs; i++)
             {
-               // Calculate the time for the following jobs
-                int FirstGeneInResource = NumberOfRealJobs * Resource;
-                int LastGeneInResource = (NumberOfRealJobs * (Resource + 1)) - 1;
-                double co, cop;
-                for (int i = FirstGeneInResource; i <= LastGeneInResource; i++)
+                output[modes[i] * NumberOfRealJobs + used[modes[i]] ] = i;
+                used[modes[i]]++;
+            }
+            /*
+            for (int i = 0; i < NumberOfResources; i++)
+            {
+                for (int j = 0; j < NumberOfRealJobs; j++)
                 {
-                    jobs[i] = genes[i];
+                    if (modes[j] == i)
+                    {
+                        for (int k = 0; k < NumberOfRealJobs; k++)
+                        {
+                            if (genes[k] == j)
+                            {
+                                output[i * NumberOfResources + k] = j;
+                            }
+                        }
+                    }
                 }
-
-            }            
-
-        }
-        private static double CalcFitness(int[] genes, double[] delayTimes)
+            }*/
+            }
+        private static double CalcFitness(int[] genes, double[] delayTimes, int[] modes)
         {
             double Time = ProdStartTime[0];
             double JobStartTime, JobEndTime;
@@ -3358,7 +3367,9 @@ namespace Junction
 
             // List of production orders to support calculation of BOM Item requirements
             List<ProdSchedule> pSched = new List<ProdSchedule>();
+            int[] output = new int[NumberOfResources * NumberOfRealJobs];
 
+            Transform(genes, modes, ref output);
 
             for (int Resource = 0; Resource < NumberOfResources; Resource++)
             {
@@ -3377,7 +3388,7 @@ namespace Junction
                 double co, cop;
                 for (int i = FirstGeneInResource; i <= LastGeneInResource; i++)
                 {
-                    CurrentJob = genes[i];
+                    CurrentJob = output[i];
                     CurrentProd = JobsToSchedule[CurrentJob];
                     if (PreviousProd != -1 & CurrentProd != -1)
                     {
@@ -3510,7 +3521,7 @@ namespace Junction
                             " " + ps.OrderQty +
                             " " + ps.AvailableQuantity);
                     }
-                   
+
                     // Calculate the penalty
                     if (pProd == ps.Product)
                     {
@@ -3543,7 +3554,7 @@ namespace Junction
                     {
                         if (shouldBreak) Debug.Write(" BOM VIOLATION");
                         pBomViolation = true;
-                        BOMPenalties += BOMPenaltyCost; 
+                        BOMPenalties += BOMPenaltyCost;
                         ScheduleViolationBOM = true;
                     }
                 }
@@ -3557,7 +3568,7 @@ namespace Junction
             //Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties
             //    + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties; 
             Fitness = TotalTimeAllResources + SumOfResourceLatePenalties + SumOfServiceLatePenalties + BOMPenalties + ResourcePrefPenalties + SumOfChangeOverPenalties + SumOfServiceEarlyPenalties + EarlyStartFactor;
-            //Fitness = BOMPenalties + ResourcePrefPenalties;// +SumOfChangeOverPenalties + SumOfServiceEarlyPenalties;
+            //Fitness = ResourcePrefPenalties;// +SumOfChangeOverPenalties + SumOfServiceEarlyPenalties;
 
 
             Debug.Assert(Fitness > 0.0, "Fitness < 0.0");
